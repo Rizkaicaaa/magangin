@@ -26,14 +26,14 @@
     </div>
 
     <!-- Kontainer utama untuk halaman login dan register, sekarang di kanan -->
-    <div class="w-[38%] p-8 bg-white rounded-xl shadow-2xl space-y-8 mr-12 ">
+    <div class="w-[38%] p-8 bg-white rounded-xl shadow-2xl space-y-8 mr-12 my-8">
         
         
         <!-- Bagian atas: Poster Informasi dengan gradasi warna logo -->
         <div class="max-w-xl p-8 bg-white rounded-xl space-y-8 mr-12">
             <div class="flex items-center space-x-4">
                 <img src="{{ asset('images/logomagangin.png') }}" alt="Logo MagangIn" style="width: 108px; height: 108px;" class="rounded-full border-2 border-white">
-                <div>
+                <div class="pl-4">
                     <h2 class="text-3xl font-bold text-red-600 mb-2">Selamat Datang di MagangIn</h2>
                     <p class="text-md text-gray-500">Temukan kesempatan magang terbaik dan kembangkan potensimu bersama kami.</p>
                 </div>
