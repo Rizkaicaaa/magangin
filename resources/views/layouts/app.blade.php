@@ -17,7 +17,7 @@
     </style>
 </head>
 <body class="bg-red-100">
-    <header class="bg-red-600 text-white p-4 mb-6 flex items-center shadow-lg flex justify-between">
+    <header class="bg-red-600 text-white p-4 flex items-center shadow-lg flex justify-between">
         <div class="flex justify-between items-center w-full">
             <div class="flex items-center">
                 <div class="bg-white rounded-full p-2 mr-4">
@@ -31,7 +31,7 @@
             </button>
         </div>
     </header>
-    <nav class="w-full flex space-x-4 mx-6 mb-6">
+    <nav class="bg-white text-white p-4 mb-6 flex items-center shadow-lg w-full flex space-x-4 mb-6">
         <a href="{{ url('/penilaian') }}" class="py-2 px-4 rounded-md font-semibold @if(Request::is('penilaian')) bg-red-500 text-white @else bg-gray-200 text-gray-700 hover:bg-gray-300 @endif">
             Kelola Penilaian
         </a>
