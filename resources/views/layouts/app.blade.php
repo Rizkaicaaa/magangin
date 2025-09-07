@@ -16,8 +16,8 @@
     }
     </style>
 </head>
-<body class="bg-red-100">
-    <header class="bg-red-600 text-white p-4 flex items-center shadow-lg flex justify-between">
+<body class="bg-baby-blue">
+    <header class="bg-navy text-white p-4 flex items-center shadow-lg flex justify-between">
         <div class="flex justify-between items-center w-full">
             <div class="flex items-center">
                 <div class="bg-white rounded-full p-2 mr-4">
@@ -26,16 +26,16 @@
                 <h1 class="text-3xl font-bold">MagangIn</h1>
             </div>
             
-            <button id="logoutButton" class="py-2 px-4 rounded-md font-semibold bg-gray-200 text-gray-700 hover:bg-gray-300">
+            <button id="logoutButton" class="py-2 px-4 rounded-md font-semibold bg-baby-blue text-gray-700 hover:bg-gray-300">
                 Logout
             </button>
         </div>
     </header>
     <nav class="bg-white text-white p-4 mb-6 flex items-center shadow-lg w-full flex space-x-4 mb-6">
-        <a href="{{ url('/penilaian') }}" class="py-2 px-4 rounded-md font-semibold @if(Request::is('penilaian')) bg-red-500 text-white @else bg-gray-200 text-gray-700 hover:bg-gray-300 @endif">
+        <a href="{{ url('/penilaian') }}" class="py-2 px-4 rounded-md font-semibold @if(Request::is('penilaian')) bg-navy text-white @else bg-gray-200 text-gray-700 hover:bg-baby-blue @endif">
             Kelola Penilaian
         </a>
-        <a href="{{ url('/info-or') }}" class="py-2 px-4 rounded-md font-semibold @if(Request::is('info-or')) bg-red-500 text-white @else bg-gray-200 text-gray-700 hover:bg-gray-300 @endif">
+        <a href="{{ url('/info-or') }}" class="py-2 px-4 rounded-md font-semibold @if(Request::is('info-or')) bg-navy text-white @else bg-gray-200 text-gray-700 hover:bg-baby-blue @endif">
             Kelola Info OR
         </a>
     </nav>
@@ -49,7 +49,7 @@
             <button id="cancelLogout" class="py-2 px-6 rounded-md bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition-colors duration-300">
                 Tidak
             </button>
-            <a href="{{ url('/auth') }}" id="confirmLogout" class="py-2 px-6 rounded-md bg-red-500 text-white font-semibold hover:bg-red-600 transition-colors duration-300">
+            <a href="{{ url('/auth') }}" id="confirmLogout" class="py-2 px-6 rounded-md bg-navy text-white font-semibold hover:bg-baby-blue transition-colors duration-300">
                 Yakin
             </a>
         </div>

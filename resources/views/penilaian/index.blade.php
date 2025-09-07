@@ -7,7 +7,7 @@
 
         <div class="flex justify-between items-center mb-6">
             <h1 id="page-title" class="text-3xl font-bold text-gray-800">Kelola Penilaian Mahasiswa Magang</h1>
-            <button id="create-button" class="py-2 px-4 rounded-md bg-red-500 text-white font-semibold hover:bg-red-600 transition-colors duration-300">
+            <button id="create-button" class="py-2 px-4 rounded-md bg-navy text-white font-semibold hover:bg-baby-blue transition-colors duration-300">
                 Buat Penilaian
             </button>
         </div>
@@ -46,7 +46,7 @@
                 <form class="space-y-4">
                     <div>
                         <label for="nama-peserta" class="block text-sm font-medium text-gray-700">Nama</label>
-                        <select id="nama-peserta" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50 px-4 py-2">
+                        <select id="nama-peserta" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-baby-blue focus:ring focus:ring-baby-blue focus:ring-opacity-50 px-4 py-2">
                             <option value="Raffi Ahmad">Raffi Ahmad</option>
                             <option value="Siti Nurhaliza">Siti Nurhaliza</option>
                             <option value="Budi Santoso">Budi Santoso</option>
@@ -61,11 +61,11 @@
                         <div class="space-y-2 mt-2">
                             <div class="flex items-center">
                                 <label for="kehadiran" class="w-1/3 text-sm text-gray-600">Kehadiran</label>
-                                <input type="number" id="kehadiran" value="80" class="w-2/3 rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50 px-4 py-2">
+                                <input type="number" id="kehadiran" value="80" class="w-2/3 rounded-md border-gray-300 shadow-sm focus:border-baby-blue focus:ring focus:ring-baby-blue focus:ring-opacity-50 px-4 py-2">
                             </div>
                             <div class="flex items-center">
                                 <label for="kinerja" class="w-1/3 text-sm text-gray-600">Kinerja</label>
-                                <select id="kinerja" class="w-2/3 rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50 px-4 py-2">
+                                <select id="kinerja" class="w-2/3 rounded-md border-gray-300 shadow-sm focus:border-baby-blue focus:ring focus:ring-baby-blue focus:ring-opacity-50 px-4 py-2">
                                     <option>Sedang</option>
                                     <option>Tinggi</option>
                                     <option>Rendah</option>
@@ -73,7 +73,7 @@
                             </div>
                             <div class="flex items-center">
                                 <label for="inisiatif" class="w-1/3 text-sm text-gray-600">Inisiatif</label>
-                                <select id="inisiatif" class="w-2/3 rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50 px-4 py-2">
+                                <select id="inisiatif" class="w-2/3 rounded-md border-gray-300 shadow-sm focus:border-baby-blue focus:ring focus:ring-baby-blue focus:ring-opacity-50 px-4 py-2">
                                     <option>Sedang</option>
                                     <option>Tinggi</option>
                                     <option>Rendah</option>
@@ -89,7 +89,7 @@
                         <button id="form-cancel-button" type="button" class="py-2 px-6 rounded-md bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition-colors duration-300">
                             Hapus
                         </button>
-                        <button type="submit" class="py-2 px-6 rounded-md bg-red-500 text-white font-semibold hover:bg-red-600 transition-colors duration-300">
+                        <button type="submit" class="py-2 px-6 rounded-md bg-navy text-white font-semibold hover:bg-baby-blue transition-colors duration-300">
                             Simpan
                         </button>
                     </div>
@@ -103,7 +103,7 @@
                         <button id="modal-cancel-button" class="py-2 px-6 rounded-md bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition-colors duration-300">
                             Tidak
                         </button>
-                        <button id="modal-confirm-button" class="py-2 px-6 rounded-md bg-red-500 text-white font-semibold hover:bg-red-600 transition-colors duration-300">
+                        <button id="modal-confirm-button" class="py-2 px-6 rounded-md bg-baby-blue text-white font-semibold hover:bg-navy transition-colors duration-300">
                             Yakin
                         </button>
                     </div>
@@ -148,7 +148,7 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.performance}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.initiative}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <button data-id="${item.id}" class="text-red-600 hover:text-red-900 delete-button">Hapus</button>
+                                <button data-id="${item.id}" class="text-navy hover:text-red-900 delete-button">Hapus</button>
                             </td>
                         </tr>
                     `;

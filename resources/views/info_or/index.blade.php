@@ -7,7 +7,7 @@
         <div class="bg-white p-8 rounded-xl shadow-lg max-w-7xl mx-auto">
             <div class="flex justify-between items-center mb-6">
                 <h1 id="page-title" class="text-3xl font-bold text-gray-800">Kelola Info OR</h1>
-                <button id="create-button" class="py-2 px-4 rounded-md bg-red-500 text-white font-semibold hover:bg-red-600 transition-colors duration-300 hidden">
+                <button id="create-button" class="py-2 px-4 rounded-md bg-baby-blue text-white font-semibold hover:bg-navy transition-colors duration-300 hidden">
                     Buat Info OR
                 </button>
             </div>
@@ -43,17 +43,17 @@
                     <form class="space-y-4">
                         <div>
                             <label for="judul-info" class="block text-sm font-medium text-gray-700">Judul Info</label>
-                            <input type="text" id="judul-info" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50 px-4 py-2">
+                            <input type="text" id="judul-info" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-baby-blue focus:ring focus:ring-baby-blue focus:ring-opacity-50 px-4 py-2">
                         </div>
                         <div>
                             <label for="deskripsi-info" class="block text-sm font-medium text-gray-700">Deskripsi</label>
-                            <textarea id="deskripsi-info" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50 px-4 py-2"></textarea>
+                            <textarea id="deskripsi-info" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-baby-blue focus:ring focus:ring-baby-blue focus:ring-opacity-50 px-4 py-2"></textarea>
                         </div>
                         <div class="flex justify-end space-x-4 mt-6">
                             <button id="form-cancel-button" type="button" class="py-2 px-6 rounded-md bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition-colors duration-300">
                                 Batal
                             </button>
-                            <button type="submit" class="py-2 px-6 rounded-md bg-red-500 text-white font-semibold hover:bg-red-600 transition-colors duration-300">
+                            <button type="submit" class="py-2 px-6 rounded-md bg-navy text-white font-semibold hover:bg-baby-blue transition-colors duration-300">
                                 Simpan
                             </button>
                         </div>
@@ -67,7 +67,7 @@
                             <button id="modal-cancel-button" class="py-2 px-6 rounded-md bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition-colors duration-300">
                                 Tidak
                             </button>
-                            <button id="modal-confirm-button" class="py-2 px-6 rounded-md bg-red-500 text-white font-semibold hover:bg-red-600 transition-colors duration-300">
+                            <button id="modal-confirm-button" class="py-2 px-6 rounded-md bg-baby-blue text-white font-semibold hover:bg-navy transition-colors duration-300">
                                 Yakin
                             </button>
                         </div>
@@ -107,7 +107,7 @@
                             <td class="px-6 py-4 text-sm text-gray-500">${item.description}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.date}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <button data-id="${item.id}" class="text-red-600 hover:text-red-900 delete-button">Hapus</button>
+                                <button data-id="${item.id}" class="text-navy hover:text-red-900 delete-button">Hapus</button>
                             </td>
                         </tr>
                     `;

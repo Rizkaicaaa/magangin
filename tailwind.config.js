@@ -14,8 +14,17 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                'baby-blue': '#BBDCE5',
+                'navy': '#3674B5',
+            },
         },
     },
-
-    plugins: [forms],
+    safelist: [
+        'text-baby-blue',
+        'bg-baby-blue',
+        'text-navy',
+        'bg-navy',
+    ],
+    plugins: [],
 };

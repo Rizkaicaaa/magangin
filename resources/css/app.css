@@ -3,6 +3,4 @@
 @tailwind utilities;
 
 /* CSS kustom untuk gradasi poster, menggunakan @apply */
-.poster-gradient {
-    @apply bg-gradient-to-r from-red-500 to-purple-500;
-}
+
