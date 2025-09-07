@@ -186,7 +186,7 @@
             } else {
                 emptyState.classList.add('hidden');
                 tableState.classList.remove('hidden');
-                pageTitle.textContent = 'Kelola Penilaian Hasil Wawancara';
+                pageTitle.textContent = 'Kelola Penilaian Mahasiswa Magang';
                 renderTable();
             }
             formState.classList.add('hidden');
