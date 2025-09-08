@@ -103,7 +103,7 @@
                         <button id="modal-cancel-button" class="py-2 px-6 rounded-md bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition-colors duration-300">
                             Tidak
                         </button>
-                        <button id="modal-confirm-button" class="py-2 px-6 rounded-md bg-baby-blue text-white font-semibold hover:bg-navy transition-colors duration-300">
+                        <button id="modal-confirm-button" class="py-2 px-6 rounded-md bg-navy text-white font-semibold hover:bg-baby-blue transition-colors duration-300">
                             Yakin
                         </button>
                     </div>
