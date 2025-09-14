@@ -32,29 +32,40 @@
         </div>
     </header>
     <nav class="bg-white text-white p-4 mb-6 flex items-center shadow-lg w-full flex space-x-4 mb-6">
+        <a href="{{ url('/info-or') }}" class="py-2 px-4 rounded-md font-semibold @if(Request::is('info-or')) bg-navy text-white @else bg-gray-200 text-gray-700 hover:bg-baby-blue @endif">
+            Kelola Info OR
+        </a>
         <a href="{{ url('/penilaian') }}" class="py-2 px-4 rounded-md font-semibold @if(Request::is('penilaian')) bg-navy text-white @else bg-gray-200 text-gray-700 hover:bg-baby-blue @endif">
             Kelola Penilaian
         </a>
-        <a href="{{ url('/info-or') }}" class="py-2 px-4 rounded-md font-semibold @if(Request::is('info-or')) bg-navy text-white @else bg-gray-200 text-gray-700 hover:bg-baby-blue @endif">
-            Kelola Info OR
+        <a href="{{ url('/kegiatan') }}" class="py-2 px-4 rounded-md font-semibold @if(Request::is('kegiatan')) bg-navy text-white @else bg-gray-200 text-gray-700 hover:bg-baby-blue @endif">
+            Kelola Kegiatan
         </a>
     </nav>
 
      @yield('content')
 
-    <div id="logoutModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white p-6 rounded-lg shadow-xl text-center">
-        <p class="text-lg font-semibold text-gray-800 mb-4">Apakah Anda yakin ingin logout?</p>
-        <div class="flex justify-center space-x-4">
-            <button id="cancelLogout" class="py-2 px-6 rounded-md bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition-colors duration-300">
-                Tidak
-            </button>
-            <a href="{{ url('/auth') }}" id="confirmLogout" class="py-2 px-6 rounded-md bg-navy text-white font-semibold hover:bg-baby-blue transition-colors duration-300">
-                Yakin
-            </a>
+        <div id="logoutModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 hidden">
+            <div class="bg-white p-6 rounded-lg shadow-xl text-center max-w-sm w-full">
+                <p class="text-lg font-semibold text-gray-800 mb-4">Apakah Anda yakin ingin logout?</p>
+                <div class="flex justify-center space-x-4">
+                    <button id="cancelLogout" 
+                            class="py-2 px-6 rounded-md bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition-colors duration-300">
+                        Tidak
+                    </button>
+                    
+                    <!-- Gunakan form logout -->
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" 
+                                class="py-2 px-6 rounded-md bg-navy text-white font-semibold hover:bg-baby-blue transition-colors duration-300">
+                            Yakin
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
-    </div>
-    </div>
+
     
     <script>
         // Ambil elemen modal dan tombol logout

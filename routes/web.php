@@ -17,9 +17,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/auth', function () {
-    return view('auth');
-});
+// Route::get('/auth', function () {
+//     return view('auth');
+// });
 
 Route::get('/penilaian', function () {
     return view('penilaian.index');
@@ -27,6 +27,10 @@ Route::get('/penilaian', function () {
 
 Route::get('/info-or', function () {
     return view('info_or.index');
+});
+
+Route::get('/kegiatan', function () {
+    return view('kegiatan.index');
 });
 
 require __DIR__.'/auth.php';
