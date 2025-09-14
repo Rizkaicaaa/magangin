@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\InfoOrController; 
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -15,6 +16,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/kelola-info-or', [InfoOrController::class, 'index'])->name('info-or.index');
 });
 
 // Route::get('/auth', function () {
@@ -25,9 +28,9 @@ Route::get('/penilaian', function () {
     return view('penilaian.index');
 });
 
-Route::get('/info-or', function () {
-    return view('info_or.index');
-});
+Route::get('/info-or', [InfoOrController::class, 'index'])->name('info-or.index');
+Route::post('/kelola-info-or', [InfoOrController::class, 'store'])->name('info-or.store');
+Route::put('/kelola-info-or/{id}/tutup', [InfoOrController::class, 'updateStatus'])->name('info-or.tutup');
 
 Route::get('/kegiatan', function () {
     return view('kegiatan.index');
