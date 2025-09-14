@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\InfoOrController; 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HasilWawancaraController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -18,6 +19,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/kelola-info-or', [InfoOrController::class, 'index'])->name('info-or.index');
+    Route::resource('hasilwawancara', HasilWawancaraController::class);
+
 });
 
 // Route::get('/auth', function () {
