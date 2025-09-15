@@ -8,7 +8,7 @@
             <div class="flex justify-between items-center mb-6">
                 <h1 id="page-title" class="text-3xl font-bold text-gray-800">Kelola Info OR</h1>
                 <button id="create-button" class="py-2 px-4 rounded-md bg-navy text-white font-semibold hover:bg-baby-blue transition-colors duration-300 {{ count($infoOrs) > 0 ? '' : 'hidden' }}">
-                    Buat Info OR
+                    + Buat Info OR
                 </button>
             </div>
 
@@ -18,7 +18,7 @@
                         Belum ada Info yang dimasukkan. Silakan buat Info OR dengan klik button buat di bawah untuk membuat Info OR
                     </p>
                     <button id="empty-create-button" class="py-2 px-4 rounded-md bg-navy text-white font-semibold hover:bg-baby-blue transition-colors duration-300">
-                        Buat Info OR
+                        + Buat Info OR
                     </button>
                 </div>
 
