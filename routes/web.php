@@ -3,6 +3,9 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\InfoOrController; 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HasilWawancaraController;
+use App\Http\Controllers\JadwalSeleksiController;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -18,6 +21,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/kelola-info-or', [InfoOrController::class, 'index'])->name('info-or.index');
+<<<<<<< HEAD
+    Route::resource('hasilwawancara', HasilWawancaraController::class);
+
+=======
+    Route::resource('/jadwal-seleksi', JadwalSeleksiController::class);
+>>>>>>> 5fa7df6838817d677533edf289b79992780fc4bc
 });
 
 // Route::get('/auth', function () {
