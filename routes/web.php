@@ -21,12 +21,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/kelola-info-or', [InfoOrController::class, 'index'])->name('info-or.index');
-<<<<<<< HEAD
     Route::resource('hasilwawancara', HasilWawancaraController::class);
 
-=======
     Route::resource('/jadwal-seleksi', JadwalSeleksiController::class);
->>>>>>> 5fa7df6838817d677533edf289b79992780fc4bc
 });
 
 // Route::get('/auth', function () {
