@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\JadwalKegiatanController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -29,8 +30,26 @@ Route::get('/info-or', function () {
     return view('info_or.index');
 });
 
-Route::get('/kegiatan', function () {
-    return view('kegiatan.index');
+
+// Routes untuk Jadwal Kegiatan Management
+Route::middleware(['auth'])->group(function () {
+    
+    // Halaman utama jadwal kegiatan
+    Route::get('/jadwal-kegiatan', [JadwalKegiatanController::class, 'index'])->name('jadwal-kegiatan.index');
+    
+    // API routes untuk AJAX
+    Route::prefix('jadwal-kegiatan')->name('jadwal-kegiatan.')->group(function () {
+        
+        // Get kegiatan by periode (untuk load tabel)
+        
+        // CRUD operations
+        Route::post('/', [JadwalKegiatanController::class, 'store'])->name('store');
+        Route::get('/{id}', [JadwalKegiatanController::class, 'show'])->name('show');
+        Route::put('/{id}', [JadwalKegiatanController::class, 'update'])->name('update');
+        Route::delete('/{id}', [JadwalKegiatanController::class, 'destroy'])->name('destroy');
+        
+    });
+    
 });
 
 require __DIR__.'/auth.php';
