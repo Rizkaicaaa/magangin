@@ -51,14 +51,21 @@
             class="py-2 px-4 rounded-md font-semibold @if(Request::is('pendaftar')) bg-navy text-white @else bg-gray-200 text-gray-700 hover:bg-baby-blue @endif">
             Data Pendaftar
         </a>
-        <a href="{{ url('/penilaian') }}"
-            class="py-2 px-4 rounded-md font-semibold @if(Request::is('penilaian')) bg-navy text-white @else bg-gray-200 text-gray-700 hover:bg-baby-blue @endif">
-            Data Penilaian
-        </a>
+       
         <a href="{{ url('/jadwal-kegiatan') }}"
             class="py-2 px-4 rounded-md font-semibold @if(Request::is('jadwal-kegiatan')) bg-navy text-white @else bg-gray-200 text-gray-700 hover:bg-baby-blue @endif">
             Data Kegiatan
+
+        <a href="{{ url('/jadwal-seleksi') }}" class="py-2 px-4 rounded-md font-semibold @if(Request::is('jadwal-seleksi')) bg-navy text-white @else bg-gray-200 text-gray-700 hover:bg-baby-blue @endif">
+            Kelola Jadwal Wawancara
         </a>
+        <a href="{{ url('/penilaian') }}" class="py-2 px-4 rounded-md font-semibold @if(Request::is('penilaian')) bg-navy text-white @else bg-gray-200 text-gray-700 hover:bg-baby-blue @endif">
+            Kelola Penilaian
+        </a>
+        <a href="{{ url('/hasilwawancara') }}" class="py-2 px-4 rounded-md font-semibold @if(Request::is('hasilwawancara')) bg-navy text-white @else bg-gray-200 text-gray-700 hover:bg-baby-blue @endif">
+            Hasil Wawancara
+        </a>
+        
     </nav>
 
     @yield('content')
