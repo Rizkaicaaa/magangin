@@ -1,5 +1,5 @@
 <?php
-// Model InfoOr
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -28,18 +28,37 @@ class InfoOr extends Model
     ];
 
     // Relationships
+    
+    /**
+     * Relasi ke JadwalKegiatan (One to Many)
+     * Satu periode memiliki banyak jadwal kegiatan
+     */
+    public function jadwalKegiatan()
+    {
+        return $this->hasMany(JadwalKegiatan::class, 'info_or_id');
+    }
+    
+    /**
+     * Relasi ke JadwalSeleksi (One to Many)
+     */
     public function jadwalSeleksi()
     {
-        return $this->hasMany(JadwalSeleksi::class);
+        return $this->hasMany(JadwalSeleksi::class, 'info_or_id');
     }
-
+    
+    /**
+     * Relasi ke Pendaftaran (One to Many)
+     */
     public function pendaftaran()
     {
-        return $this->hasMany(Pendaftaran::class);
+        return $this->hasMany(Pendaftaran::class, 'info_or_id');
     }
-
+    
+    /**
+     * Relasi ke Template Sertifikat (One to Many)
+     */
     public function templateSertifikat()
     {
-        return $this->hasMany(TemplateSertifikat::class);
+        return $this->hasMany(TemplateSertifikat::class, 'info_or_id');
     }
 }

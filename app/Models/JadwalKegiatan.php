@@ -1,6 +1,5 @@
 <?php
 
-// Model JadwalKegiatan
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,7 +12,7 @@ class JadwalKegiatan extends Model
     protected $table = 'jadwal_kegiatan';
 
     protected $fillable = [
-        'dinas_id',
+        'info_or_id', // Sesuaikan dengan migration
         'nama_kegiatan',
         'deskripsi_kegiatan',
         'tanggal_kegiatan',
@@ -29,8 +28,39 @@ class JadwalKegiatan extends Model
     ];
 
     // Relationships
-    public function dinas()
+    
+    /**
+     * Relasi ke InfoOr (Many to One)
+     * Satu jadwal kegiatan belongs to satu periode (InfoOr)
+     */
+    public function infoOr()
     {
-        return $this->belongsTo(Dinas::class);
+        return $this->belongsTo(InfoOr::class, 'info_or_id');
+    }
+    
+    /**
+     * Accessor untuk mendapatkan periode dari InfoOr
+     */
+    public function getPeriodeAttribute()
+    {
+        return $this->infoOr?->periode;
+    }
+    
+    /**
+     * Scope untuk filter berdasarkan periode
+     */
+    public function scopeByPeriode($query, $periodeId)
+    {
+        return $query->where('info_or_id', $periodeId);
+    }
+    
+    /**
+     * Scope untuk kegiatan aktif (berdasarkan periode yang buka)
+     */
+    public function scopeAktif($query)
+    {
+        return $query->whereHas('infoOr', function ($q) {
+            $q->where('status', 'buka');
+        });
     }
 }
