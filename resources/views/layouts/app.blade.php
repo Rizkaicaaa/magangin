@@ -41,7 +41,7 @@
         <a href="{{ url('/penilaian') }}" class="py-2 px-4 rounded-md font-semibold @if(Request::is('penilaian')) bg-navy text-white @else bg-gray-200 text-gray-700 hover:bg-baby-blue @endif">
             Kelola Penilaian
         </a>
-        <a href="{{ url('/hasilwawancara') }}" class="py-2 px-4 rounded-md font-semibold @if(Request::is('hasilwawancara')) bg-navy text-white @else bg-gray-200 text-gray-700 hover:bg-baby-blue @endif">
+        <a href="{{ route('hasilwawancara.index') }}" class="py-2 px-4 rounded-md font-semibold @if(Request::is('hasilwawancara')) bg-navy text-white @else bg-gray-200 text-gray-700 hover:bg-baby-blue @endif">
             Hasil Wawancara
         </a>
         <a href="{{ url('/kegiatan') }}" class="py-2 px-4 rounded-md font-semibold @if(Request::is('kegiatan')) bg-navy text-white @else bg-gray-200 text-gray-700 hover:bg-baby-blue @endif">
