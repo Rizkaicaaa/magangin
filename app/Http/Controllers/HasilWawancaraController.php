@@ -8,7 +8,6 @@ class HasilWawancaraController extends Controller
 {
     public function index()
     {
-        $hasilSeleksi = HasilSeleksi::all();
-        return view('hasilwawancara.index', compact('hasilSeleksi'));
+        return view('hasilwawancara.index');
     }
 }
