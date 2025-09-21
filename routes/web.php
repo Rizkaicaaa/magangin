@@ -8,6 +8,8 @@ use App\Http\Controllers\HasilWawancaraController;
 use App\Http\Controllers\JadwalSeleksiController;
 use App\Http\Controllers\PendaftarController;;
 
+
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -42,9 +44,6 @@ Route::get('/pendaftar', function () {
 Route::get('/info-or', [InfoOrController::class, 'index'])->name('info-or.index');
 Route::post('/kelola-info-or', [InfoOrController::class, 'store'])->name('info-or.store');
 Route::put('/kelola-info-or/{id}/tutup', [InfoOrController::class, 'updateStatus'])->name('info-or.tutup');
-
-
-// Routes untuk Jadwal Kegiatan Management
 
 // Routes untuk Jadwal Kegiatan Management
 Route::middleware(['auth'])->group(function () {
