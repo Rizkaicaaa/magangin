@@ -97,19 +97,18 @@ return new class extends Migration
         });
 
         // Table Jadwal Kegiatan
-        Schema::create('jadwal_kegiatan', function (Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedInteger('dinas_id');
-            $table->foreign('dinas_id')->references('id')->on('dinas')->onDelete('cascade');
-            $table->string('nama_kegiatan', 200);
-            $table->text('deskripsi_kegiatan')->nullable();
-            $table->date('tanggal_kegiatan');
-            $table->time('waktu_mulai');
-            $table->time('waktu_selesai');
-            $table->string('tempat', 100)->nullable();
-            $table->timestamps();
-        });
-
+Schema::create('jadwal_kegiatan', function (Blueprint $table) {
+    $table->increments('id');
+    $table->unsignedInteger('info_or_id'); // Tambah kolom foreign key
+    $table->foreign('info_or_id')->references('id')->on('info_or')->onDelete('cascade'); // Tambah foreign key constraint
+    $table->string('nama_kegiatan', 200);
+    $table->text('deskripsi_kegiatan')->nullable();
+    $table->date('tanggal_kegiatan');
+    $table->time('waktu_mulai');
+    $table->time('waktu_selesai');
+    $table->string('tempat', 100)->nullable();
+    $table->timestamps();
+});
         // Table Template Sertifikat
         Schema::create('template_sertifikat', function (Blueprint $table) {
             $table->increments('id');
