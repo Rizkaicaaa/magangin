@@ -109,9 +109,9 @@
         <!-- Poster Section - Hidden on mobile/tablet -->
         <div class="poster-container hidden lg:flex lg:w-1/2 xl:w-3/5 justify-center items-center">
             <div class="relative max-w-lg">
-                <img src="{{ asset('images/poster1.jpg') }}" 
-                     alt="Poster MagangIn" 
-                     class="w-full h-auto rounded-3xl poster-shadow floating-animation">
+                <img src="{{ asset($posterPath) }}" 
+                    alt="Poster MagangIn" 
+                    class="w-full h-auto rounded-3xl poster-shadow floating-animation">
             </div>
         </div>
 
