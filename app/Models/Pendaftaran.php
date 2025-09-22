@@ -1,6 +1,5 @@
 <?php
 
-// Model Pendaftaran
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -31,7 +30,6 @@ class Pendaftaran extends Model
         'tanggal_daftar' => 'datetime',
     ];
 
-    // Relationships
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -39,12 +37,12 @@ class Pendaftaran extends Model
 
     public function infoOr()
     {
-        return $this->belongsTo(InfoOr::class);
+        return $this->belongsTo(InfoOr::class, 'info_or_id');
     }
 
     public function jadwalSeleksi()
     {
-        return $this->belongsTo(JadwalSeleksi::class);
+        return $this->belongsTo(JadwalSeleksi::class, 'jadwal_seleksi_id');
     }
 
     public function dinasPilihan1()
@@ -64,11 +62,11 @@ class Pendaftaran extends Model
 
     public function penilaianWawancara()
     {
-        return $this->hasOne(PenilaianWawancara::class);
+        return $this->hasOne(PenilaianWawancara::class, 'pendaftaran_id');
     }
 
     public function evaluasiMagang()
     {
-        return $this->hasOne(EvaluasiMagang::class);
+        return $this->hasOne(EvaluasiMagang::class, 'pendaftaran_id');
     }
 }
