@@ -6,6 +6,7 @@ use App\Http\Controllers\InfoOrController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HasilWawancaraController;
 use App\Http\Controllers\JadwalSeleksiController;
+use App\Http\Controllers\PenilaianWawancaraController;
 use App\Http\Controllers\PendaftarController;;
 
 Route::get('/', function () {
@@ -25,6 +26,11 @@ Route::middleware('auth')->group(function () {
     Route::resource('hasilwawancara', HasilWawancaraController::class);
 
     Route::resource('/jadwal-seleksi', JadwalSeleksiController::class);
+    Route::get('/jadwal-seleksi/{id}', [JadwalSeleksiController::class, 'show'])->name('jadwal-seleksi.show');
+    Route::resource('penilaian-wawancara', PenilaianWawancaraController::class);
+    Route::get('penilaian-wawancara/{id}', [PenilaianWawancaraController::class, 'show'])->name('penilaian-wawancara.show');
+
+
 });
 
 // Route::get('/auth', function () {

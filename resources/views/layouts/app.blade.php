@@ -12,6 +12,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <!-- Toastify CSS -->
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 
@@ -25,6 +26,7 @@
     }
     </style>
 </head>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <body class="bg-baby-blue">
     <header class="bg-navy text-white p-4 flex items-center shadow-lg flex justify-between">
@@ -51,6 +53,22 @@
             class="py-2 px-4 rounded-md font-semibold @if(Request::is('pendaftar')) bg-navy text-white @else bg-gray-200 text-gray-700 hover:bg-baby-blue @endif">
             Data Pendaftar
         </a>
+        <li>
+            <a href="{{ route('jadwal-seleksi.index') }}" 
+                class="block px-4 py-2 rounded-lg rounded-md font-semibold
+                {{ request()->is('jadwal-seleksi*') ? 'bg-navy text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-100' }}">
+                Kelola Jadwal Wawancara
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ route('penilaian-wawancara.index') }}" 
+                class="block px-4 py-2 rounded-lg font-semibold
+                {{ request()->is('penilaian-wawancara*') ? 'bg-navy text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-100' }}">
+                Kelola Penilaian Wawancara
+            </a>
+        </li>
+
        
         <a href="{{ url('/jadwal-kegiatan') }}"
             class="py-2 px-4 rounded-md font-semibold @if(Request::is('jadwal-kegiatan')) bg-navy text-white @else bg-gray-200 text-gray-700 hover:bg-baby-blue @endif">
@@ -60,7 +78,7 @@
             Kelola Jadwal Wawancara
         </a>
         <a href="{{ url('/penilaian') }}" class="py-2 px-4 rounded-md font-semibold @if(Request::is('penilaian')) bg-navy text-white @else bg-gray-200 text-gray-700 hover:bg-baby-blue @endif">
-            Kelola Penilaian
+            Kelola Penilaian Magang
         </a>
         <a href="{{ route('hasilwawancara.index') }}" class="py-2 px-4 rounded-md font-semibold @if(Request::is('hasilwawancara')) bg-navy text-white @else bg-gray-200 text-gray-700 hover:bg-baby-blue @endif">
             Hasil Wawancara
