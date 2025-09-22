@@ -35,6 +35,9 @@
         <a href="{{ url('/info-or') }}" class="py-2 px-4 rounded-md font-semibold @if(Request::is('info-or')) bg-navy text-white @else bg-gray-200 text-gray-700 hover:bg-baby-blue @endif">
             Kelola Info OR
         </a>
+        <a href="{{ url('/users') }}" class="py-2 px-4 rounded-md font-semibold @if(Request::is('users') || Request::is('users/*')) bg-navy text-white @else bg-gray-200 text-gray-700 hover:bg-baby-blue @endif">
+            Kelola User
+        </a>
         <a href="{{ url('/jadwal-seleksi') }}" class="py-2 px-4 rounded-md font-semibold @if(Request::is('jadwal-seleksi')) bg-navy text-white @else bg-gray-200 text-gray-700 hover:bg-baby-blue @endif">
             Kelola Jadwal Wawancara
         </a>

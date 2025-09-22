@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\InfoOr;
+use Illuminate\Support\Facades\Storage;
 
 class InfoOrController extends Controller
 {
@@ -12,8 +13,8 @@ class InfoOrController extends Controller
      */
     public function index()
     {
-        $infoOrs = InfoOr::all();
-        return view('info_or.index', compact('infoOrs'));
+        $infoOrs = InfoOr::orderBy('id', 'desc')->get();
+        return view(view: 'info_or.index', data: compact('infoOrs'));
     }
 
     /**
@@ -28,11 +29,26 @@ class InfoOrController extends Controller
             'tanggal_buka' => 'required|date',
             'tanggal_tutup' => 'required|date',
             'periode' => 'nullable|string|max:50',
-            'gambar' => 'nullable|string|max:100',
+            'gambar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'status' => 'required|in:buka,tutup',
         ]);
-
-        InfoOr::create($request->all());
+        
+        $data = $request->except('gambar'); 
+        
+        if ($request->hasFile('gambar')) {
+            // Menggunakan disk 'gambar_public' untuk menyimpan file
+            $fileName = $request->file('gambar')->hashName();
+            $request->file('gambar')->storeAs('', $fileName, 'gambar_public');
+            $data['gambar'] = 'images/' . $fileName; 
+        }
+        
+        // if ($request->hasFile('gambar')) {
+        //     dd($request->file('gambar')); // Ini akan menampilkan semua detail file
+        // } else {
+        //     dd('Tidak ada file gambar yang diunggah.');
+        // }
+        
+        InfoOr::create($data);
 
         return redirect()->route('info-or.index')->with('success', 'Info OR berhasil ditambahkan!');
     }
@@ -43,6 +59,7 @@ class InfoOrController extends Controller
     public function updateStatus($id)
     {
         $infoOr = InfoOr::findOrFail($id);
+        
         $infoOr->status = 'tutup';
         $infoOr->save();
 
