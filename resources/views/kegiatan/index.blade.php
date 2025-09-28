@@ -17,12 +17,18 @@
                     class="block w-48 px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
                     <option value="">-- Pilih Periode --</option>
                     @foreach($periodes as $periode)
-                    <option value="{{ $periode->id }}" data-status="{{ $periode->status }}">
+                    <option value="{{ $periode->id }}" data-status="{{ $periode->status }}" @if($periode->status ===
+                        'buka') selected @endif>
+
                         {{ $periode->periode }}
-                        @if($periode->status === 'tutup') - TUTUP @endif
+                        @if($periode->status === 'tutup') - Tutup
+                        @elseif($periode->status === 'buka') - Buka
+                        @endif
                     </option>
                     @endforeach
                 </select>
+
+
             </div>
 
             <!-- Button Tambah Kegiatan -->
@@ -88,25 +94,27 @@
                 <textarea id="deskripsi_kegiatan" name="deskripsi_kegiatan" rows="3" class="input-field"
                     placeholder="Masukkan deskripsi kegiatan"></textarea>
             </div>
-
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label for="tanggal_kegiatan" class="block text-sm font-medium text-gray-700">Tanggal</label>
                     <input type="date" id="tanggal_kegiatan" name="tanggal_kegiatan" class="input-field" required>
                 </div>
                 <div>
-                    <label for="waktu_mulai" class="block text-sm font-medium text-gray-700">Waktu Mulai</label>
-                    <input type="time" id="waktu_mulai" name="waktu_mulai" class="input-field" required>
-                </div>
-                <div class="col-span-2">
-                    <label for="waktu_selesai" class="block text-sm font-medium text-gray-700">Waktu Selesai</label>
-                    <input type="time" id="waktu_selesai" name="waktu_selesai" class="input-field">
+                    <label for="tempat" class="block text-sm font-medium text-gray-700">Tempat</label>
+                    <input type="text" id="tempat" name="tempat" class="input-field"
+                        placeholder="Masukkan tempat kegiatan">
                 </div>
             </div>
 
-            <div>
-                <label for="tempat" class="block text-sm font-medium text-gray-700">Tempat</label>
-                <input type="text" id="tempat" name="tempat" class="input-field" placeholder="Masukkan tempat kegiatan">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="waktu_mulai" class="block text-sm font-medium text-gray-700">Waktu Mulai</label>
+                    <input type="time" id="waktu_mulai" name="waktu_mulai" class="input-field" required>
+                </div>
+                <div>
+                    <label for="waktu_selesai" class="block text-sm font-medium text-gray-700">Waktu Selesai</label>
+                    <input type="time" id="waktu_selesai" name="waktu_selesai" class="input-field">
+                </div>
             </div>
 
             <div class="flex justify-end gap-3 pt-4">
@@ -249,6 +257,13 @@ document.addEventListener('DOMContentLoaded', function() {
         addButton.disabled = false;
         loadJadwalKegiatan(periodeId);
     });
+    // ✅ Cek apakah ada periode yang sudah terpilih (status = buka) saat pertama kali load
+    const selectedOption = periodeSelect.options[periodeSelect.selectedIndex];
+    if (selectedOption && selectedOption.value) {
+        currentPeriodeId = selectedOption.value;
+        addButton.disabled = false;
+        loadJadwalKegiatan(currentPeriodeId);
+    }
 
     // Function untuk load jadwal kegiatan
     function loadJadwalKegiatan(periodeId) {
@@ -465,13 +480,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function handleFormSubmit() {
         const submitButton = form.querySelector('button[type="submit"]');
-        const submitText = document.getElementById('submit-text');
-        const submitLoading = document.getElementById('submit-loading');
+        const submitText = submitButton?.querySelector('#submit-text');
+        const submitLoading = submitButton?.querySelector('#submit-loading');
 
-        // Show loading state
+        // ✅ Tampilkan loading state dengan aman
         submitButton.disabled = true;
-        submitText.classList.add('hidden');
-        submitLoading.classList.remove('hidden');
+        if (submitText) submitText.classList.add('hidden');
+        if (submitLoading) submitLoading.classList.remove('hidden');
 
         const formData = new FormData(form);
         const isEdit = formId.value !== '';
@@ -493,11 +508,10 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    formModal.classList.add('hidden');
+                    if (formModal) formModal.classList.add('hidden');
                     loadJadwalKegiatan(currentPeriodeId);
                     showSuccess(data.message || 'Data berhasil disimpan');
                 } else {
-                    // Handle validation errors
                     if (data.errors) {
                         let errorMessage = 'Terjadi kesalahan:\n';
                         Object.values(data.errors).forEach(error => {
@@ -519,17 +533,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 showError('Terjadi kesalahan saat menyimpan data');
             })
             .finally(() => {
-                // Reset loading state
+                // ✅ Reset loading state aman
                 submitButton.disabled = false;
-                submitText.classList.remove('hidden');
-                submitLoading.classList.add('hidden');
+                if (submitText) submitText.classList.remove('hidden');
+                if (submitLoading) submitLoading.classList.add('hidden');
             });
     }
 
-    // Global functions untuk edit dan delete
+
+    // Fungsi edit
     window.editKegiatan = function(id) {
         const item = kegiatanData.find(d => d.id === id);
-        if (!item || !form) return;
+        if (!item || !form || !formModal) {
+            console.error('❌ Modal atau form belum terload.');
+            return;
+        }
 
         formId.value = item.id;
         document.getElementById('nama_kegiatan').value = item.nama_kegiatan || '';
@@ -542,12 +560,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         modalTitle.textContent = 'Edit Kegiatan';
 
-        // Reset submit button
         document.getElementById('submit-text').classList.remove('hidden');
         document.getElementById('submit-loading').classList.add('hidden');
 
         formModal.classList.remove('hidden');
-    };
+    }
 
     window.deleteKegiatan = function(id) {
         deleteId = id;
