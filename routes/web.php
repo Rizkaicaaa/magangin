@@ -12,15 +12,25 @@ use App\Models\InfoOr;
 
 use App\Http\Controllers\PenilaianWawancaraController;
 use App\Http\Controllers\PendaftarController;
-
+use App\Http\Controllers\DashboardController;
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
+//Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('auth')->name('dashboard');
 
+
+
+// Route::get('/dashboard', [DashboardController::class, 'index'])
+//     ->middleware(['auth', 'verified'])
+//     ->name('dashboard');
+
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 Route::get('/', function () {
     // Ambil data InfoOr terbaru yang memiliki gambar
     $latestPoster = InfoOr::whereNotNull('gambar')
@@ -67,9 +77,11 @@ Route::get('/penilaian', function () {
     return view('penilaian.index');
 });
 
-Route::get('/pendaftar', function () {
-    return view('pendaftar.index');
-});
+// Route::get('/pendaftar', function () {
+//     return view('pendaftar.index');
+// });
+
+
 
 Route::get('/info-or', [InfoOrController::class, 'index'])->name('info-or.index');
 Route::post('/kelola-info-or', [InfoOrController::class, 'store'])->name('info-or.store');
@@ -78,7 +90,6 @@ Route::put('/kelola-info-or/{id}/tutup', [InfoOrController::class, 'updateStatus
 
 // Routes untuk Jadwal Kegiatan Management
 
-// Routes untuk Jadwal Kegiatan Management
 Route::middleware(['auth'])->group(function () {
     
     // Halaman utama jadwal kegiatan

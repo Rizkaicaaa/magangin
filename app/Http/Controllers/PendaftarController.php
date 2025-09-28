@@ -8,6 +8,8 @@ use App\Models\Dinas;
 use App\Models\InfoOr;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class PendaftarController extends Controller
 {
@@ -16,7 +18,7 @@ class PendaftarController extends Controller
      */
     public function index()
     {
-        // Ambil semua user dengan role mahasiswa yang sudah mendaftar magang
+        // Ambil semua user dengan role mahasiswa yang sudah mendaftar magang ditampilkan di halaman data pendaftar
         $pendaftars = User::with([
             'pendaftaran.infoOr',
             'pendaftaran.dinasPilihan1',
@@ -37,23 +39,223 @@ class PendaftarController extends Controller
                            ->orderBy('periode', 'desc')
                            ->get();
 
-        // Debug untuk melihat data (uncomment untuk debug)
-        // dd('Total Dinas:', $allDinas->count(), 'First Pendaftar:', $pendaftars->first());
-        
-        // Debug specific pendaftaran
-        // if ($pendaftars->count() > 0) {
-        //     $firstPendaftaran = $pendaftars->first()->pendaftaran->first();
-        //     dd([
-        //         'pilihan_dinas_1' => $firstPendaftaran->pilihan_dinas_1,
-        //         'dinasPilihan1' => $firstPendaftaran->dinasPilihan1,
-        //         'pilihan_dinas_2' => $firstPendaftaran->pilihan_dinas_2,
-        //         'dinasPilihan2' => $firstPendaftaran->dinasPilihan2
-        //     ]);
-        // }
-
         return view('pendaftar.index', compact('pendaftars', 'allDinas', 'allPeriode'));
     }
 
+    /**
+     * Create new pendaftar (register mahasiswa + pendaftaran magang)
+     */
+public function create(Request $request)
+{
+    try {
+        // Log untuk debugging - TAMBAHKAN SEMUA REQUEST DATA
+        Log::info('Registration attempt started', [
+            'all_request_data' => $request->all(),
+            'files' => $request->allFiles(),
+            'email' => $request->email,
+            'nim' => $request->nim,
+            'nama_lengkap' => $request->nama_lengkap, // Pastikan ini ada
+        ]);
+
+        // PERBAIKAN: Pastikan validation rules sesuai dengan nama field yang dikirim
+        $validated = $request->validate([
+            // Data akun mahasiswa - HARUS SESUAI DENGAN NAME DI HTML
+            'nama_lengkap'   => 'required|string|max:50',
+            'nim'            => 'required|string|max:10|unique:users,nim',
+            'email'          => 'required|email|unique:users,email',
+            'password'       => 'required|string|min:8|confirmed',
+            'no_telp'        => 'required|string|max:13',
+
+            // Data pendaftaran
+            'pilihan_dinas_1' => 'required|exists:dinas,id',
+            'pilihan_dinas_2' => 'nullable|different:pilihan_dinas_1|exists:dinas,id',
+            'motivasi'        => 'required|string|max:500',
+            'pengalaman'      => 'nullable|string|max:500',
+            'file_cv'         => 'required|file|mimes:pdf,doc,docx|max:5120',
+            'file_transkrip'  => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
+        ], [
+            // Custom error messages
+            'nama_lengkap.required' => 'Nama lengkap harus diisi',
+            'nama_lengkap.string' => 'Nama lengkap harus berupa teks',
+            'nama_lengkap.max' => 'Nama lengkap maksimal 255 karakter',
+            
+            'nim.required' => 'NIM harus diisi',
+            'nim.unique' => 'NIM sudah terdaftar',
+            'nim.max' => 'NIM maksimal 50 karakter',
+            
+            'email.required' => 'Email harus diisi',
+            'email.email' => 'Format email tidak valid',
+            'email.unique' => 'Email sudah terdaftar',
+            
+            'password.required' => 'Password harus diisi',
+            'password.min' => 'Password minimal 6 karakter',
+            'password.confirmed' => 'Konfirmasi password tidak cocok',
+            
+            'no_telp.max' => 'Nomor telepon maksimal 20 karakter',
+            
+            'pilihan_dinas_1.required' => 'Pilihan dinas utama harus diisi',
+            'pilihan_dinas_1.exists' => 'Dinas yang dipilih tidak valid',
+            'pilihan_dinas_2.different' => 'Pilihan dinas kedua harus berbeda dengan yang pertama',
+            'pilihan_dinas_2.exists' => 'Dinas alternatif yang dipilih tidak valid',
+            
+            'motivasi.required' => 'Motivasi harus diisi',
+            'motivasi.max' => 'Motivasi maksimal 1000 karakter',
+            'pengalaman.max' => 'Pengalaman maksimal 1000 karakter',
+            
+            'file_cv.required' => 'File CV harus diupload',
+            'file_cv.file' => 'CV harus berupa file',
+            'file_cv.mimes' => 'File CV harus berformat PDF, DOC, atau DOCX',
+            'file_cv.max' => 'Ukuran file CV maksimal 5MB',
+            
+            'file_transkrip.required' => 'File transkrip harus diupload',
+            'file_transkrip.file' => 'Transkrip harus berupa file',
+            'file_transkrip.mimes' => 'File transkrip harus berformat PDF, JPG, JPEG, atau PNG',
+            'file_transkrip.max' => 'Ukuran file transkrip maksimal 5MB',
+        ]);
+
+        Log::info('Validation passed successfully', ['validated_data' => $validated]);
+
+        DB::beginTransaction();
+
+        // 1. Buat user dengan data yang sudah divalidasi
+        $user = User::create([
+            'nama_lengkap'   => $validated['nama_lengkap'], // PASTIKAN MENGGUNAKAN VALIDATED DATA
+            'nim'            => $validated['nim'],
+            'email'          => $validated['email'],
+            'password'       => Hash::make($validated['password']),
+            'no_telp'        => $validated['no_telp'],
+            'role'           => 'mahasiswa',
+            'tanggal_daftar' => now(),
+            'status'         => 'aktif',
+        ]);
+
+        Log::info('User created successfully', [
+            'user_id' => $user->id,
+            'nama_lengkap' => $user->nama_lengkap,
+            'email' => $user->email
+        ]);
+
+        // 2. Cari Info OR yang aktif
+        $infoOr = InfoOr::where('status', 'buka')
+            ->orderBy('tanggal_buka', 'desc')
+            ->first();
+
+        if (!$infoOr) {
+            DB::rollBack();
+            Log::error('No active InfoOr found');
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak ada periode Info OR yang sedang buka saat ini.',
+                'errors' => ['info_or' => ['Periode pendaftaran belum dibuka']]
+            ], 400);
+        }
+
+        Log::info('Active InfoOr found', ['info_or_id' => $infoOr->id]);
+
+        // 3. Upload files dengan error handling
+        try {
+            // Validasi file sebelum upload
+            if (!$request->hasFile('file_cv') || !$request->file('file_cv')->isValid()) {
+                throw new \Exception('File CV tidak valid atau rusak');
+            }
+            
+            if (!$request->hasFile('file_transkrip') || !$request->file('file_transkrip')->isValid()) {
+                throw new \Exception('File transkrip tidak valid atau rusak');
+            }
+
+            $cvPath = $request->file('file_cv')->store('pendaftaran/cv', 'public');
+            $transkripPath = $request->file('file_transkrip')->store('pendaftaran/transkrip', 'public');
+
+            Log::info('Files uploaded successfully', [
+                'cv_path' => $cvPath,
+                'transkrip_path' => $transkripPath
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('File upload failed', ['error' => $e->getMessage()]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengupload file: ' . $e->getMessage(),
+                'errors' => [
+                    'file_cv' => ['Gagal upload file CV'],
+                    'file_transkrip' => ['Gagal upload file transkrip']
+                ]
+            ], 400);
+        }
+
+        // 4. Simpan data pendaftaran
+        $pendaftaran = Pendaftaran::create([
+            'user_id'            => $user->id,
+            'info_or_id'         => $infoOr->id,
+            'pilihan_dinas_1'    => (int) $validated['pilihan_dinas_1'],
+            'pilihan_dinas_2'    => $validated['pilihan_dinas_2'] ? (int) $validated['pilihan_dinas_2'] : null,
+            'motivasi'           => $validated['motivasi'],
+            'pengalaman'         => $validated['pengalaman'],
+            'file_cv'            => $cvPath,
+            'file_transkrip'     => $transkripPath,
+            'status_pendaftaran' => 'terdaftar',
+        ]);
+
+        Log::info('Registration completed successfully', [
+            'user_id' => $user->id,
+            'pendaftaran_id' => $pendaftaran->id,
+            'nama_lengkap' => $user->nama_lengkap
+        ]);
+
+        DB::commit();
+
+        // Return JSON response untuk AJAX
+        return response()->json([
+            'success' => true,
+            'message' => 'Pendaftaran berhasil! Silakan login dengan akun Anda.',
+            'data' => [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'nim' => $user->nim,
+                'nama_lengkap' => $user->nama_lengkap, // GUNAKAN NAMA_LENGKAP
+                'pendaftaran_id' => $pendaftaran->id
+            ]
+        ], 201);
+
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        DB::rollBack();
+        
+        Log::error('Validation failed', [
+            'errors' => $e->errors(),
+            'request_data' => $request->except(['password', 'password_confirmation'])
+        ]);
+        
+        return response()->json([
+            'success' => false,
+            'message' => 'Data yang Anda masukkan tidak valid. Periksa kembali form Anda.',
+            'errors' => $e->errors()
+        ], 422);
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        
+        Log::error('Registration failed with exception', [
+            'error' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'request_data' => $request->except(['password', 'password_confirmation'])
+        ]);
+        
+        return response()->json([
+            'success' => false,
+            'message' => 'Terjadi kesalahan sistem. Silakan coba lagi.',
+            'errors' => ['system' => ['Server error occurred']],
+            'debug' => config('app.debug') ? [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ] : null
+        ], 500);
+    }
+}
     /**
      * Show the specified resource.
      */
@@ -124,40 +326,139 @@ class PendaftarController extends Controller
     /**
      * Download CV file
      */
-    public function downloadCV($id)
-    {
-        $pendaftaran = Pendaftaran::where('user_id', $id)->first();
+    // public function downloadCV($id)
+    // {
+    //     $pendaftaran = Pendaftaran::where('user_id', $id)->first();
         
-        if (!$pendaftaran || !$pendaftaran->file_cv) {
-            return redirect()->back()->with('error', 'File CV tidak ditemukan.');
-        }
+    //     if (!$pendaftaran || !$pendaftaran->file_cv) {
+    //         return redirect()->back()->with('error', 'File CV tidak ditemukan.');
+    //     }
 
-        $filePath = storage_path('app/public/' . $pendaftaran->file_cv);
+    //     $filePath = storage_path('app/public/' . $pendaftaran->file_cv);
         
-        if (!file_exists($filePath)) {
-            return redirect()->back()->with('error', 'File CV tidak ditemukan di server.');
-        }
+    //     if (!file_exists($filePath)) {
+    //         return redirect()->back()->with('error', 'File CV tidak ditemukan di server.');
+    //     }
 
-        return response()->download($filePath);
+    //     return response()->download($filePath);
+    // }
+
+    // /**
+    //  * Download Transkrip file
+    //  */
+    // public function downloadTranskrip($id)
+    // {
+    //     $pendaftaran = Pendaftaran::where('user_id', $id)->first();
+        
+    //     if (!$pendaftaran || !$pendaftaran->file_transkrip) {
+    //         return redirect()->back()->with('error', 'File transkrip tidak ditemukan.');
+    //     }
+
+    //     $filePath = storage_path('app/public/' . $pendaftaran->file_transkrip);
+        
+    //     if (!file_exists($filePath)) {
+    //         return redirect()->back()->with('error', 'File transkrip tidak ditemukan di server.');
+    //     }
+
+    //     return response()->download($filePath);
+    // }
+
+    public function viewCV($id)
+{
+    $pendaftar = Pendaftar::findOrFail($id);
+    $pendaftaran = $pendaftar->pendaftaran->first();
+    
+    if (!$pendaftaran || !$pendaftaran->file_cv) {
+        abort(404, 'File CV tidak ditemukan');
     }
-
-    /**
-     * Download Transkrip file
-     */
-    public function downloadTranskrip($id)
-    {
-        $pendaftaran = Pendaftaran::where('user_id', $id)->first();
-        
-        if (!$pendaftaran || !$pendaftaran->file_transkrip) {
-            return redirect()->back()->with('error', 'File transkrip tidak ditemukan.');
-        }
-
-        $filePath = storage_path('app/public/' . $pendaftaran->file_transkrip);
-        
-        if (!file_exists($filePath)) {
-            return redirect()->back()->with('error', 'File transkrip tidak ditemukan di server.');
-        }
-
-        return response()->download($filePath);
+    
+    $filePath = storage_path('app/' . $pendaftaran->file_cv);
+    
+    if (!file_exists($filePath)) {
+        abort(404, 'File CV tidak ditemukan');
     }
+    
+    $mimeType = mime_content_type($filePath);
+    $fileName = basename($filePath);
+    
+    // Set headers untuk menampilkan file di browser
+    return response()->file($filePath, [
+        'Content-Type' => $mimeType,
+        'Content-Disposition' => 'inline; filename="' . $fileName . '"'
+    ]);
+}
+
+/**
+ * View Transkrip file in browser
+ */
+public function viewTranskrip($id)
+{
+    $pendaftar = Pendaftar::findOrFail($id);
+    $pendaftaran = $pendaftar->pendaftaran->first();
+    
+    if (!$pendaftaran || !$pendaftaran->file_transkrip) {
+        abort(404, 'File Transkrip tidak ditemukan');
+    }
+    
+    $filePath = storage_path('app/' . $pendaftaran->file_transkrip);
+    
+    if (!file_exists($filePath)) {
+        abort(404, 'File Transkrip tidak ditemukan');
+    }
+    
+    $mimeType = mime_content_type($filePath);
+    $fileName = basename($filePath);
+    
+    // Set headers untuk menampilkan file di browser
+    return response()->file($filePath, [
+        'Content-Type' => $mimeType,
+        'Content-Disposition' => 'inline; filename="' . $fileName . '"'
+    ]);
+}
+
+/**
+ * Download CV file (existing method - modified to force download)
+ */
+public function downloadCV($id)
+{
+    $pendaftar = Pendaftar::findOrFail($id);
+    $pendaftaran = $pendaftar->pendaftaran->first();
+    
+    if (!$pendaftaran || !$pendaftaran->file_cv) {
+        abort(404, 'File CV tidak ditemukan');
+    }
+    
+    $filePath = storage_path('app/' . $pendaftaran->file_cv);
+    
+    if (!file_exists($filePath)) {
+        abort(404, 'File CV tidak ditemukan');
+    }
+    
+    $fileName = 'CV_' . $pendaftar->nama_lengkap . '_' . $pendaftar->nim . '.' . pathinfo($filePath, PATHINFO_EXTENSION);
+    
+    return response()->download($filePath, $fileName);
+}
+
+/**
+ * Download Transkrip file (existing method - modified to force download)
+ */
+public function downloadTranskrip($id)
+{
+    $pendaftar = Pendaftar::findOrFail($id);
+    $pendaftaran = $pendaftar->pendaftaran->first();
+    
+    if (!$pendaftaran || !$pendaftaran->file_transkrip) {
+        abort(404, 'File Transkrip tidak ditemukan');
+    }
+    
+    $filePath = storage_path('app/' . $pendaftaran->file_transkrip);
+    
+    if (!file_exists($filePath)) {
+        abort(404, 'File Transkrip tidak ditemukan');
+    }
+    
+    $fileName = 'Transkrip_' . $pendaftar->nama_lengkap . '_' . $pendaftar->nim . '.' . pathinfo($filePath, PATHINFO_EXTENSION);
+    
+    return response()->download($filePath, $fileName);
+}
 }
