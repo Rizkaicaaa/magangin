@@ -255,9 +255,19 @@
                         Login
                     </button>
                     <button id="registerTab"
-                        class="flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-300 text-gray-500 hover:text-navy">
-                        Register
-                    </button>
+                {{-- Atribut 'disabled' ditambahkan jika status BUKAN 'buka' --}}
+                @if (strtolower($infoOr->status) != 'buka') disabled @endif
+                
+                class="flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-300 
+                    {{-- Styling tombol diubah berdasarkan status disabled --}}
+                    @if (strtolower($infoOr->status) == 'buka')
+                        text-gray-500 hover:text-navy hover:bg-white
+                    @else
+                        text-gray-400 bg-gray-200 cursor-not-allowed
+                    @endif
+                ">
+                Register
+            </button>
                 </div>
 
 
