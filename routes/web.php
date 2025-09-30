@@ -89,29 +89,29 @@ Route::put('/kelola-info-or/{id}/tutup', [InfoOrController::class, 'updateStatus
 
 
 // Routes untuk Jadwal Kegiatan Management
-
 Route::middleware(['auth'])->group(function () {
+
+    // ✅ Halaman utama jadwal kegiatan (semua role bisa akses)
+    Route::get('/jadwal-kegiatan', [JadwalKegiatanController::class, 'index'])
+        ->name('jadwal-kegiatan.index');
+
+    // ✅ API untuk get kegiatan berdasarkan periode (semua role bisa akses)
+    Route::get('/jadwal-kegiatan/api/by-periode', [JadwalKegiatanController::class, 'getByPeriode'])
+        ->name('jadwal-kegiatan.by-periode');
+
+    // ✅ CRUD operations (validasi role dilakukan di controller)
+    Route::post('/jadwal-kegiatan', [JadwalKegiatanController::class, 'store'])
+        ->name('jadwal-kegiatan.store');
+    Route::put('/jadwal-kegiatan/{id}', [JadwalKegiatanController::class, 'update'])
+        ->name('jadwal-kegiatan.update');
+    Route::delete('/jadwal-kegiatan/{id}', [JadwalKegiatanController::class, 'destroy'])
+        ->name('jadwal-kegiatan.destroy');
     
-    // Halaman utama jadwal kegiatan
-    Route::get('/jadwal-kegiatan', [JadwalKegiatanController::class, 'index'])->name('jadwal-kegiatan.index');
-    
-    // API routes untuk AJAX
-    Route::prefix('jadwal-kegiatan')->name('jadwal-kegiatan.')->group(function () {
-        
-        // Get kegiatan by periode (untuk load tabel)
-        Route::get('/api/by-periode', [JadwalKegiatanController::class, 'getByPeriode'])->name('by-periode');
-        
-        // CRUD operations
-        Route::post('/', [JadwalKegiatanController::class, 'store'])->name('store');
-        Route::get('/{id}', [JadwalKegiatanController::class, 'show'])->name('show');
-        Route::put('/{id}', [JadwalKegiatanController::class, 'update'])->name('update');
-        Route::delete('/{id}', [JadwalKegiatanController::class, 'destroy'])->name('destroy');
-        
-    });
-    
+    // ✅ Detail kegiatan di akhir agar tidak conflict dengan route lain
+    Route::get('/jadwal-kegiatan/{id}', [JadwalKegiatanController::class, 'show'])
+        ->name('jadwal-kegiatan.show')
+        ->where('id', '[0-9]+');
 });
-
-
 Route::middleware(['auth'])->group(function () {
     // Routes untuk mengelola data pendaftar
     Route::get('/pendaftar', [PendaftarController::class, 'index'])->name('pendaftar.index');
