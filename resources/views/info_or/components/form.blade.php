@@ -18,13 +18,13 @@
                         <label for="persyaratan-umum" class="block text-sm font-medium text-gray-700">Persyaratan Umum</label>
                         <textarea id="persyaratan-umum" name="persyaratan_umum" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-baby-blue focus:ring focus:ring-baby-blue focus:ring-opacity-50 px-4 py-2"></textarea>
                     </div>
-                    <div>
+                    {{-- <div>
                         <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
                         <select id="status" name="status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-baby-blue focus:ring focus:ring-baby-blue focus:ring-opacity-50 px-4 py-2">
                             <option value="buka">Buka</option>
                             <option value="tutup">Tutup</option>
                         </select>
-                    </div>
+                    </div> --}}
                 </div>
 
                 <div class="w-full md:w-1/2 px-2 space-y-4 mt-4 md:mt-0">
@@ -38,7 +38,8 @@
                     </div>
                     <div>
                         <label for="periode" class="block text-sm font-medium text-gray-700">Periode</label>
-                        <select id="periode" name="periode" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-baby-blue focus:ring focus:ring-baby-blue focus:ring-opacity-50 px-4 py-2">
+                        <input type="text" id="judul-info" name="periode" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-baby-blue focus:ring focus:ring-baby-blue focus:ring-opacity-50 px-4 py-2" required>
+                        {{-- <select id="periode" name="periode" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-baby-blue focus:ring focus:ring-baby-blue focus:ring-opacity-50 px-4 py-2">
                             @php
                                 $currentYear = date('Y');
                                 for ($i = 0; $i < 5; $i++) {
@@ -46,7 +47,7 @@
                                     echo "<option value=\"$year\">$year</option>";
                                 }
                             @endphp
-                        </select>
+                        </select> --}}
                     </div>
                     <div>
                         <label for="gambar" class="block text-sm font-medium text-gray-700">Gambar</label>

@@ -11,10 +11,13 @@ class InfoOrController extends Controller
     /**
      * Menampilkan daftar semua info OR.
      */
-    public function index()
+public function index()
     {
         $infoOrs = InfoOr::orderBy('id', 'desc')->get();
-        return view(view: 'info_or.index', data: compact('infoOrs'));
+        $latestOpenInfo = $infoOrs->firstWhere('status', 'buka');
+        $isInfoOpen = $latestOpenInfo !== null;
+
+        return view('info_or.index', compact('infoOrs', 'isInfoOpen'));
     }
 
     /**
@@ -30,7 +33,7 @@ class InfoOrController extends Controller
             'tanggal_tutup' => 'required|date',
             'periode' => 'nullable|string|max:50',
             'gambar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'status' => 'required|in:buka,tutup',
+            'status' => 'buka',
         ]);
         
         $data = $request->except('gambar'); 

@@ -73,7 +73,7 @@
                                     <a href="{{ route('penilaian-wawancara.index') }}" class="flex items-center px-4 py-3 text-sm hover:bg-blue-50 {{ request()->is('penilaian-wawancara*') ? 'bg-blue-50 text-blue-700' : 'text-gray-700' }}">
                                         <i class="fas fa-clipboard-check text-yellow-600 mr-3"></i> Penilaian Wawancara
                                     </a>
-                                    <a href="{{ route('#') }}" class="flex items-center px-4 py-3 text-sm hover:bg-blue-50 {{ request()->is('hasilwawancara*') ? 'bg-blue-50 text-blue-700' : 'text-gray-700' }}">
+                                    <a href="{{ route('hasilwawancara.index') }}" class="flex items-center px-4 py-3 text-sm hover:bg-blue-50 {{ request()->is('hasilwawancara*') ? 'bg-blue-50 text-blue-700' : 'text-gray-700' }}">
                                         <i class="fas fa-chart-bar text-purple-600 mr-3"></i> Hasil Wawancara
                                     </a>
                                 </div>
