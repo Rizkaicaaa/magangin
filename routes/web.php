@@ -122,8 +122,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pendaftar/{id}', [PendaftarController::class, 'show'])->name('pendaftar.show');
     Route::put('/pendaftar/{id}/status', [PendaftarController::class, 'updateStatus'])->name('pendaftar.update-status');
     Route::post('/pendaftar/{id}/dinas', [PendaftarController::class, 'setDinasDiterima'])->name('pendaftar.set-dinas');
-    Route::get('/pendaftar/{id}/download-cv', [PendaftarController::class, 'downloadCV'])->name('pendaftar.download-cv');
-    Route::get('/pendaftar/{id}/download-transkrip', [PendaftarController::class, 'downloadTranskrip'])->name('pendaftar.download-transkrip');
+    Route::get('/pendaftar/{id}/view-cv', [PendaftarController::class, 'viewCV'])->name('pendaftar.view-cv');
+Route::get('/pendaftar/{id}/view-transkrip', [PendaftarController::class, 'viewTranskrip'])->name('pendaftar.view-transkrip');
+
 });
 
 require __DIR__.'/auth.php';
