@@ -13,6 +13,9 @@ use App\Models\InfoOr;
 use App\Http\Controllers\PenilaianWawancaraController;
 use App\Http\Controllers\PendaftarController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\KelulusanWawancaraController;
+use App\Http\Controllers\SeleksiWawancaraController;
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -64,9 +67,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/jadwal-seleksi/{id}', [JadwalSeleksiController::class, 'show'])->name('jadwal-seleksi.show');
     Route::resource('penilaian-wawancara', PenilaianWawancaraController::class);
     Route::get('penilaian-wawancara/{id}', [PenilaianWawancaraController::class, 'show'])->name('penilaian-wawancara.show');
-
-
-
 });
 
 // Route::get('/auth', function () {
@@ -111,6 +111,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/jadwal-kegiatan/{id}', [JadwalKegiatanController::class, 'show'])
         ->name('jadwal-kegiatan.show')
         ->where('id', '[0-9]+');
+
+    // MAHASISWA
+    Route::get('/seleksi-wawancara', [SeleksiWawancaraController::class, 'index'])->name('mahasiswa.jadwal-seleksi');
+    Route::get('/kelulusan-wawancara', [KelulusanWawancaraController::class, 'index'])->name('kelulusanwawancara.index');
 });
 Route::middleware(['auth'])->group(function () {
     // Routes untuk mengelola data pendaftar
