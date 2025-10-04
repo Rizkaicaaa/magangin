@@ -8,6 +8,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+  use App\Models\Dinas; // import model Dinas
+
 
 class AuthenticatedSessionController extends Controller
 {
@@ -15,10 +17,11 @@ class AuthenticatedSessionController extends Controller
      * Display the login view.
      */
     public function create(): View
-    {
-        return view('auth.login');
-    }
-
+{
+    $allDinas = Dinas::all(); // ambil data dinas
+    return view('auth.login', compact('allDinas'));
+}
+    
     /**
      * Handle an incoming authentication request.
      */

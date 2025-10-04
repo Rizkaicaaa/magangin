@@ -1,81 +1,118 @@
-{{-- resources/views/hasilwawancara/index.blade.php --}}
-@extends('layouts.app')
+<!-- @extends('layouts.app')
 
 @section('content')
-<div class="bg-white p-8 rounded-xl shadow-lg mx-6">
+<div x-data="{ openModal: false, selected: null }" class="bg-white p-8 rounded-xl shadow-lg mx-6">
     <div class="flex justify-between items-center mb-6">
-        <h1 id="page-title" class="text-3xl font-bold text-gray-800">Pengumuman Hasil Wawancara</h1>
-
-        {{-- Tombol buat kalau ada data --}}
-        <a href="{{ route('hasilwawancara.create') }}" 
-           id="create-button"
-           class="py-2 px-4 rounded-md bg-navy text-white font-semibold hover:bg-baby-blue transition-colors duration-300 {{ count($hasilSeleksi) > 0 ? '' : 'hidden' }}">
-            Tambah Hasil Wawancara
-        </a>
+        <h1 class="text-3xl font-bold text-gray-800">Hasil Wawancara</h1>
     </div>
 
     <div id="content-container">
-        {{-- Kalau kosong --}}
-        <div id="empty-state" class="text-center p-12 {{ count($hasilSeleksi) > 0 ? 'hidden' : '' }}">
-            <p class="text-gray-500 mb-4">
-                Belum ada hasil wawancara yang dimasukkan. Silakan tambah data dengan klik tombol di bawah.
-            </p>
-            <a href="{{ route('hasilwawancara.create') }}" 
-               id="empty-create-button" 
-               class="py-2 px-4 rounded-md bg-navy text-white font-semibold hover:bg-baby-blue transition-colors duration-300">
-                Tambah Hasil Wawancara
-            </a>
-        </div>
-
-        {{-- Kalau ada data --}}
-        <div id="data-state" class="{{ count($hasilSeleksi) > 0 ? '' : 'hidden' }}">
-            <table class="w-full border border-gray-200 rounded-lg overflow-hidden">
-                <thead class="bg-gray-100 text-gray-700">
-                    <tr>
-                        <th class="px-4 py-2 border">ID Hasil Seleksi</th>
-                        <th class="px-4 py-2 border">ID Nilai Wawancara</th>
-                        <th class="px-4 py-2 border">Nilai Total</th>
-                        <th class="px-4 py-2 border">Status Seleksi</th>
-                        <th class="px-4 py-2 border">Aksi</th>
+        <table class="w-full border border-gray-200 rounded-lg overflow-hidden">
+            <thead class="bg-gray-100 text-left">
+                <tr>
+                    <th class="py-3 px-4">No</th>
+                    <th class="py-3 px-4">Nama Peserta</th>
+                    <th class="py-3 px-4">Nilai Rata-rata</th>
+                    <th class="py-3 px-4">Status Seleksi</th>
+                    <th class="py-3 px-4">Dinas Diterima</th>
+                    <th class="py-3 px-4 text-center">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($penilaians as $index => $penilaian)
+                    <tr class="border-t hover:bg-gray-50 transition">
+                        <td class="py-3 px-4">{{ $index + 1 }}</td>
+                        <td class="py-3 px-4">{{ $penilaian->pendaftaran->user->nama_lengkap ?? '-' }}</td>
+                        <td class="py-3 px-4">{{ $penilaian->nilai_rata_rata ?? '-' }}</td>
+                        <td class="py-3 px-4">
+                            @if($penilaian->nilai_rata_rata >= 75)
+                                <span class="text-green-600 font-semibold">Lolos</span>
+                            @else
+                                <span class="text-red-600 font-semibold">Tidak Lolos</span>
+                            @endif
+                        </td>
+                        <td class="py-3 px-4">{{ $penilaian->pendaftaran->dinasDiterima->nama_dinas ?? '-' }}</td>
+                        <td class="py-3 px-4 text-center">
+                            <button 
+                                @click="openModal = true; selected = {{ $penilaian->toJson() }}"
+                                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-all duration-200">
+                                Detail
+                            </button>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach($hasilSeleksi as $hasil)
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="px-4 py-2 border text-center">{{ $hasil->ID_Hasil_Seleksi }}</td>
-                            <td class="px-4 py-2 border text-center">{{ $hasil->ID_Nilai_Wawancara }}</td>
-                            <td class="px-4 py-2 border text-center">{{ $hasil->Nilai_Total }}</td>
-                            <td class="px-4 py-2 border text-center">
-                                @if($hasil->Status_Seleksi == 'Lulus')
-                                    <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 font-semibold">Lulus</span>
-                                @elseif($hasil->Status_Seleksi == 'Tidak Lulus')
-                                    <span class="px-3 py-1 rounded-full bg-red-100 text-red-700 font-semibold">Tidak Lulus</span>
-                                @else
-                                    <span class="px-3 py-1 rounded-full bg-gray-200 text-gray-700 font-semibold">{{ $hasil->Status_Seleksi }}</span>
-                                @endif
-                            </td>
-                            <td class="px-4 py-2 border text-center">
-                                {{-- Button Edit --}}
-                                <a href="{{ route('hasilwawancara.edit', $hasil->ID_Hasil_Seleksi) }}"
-                                   class="px-3 py-1 rounded-md bg-yellow-500 text-white font-semibold hover:bg-yellow-600 transition-colors duration-300">
-                                    Edit
-                                </a>
-                                {{-- Button Hapus --}}
-                                <form action="{{ route('hasilwawancara.destroy', $hasil->ID_Hasil_Seleksi) }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                            onclick="return confirm('Yakin ingin menghapus data ini?')"
-                                            class="px-3 py-1 rounded-md bg-red-600 text-white font-semibold hover:bg-red-700 transition-colors duration-300">
-                                        Hapus
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                @empty
+                    <tr>
+                        <td colspan="6" class="py-6 text-center text-gray-500">
+                            Belum ada data penilaian wawancara.
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    {{-- Modal Pop-up --}}
+    <div 
+        x-show="openModal"
+        x-cloak
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+        
+        <div class="bg-white w-full max-w-2xl rounded-2xl shadow-xl p-8 relative">
+            <button @click="openModal = false" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times text-lg"></i>
+            </button>
+
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Detail Hasil Wawancara</h2>
+
+            <template x-if="selected">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-gray-700">
+                    <div>
+                        <p class="font-semibold">Nama Peserta</p>
+                        <p x-text="selected.pendaftaran?.user?.nama_lengkap ?? '-'"></p>
+                    </div>
+                    <div>
+                        <p class="font-semibold">Dinas Diterima</p>
+                        <p x-text="selected.pendaftaran?.dinas_diterima?.nama_dinas ?? '-'"></p>
+                    </div>
+                    <div>
+                        <p class="font-semibold">Nilai Komunikasi</p>
+                        <p x-text="selected.nilai_komunikasi"></p>
+                    </div>
+                    <div>
+                        <p class="font-semibold">Nilai Motivasi</p>
+                        <p x-text="selected.nilai_motivasi"></p>
+                    </div>
+                    <div>
+                        <p class="font-semibold">Nilai Kemampuan</p>
+                        <p x-text="selected.nilai_kemampuan"></p>
+                    </div>
+                    <div>
+                        <p class="font-semibold">Nilai Total</p>
+                        <p x-text="selected.nilai_total"></p>
+                    </div>
+                    <div>
+                        <p class="font-semibold">Nilai Rata-rata</p>
+                        <p x-text="selected.nilai_rata_rata"></p>
+                    </div>
+                    <div>
+                        <p class="font-semibold">Status Seleksi</p>
+                        <template x-if="selected.nilai_rata_rata >= 75">
+                            <span class="text-green-600 font-semibold">Lolos</span>
+                        </template>
+                        <template x-if="selected.nilai_rata_rata < 75">
+                            <span class="text-red-600 font-semibold">Tidak Lolos</span>
+                        </template>
+                    </div>
+                </div>
+            </template>
+
+            <div class="mt-8 text-right">
+                <button @click="openModal = false"
+                        class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium px-4 py-2 rounded-lg transition">
+                    Tutup
+                </button>
+            </div>
         </div>
     </div>
 </div>
-@endsection
+@endsection -->

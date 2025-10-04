@@ -18,6 +18,7 @@ class JadwalSeleksi extends Model
         'waktu_mulai',
         'waktu_selesai',
         'tempat',
+        'pewawancara',
     ];
 
     protected $casts = [
@@ -36,4 +37,10 @@ class JadwalSeleksi extends Model
     {
         return $this->hasMany(Pendaftaran::class);
     }
+    
+    public function mahasiswas()
+{
+    return $this->belongsToMany(User::class, 'jadwal_mahasiswa', 'jadwal_id', 'mahasiswa_id');
+}
+
 }
