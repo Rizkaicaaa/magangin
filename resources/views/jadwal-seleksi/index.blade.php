@@ -10,7 +10,6 @@
             class="py-2 px-4 rounded-md bg-navy text-white font-semibold hover:bg-baby-blue transition-colors duration-300">
             + Tambah Jadwal
         </a>
-
     </div>
 
     <div id="content-container">
@@ -24,16 +23,13 @@
         {{-- Kalau ada data, tampilkan tabel --}}
         <div id="data-state" class="{{ count($jadwals) > 0 ? '' : 'hidden' }}">
             <form action="{{ route('jadwal-seleksi.index') }}" method="GET" class="mb-4 flex">
-                <!-- Filter by tanggal seleksi -->
                 <input type="date" name="tanggal" value="{{ request('tanggal') }}"
                     class="border border-gray-300 px-4 py-2 rounded-l-full focus:outline-none focus:ring-2 focus:ring-blue-400">
 
-                <!-- Search by nama atau tempat -->
                 <input type="text" name="search" value="{{ request('search') }}"
                     placeholder="Cari berdasarkan nama atau tempat"
                     class="border-t border-b border-gray-300 px-4 py-2 w-96 focus:outline-none focus:ring-2 focus:ring-blue-400">
 
-                <!-- Submit button -->
                 <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-r-full hover:bg-blue-700">
                     Filter / Cari
                 </button>
@@ -48,6 +44,7 @@
                         <th class="py-3 px-4 text-left text-gray-600 font-semibold">Waktu Wawancara</th>
                         <th class="py-3 px-4 text-left text-gray-600 font-semibold">Tempat</th>
                         <th class="py-3 px-4 text-left text-gray-600 font-semibold">Pewawancara</th>
+                        <th class="py-3 px-4 text-left text-gray-600 font-semibold text-center">Jumlah Peserta</th>
                         <th class="py-3 px-4 text-left text-gray-600 font-semibold">Aksi</th>
                     </tr>
                 </thead>
@@ -56,19 +53,20 @@
                     <tr class="border-t">
                         <td class="py-3 px-4">{{ $loop->iteration }}</td>
                         <td class="py-3 px-4">{{ $jadwal->infoOr->judul ?? '-' }}</td>
-                        <td class="py-3 px-4">{{ \Carbon\Carbon::parse($jadwal->tanggal_seleksi)->format('d M Y') }}
-                        </td>
+                        <td class="py-3 px-4">{{ \Carbon\Carbon::parse($jadwal->tanggal_seleksi)->format('d M Y') }}</td>
                         <td class="px-6 py-3 text-sm text-center font-mono">
                             {{ \Carbon\Carbon::parse($jadwal->waktu_mulai)->format('H:i') }} -
                             {{ \Carbon\Carbon::parse($jadwal->waktu_selesai)->format('H:i') }} WIB
                         </td>
                         <td class="py-3 px-4">{{ $jadwal->tempat ?? '-' }}</td>
                         <td class="py-3 px-4">{{ $jadwal->pewawancara ?? '-' }}</td>
+                        <td class="py-3 px-4 text-center">
+                            {{ $jadwal->pendaftarans ? $jadwal->pendaftarans->count() : 0 }} Peserta
+                        </td>
                         <td class="py-3 px-4 flex gap-2">
                             {{-- Tombol Detail --}}
                             <a href="{{ route('jadwal-seleksi.show', $jadwal->id) }}"
                                 class="text-green-600 hover:text-green-800" title="Detail">
-                                <!-- Icon Eye -->
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -81,7 +79,6 @@
                             {{-- Tombol Edit --}}
                             <a href="{{ route('jadwal-seleksi.edit', $jadwal->id) }}"
                                 class="text-blue-600 hover:text-blue-800" title="Edit">
-                                <!-- Icon Pencil -->
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -96,7 +93,6 @@
                                 @method('DELETE')
                                 <button type="button" class="text-red-600 hover:text-red-800 delete-button"
                                     title="Hapus">
-                                    <!-- Icon Trash -->
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -109,8 +105,8 @@
                     @endforeach
                 </tbody>
             </table>
-            {{ $jadwals->appends(['search' => request('search')])->links() }}
 
+            {{ $jadwals->appends(['search' => request('search')])->links() }}
         </div>
     </div>
 </div>
@@ -139,14 +135,12 @@ document.querySelectorAll('.delete-button').forEach(button => {
 });
 </script>
 
-{{-- Script SweetAlert sukses --}}
 @if(session('success'))
 <script>
 Swal.fire({
     icon: 'success',
     title: 'Berhasil!',
-    text: '{{ session('
-    success ') }}',
+    text: '{{ session('success') }}',
     showConfirmButton: false,
     timer: 1500
 });
