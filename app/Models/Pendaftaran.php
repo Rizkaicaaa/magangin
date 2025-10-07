@@ -69,4 +69,10 @@ class Pendaftaran extends Model
     {
         return $this->hasOne(EvaluasiMagang::class, 'pendaftaran_id');
     }
+
+    public function jadwals()
+{
+    return $this->belongsToMany(JadwalSeleksi::class, 'jadwal_pendaftaran', 'pendaftaran_id', 'jadwal_id');
+}
+
 }

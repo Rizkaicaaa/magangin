@@ -60,6 +60,26 @@
                    required>
         </div>
 
+        <div>
+    <label class="block text-sm font-medium text-gray-700">Pilih Peserta Wawancara</label>
+    <div class="border rounded-lg p-4 max-h-64 overflow-y-auto">
+        @foreach ($pendaftarans as $pendaftaran)
+            <div class="flex items-center mb-2">
+                <input 
+                    type="checkbox" 
+                    name="pendaftaran_id[]" 
+                    value="{{ $pendaftaran->id }}" 
+                    class="mr-2">
+                <label>
+                    {{ $pendaftaran->user->nama_lengkap }} 
+                    — <span class="text-gray-500 text-sm">{{ $pendaftaran->infoOr->judul }}</span>
+                </label>
+            </div>
+        @endforeach
+    </div>
+</div>
+
+
         <div class="flex justify-end gap-2 mt-4">
             <a href="{{ route('jadwal-seleksi.index') }}" 
                class="px-4 py-2 rounded-md bg-gray-300 hover:bg-gray-400">Batal</a>
