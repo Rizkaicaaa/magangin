@@ -62,34 +62,6 @@ class UserSeeder extends Seeder
             'updated_at'     => now(),
         ]);
 
-        // Contoh data mahasiswa untuk testing
-        DB::table('users')->insert([
-            [
-                'email'          => 'mahasiswa1@test.com',
-                'password'       => Hash::make('password123'),
-                'role'           => 'mahasiswa',
-                'nama_lengkap'   => 'Ahmad Rizki Pratama',
-                'nim'            => '210001',
-                'no_telp'        => '081234567891',
-                'tanggal_daftar' => now(),
-                'status'         => 'aktif',
-                'dinas_id'       => null,
-                'created_at'     => now(),
-                'updated_at'     => now(),
-            ],
-            [
-                'email'          => 'mahasiswa2@test.com',
-                'password'       => Hash::make('password123'),
-                'role'           => 'mahasiswa',
-                'nama_lengkap'   => 'Siti Nurhaliza',
-                'nim'            => '210002',
-                'no_telp'        => '081234567892',
-                'tanggal_daftar' => now(),
-                'status'         => 'aktif',
-                'dinas_id'       => null,
-                'created_at'     => now(),
-                'updated_at'     => now(),
-            ],
-        ]);
+
     }
 }
