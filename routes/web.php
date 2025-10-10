@@ -15,21 +15,12 @@ use App\Http\Controllers\PendaftarController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KelulusanWawancaraController;
 use App\Http\Controllers\SeleksiWawancaraController;
-
+use App\Http\Controllers\KelulusanMagangController;
 Route::get('/', function () {
     return view('welcome');
 });
 
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
-//Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('auth')->name('dashboard');
 
-
-
-// Route::get('/dashboard', [DashboardController::class, 'index'])
-//     ->middleware(['auth', 'verified'])
-//     ->name('dashboard');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
@@ -50,8 +41,12 @@ Route::get('/', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // Halaman ubah password
+    Route::get('/profile/password', [ProfileController::class, 'editPassword'])->name('profile.password.edit');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
+
+    
     Route::get('/kelola-info-or', [InfoOrController::class, 'index'])->name('info-or.index');
     Route::resource('hasilwawancara', HasilWawancaraController::class);
 
@@ -75,7 +70,8 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/penilaian', function () {
     return view('penilaian.index');
-});
+})->name('penilaian.index');
+
 
 // Route::get('/pendaftar', function () {
 //     return view('pendaftar.index');
@@ -127,4 +123,7 @@ Route::get('/pendaftar/{id}/view-transkrip', [PendaftarController::class, 'viewT
 
 });
 
+Route::get('/kelulusan-magang', [KelulusanMagangController::class, 'index'])
+    ->name('kelulusan-magang.index')
+    ->middleware('auth');
 require __DIR__.'/auth.php';

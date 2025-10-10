@@ -369,6 +369,7 @@
             </div>
         </div>
 
+        @if($user->role === 'superadmin')
         <!-- Total Dinas Card -->
         <div
             class="group relative bg-gradient-to-br from-emerald-50 via-emerald-100 to-emerald-200 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-emerald-200">
@@ -381,7 +382,7 @@
                         </div>
                         <div>
                             <p class="text-sm text-emerald-700 font-medium mb-1">
-                                {{ $user->role == 'superadmin' ? 'Total Dinas' : 'Dinas Anda' }}
+                                Total Dinas
                             </p>
                             <p class="text-xs text-emerald-600">Instansi Terdaftar</p>
                         </div>
@@ -395,6 +396,8 @@
                 </div>
             </div>
         </div>
+        @endif
+
 
         <!-- Total Kegiatan Card -->
         <div
@@ -737,14 +740,6 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-// Auto-refresh untuk real-time updates (opsional)
-// setInterval(() => {
-//     if (document.visibilityState === 'visible') {
-//         location.reload();
-//     }
-// }, 300000); // 5 menit
-
-// Kirim role user dari server ke JS (tanpa pakai ->)
 const userRole = "{{ $user['role'] ?? '' }}";
 
 // Loading state untuk dropdown filter
