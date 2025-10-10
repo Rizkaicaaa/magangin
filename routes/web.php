@@ -64,9 +64,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/jadwal-seleksi/{id}', [JadwalSeleksiController::class, 'show'])->name('jadwal-seleksi.show');
     Route::resource('penilaian-wawancara', PenilaianWawancaraController::class);
     Route::get('penilaian-wawancara/{id}', [PenilaianWawancaraController::class, 'show'])->name('penilaian-wawancara.show');
-    Route::resource('penilaian', EvaluasiMagangController::class);
-    Route::put('/penilaian/{id}', [EvaluasiMagangController::class, 'update'])->name('penilaian.update');
-    Route::post('/penilaian/store', [EvaluasiMagangController::class, 'storeOrUpdate'])->name('penilaian.store');
+    Route::resource('penilaian', EvaluasiMagangController::class); 
+    Route::put('/penilaian/{id}', [EvaluasiMagangController::class, 'update'])->name('penilaian.update'); 
+    Route::post('/penilaian/store', [EvaluasiMagangController::class, 'storeOrUpdate'])->name('penilaian.store'); 
+    Route::put('penilaian/{id}', [EvaluasiMagangController::class, 'storeOrUpdate']);
 });
 
 // Route::get('/auth', function () {
@@ -76,9 +77,9 @@ Route::middleware('auth')->group(function () {
 // Route::get('/penilaian', function () {
 //    return view('penilaian.index');
 //});
-Route::get('/penilaian', function () {
-    return view('penilaian.index');
-})->name('penilaian.index');
+//Route::get('/penilaian', function () {
+//   return view('penilaian.index');
+//})->name('penilaian.index');
 
 
 // Route::get('/pendaftar', function () {

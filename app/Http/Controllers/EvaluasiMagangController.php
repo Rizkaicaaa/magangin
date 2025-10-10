@@ -9,26 +9,22 @@ use Illuminate\Support\Facades\Auth;
 
 class EvaluasiMagangController extends Controller
 {
-    // INDEX: tampilkan daftar penilaian + peserta yang boleh dinilai
     public function index()
     {
         $user = Auth::user();
 
-        // Peserta yang boleh dinilai user ini (dinas sama & sudah lulus wawancara)
         $pendaftar = Pendaftaran::where('dinas_diterima_id', $user->dinas_id)
             ->where('status_pendaftaran', 'lulus_wawancara')
             ->with('user') 
             ->get();
 
-        // Semua penilaian peserta yang termasuk di atas
         $penilaian = EvaluasiMagang::whereIn('pendaftaran_id', $pendaftar->pluck('id'))
-            ->with('pendaftaran')
+            ->with('pendaftaran.user')
             ->get();
 
         return view('penilaian.index', compact('pendaftar', 'penilaian'));
     }
 
-    // SIMPAN atau UPDATE
     public function storeOrUpdate(Request $request)
     {
         $request->validate([
@@ -41,15 +37,10 @@ class EvaluasiMagangController extends Controller
 
         $user = Auth::user();
 
-        $total = (
-            $request->nilai_kedisiplinan +
-            $request->nilai_kerjasama +
-            $request->nilai_inisiatif +
-            $request->nilai_hasil_kerja
-        ) / 4;
+        $total = ($request->nilai_kedisiplinan + $request->nilai_kerjasama + $request->nilai_inisiatif + $request->nilai_hasil_kerja) / 4;
 
         if ($request->penilaian_id) {
-            // UPDATE
+            // UPDATE berdasar penilaian_id
             $evaluasi = EvaluasiMagang::findOrFail($request->penilaian_id);
             $evaluasi->update([
                 'pendaftaran_id' => $request->pendaftaran_id,
@@ -64,19 +55,17 @@ class EvaluasiMagangController extends Controller
 
             $message = 'Penilaian berhasil diperbarui!';
         } else {
-            // SIMPAN BARU
-            EvaluasiMagang::updateOrCreate(
-                ['pendaftaran_id' => $request->pendaftaran_id],
-                [
-                    'penilai_id' => $user->id,
-                    'nilai_kedisiplinan' => $request->nilai_kedisiplinan,
-                    'nilai_kerjasama' => $request->nilai_kerjasama,
-                    'nilai_inisiatif' => $request->nilai_inisiatif,
-                    'nilai_hasil_kerja' => $request->nilai_hasil_kerja,
-                    'nilai_total' => $total,
-                    'hasil_evaluasi' => $total >= 70 ? 'Lulus' : 'Tidak Lulus',
-                ]
-            );
+            // CREATE baru
+            EvaluasiMagang::create([
+                'pendaftaran_id' => $request->pendaftaran_id,
+                'penilai_id' => $user->id,
+                'nilai_kedisiplinan' => $request->nilai_kedisiplinan,
+                'nilai_kerjasama' => $request->nilai_kerjasama,
+                'nilai_inisiatif' => $request->nilai_inisiatif,
+                'nilai_hasil_kerja' => $request->nilai_hasil_kerja,
+                'nilai_total' => $total,
+                'hasil_evaluasi' => $total >= 70 ? 'Lulus' : 'Tidak Lulus',
+            ]);
 
             $message = 'Penilaian berhasil disimpan!';
         }
@@ -84,7 +73,6 @@ class EvaluasiMagangController extends Controller
         return redirect()->route('penilaian.index')->with('success', $message);
     }
 
-    // HAPUS
     public function destroy($id)
     {
         $evaluasi = EvaluasiMagang::findOrFail($id);
