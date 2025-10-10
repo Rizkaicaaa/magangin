@@ -15,6 +15,7 @@ use App\Http\Controllers\PendaftarController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KelulusanWawancaraController;
 use App\Http\Controllers\SeleksiWawancaraController;
+use App\Http\Controllers\EvaluasiMagangController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -67,15 +68,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/jadwal-seleksi/{id}', [JadwalSeleksiController::class, 'show'])->name('jadwal-seleksi.show');
     Route::resource('penilaian-wawancara', PenilaianWawancaraController::class);
     Route::get('penilaian-wawancara/{id}', [PenilaianWawancaraController::class, 'show'])->name('penilaian-wawancara.show');
+    Route::resource('penilaian', EvaluasiMagangController::class);
+    Route::put('/penilaian/{id}', [EvaluasiMagangController::class, 'update'])->name('penilaian.update');
+    Route::post('/penilaian/store', [EvaluasiMagangController::class, 'storeOrUpdate'])->name('penilaian.store');
 });
 
 // Route::get('/auth', function () {
 //     return view('auth');
 // });
 
-Route::get('/penilaian', function () {
-    return view('penilaian.index');
-});
+// Route::get('/penilaian', function () {
+//    return view('penilaian.index');
+//});
 
 // Route::get('/pendaftar', function () {
 //     return view('pendaftar.index');
