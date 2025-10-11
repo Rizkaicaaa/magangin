@@ -14,9 +14,9 @@ class EvaluasiMagangController extends Controller
         $user = Auth::user();
 
         $pendaftar = Pendaftaran::where('dinas_diterima_id', $user->dinas_id)
-            ->where('status_pendaftaran', 'lulus_wawancara')
-            ->with('user') 
-            ->get();
+    ->whereIn('status_pendaftaran', ['lulus_magang', 'tidak_lulus_magang'])
+    ->with('user') 
+    ->get();
 
         $penilaian = EvaluasiMagang::whereIn('pendaftaran_id', $pendaftar->pluck('id'))
             ->with('pendaftaran.user')
@@ -25,53 +25,69 @@ class EvaluasiMagangController extends Controller
         return view('penilaian.index', compact('pendaftar', 'penilaian'));
     }
 
-    public function storeOrUpdate(Request $request)
-    {
-        $request->validate([
-            'pendaftaran_id' => 'required|exists:pendaftaran,id',
-            'nilai_kedisiplinan' => 'required|numeric|min:0|max:100',
-            'nilai_kerjasama' => 'required|numeric|min:0|max:100',
-            'nilai_inisiatif' => 'required|numeric|min:0|max:100',
-            'nilai_hasil_kerja' => 'required|numeric|min:0|max:100',
+  public function storeOrUpdate(Request $request)
+{
+    $request->validate([
+        'pendaftaran_id' => 'required|exists:pendaftaran,id',
+        'nilai_kedisiplinan' => 'required|numeric|min:0|max:100',
+        'nilai_kerjasama' => 'required|numeric|min:0|max:100',
+        'nilai_inisiatif' => 'required|numeric|min:0|max:100',
+        'nilai_hasil_kerja' => 'required|numeric|min:0|max:100',
+    ]);
+
+    $user = Auth::user();
+    $total = (
+        $request->nilai_kedisiplinan +
+        $request->nilai_kerjasama +
+        $request->nilai_inisiatif +
+        $request->nilai_hasil_kerja
+    ) / 4;
+
+    // Tentukan hasil evaluasi dan status pendaftaran
+    $hasilEvaluasi = $total >= 70 ? 'Lulus' : 'Tidak Lulus';
+    $statusPendaftaran = $total >= 70 ? 'lulus_magang' : 'tidak_lulus_magang';
+
+    // Ambil data pendaftaran terkait
+    $pendaftaran = Pendaftaran::findOrFail($request->pendaftaran_id);
+
+    if ($request->penilaian_id) {
+        // UPDATE penilaian
+        $evaluasi = EvaluasiMagang::findOrFail($request->penilaian_id);
+        $evaluasi->update([
+            'pendaftaran_id' => $request->pendaftaran_id,
+            'penilai_id' => $user->id,
+            'nilai_kedisiplinan' => $request->nilai_kedisiplinan,
+            'nilai_kerjasama' => $request->nilai_kerjasama,
+            'nilai_inisiatif' => $request->nilai_inisiatif,
+            'nilai_hasil_kerja' => $request->nilai_hasil_kerja,
+            'nilai_total' => $total,
+            'hasil_evaluasi' => $hasilEvaluasi,
         ]);
 
-        $user = Auth::user();
+        $message = 'Penilaian berhasil diperbarui!';
+    } else {
+        // CREATE penilaian baru
+        EvaluasiMagang::create([
+            'pendaftaran_id' => $request->pendaftaran_id,
+            'penilai_id' => $user->id,
+            'nilai_kedisiplinan' => $request->nilai_kedisiplinan,
+            'nilai_kerjasama' => $request->nilai_kerjasama,
+            'nilai_inisiatif' => $request->nilai_inisiatif,
+            'nilai_hasil_kerja' => $request->nilai_hasil_kerja,
+            'nilai_total' => $total,
+            'hasil_evaluasi' => $hasilEvaluasi,
+        ]);
 
-        $total = ($request->nilai_kedisiplinan + $request->nilai_kerjasama + $request->nilai_inisiatif + $request->nilai_hasil_kerja) / 4;
-
-        if ($request->penilaian_id) {
-            // UPDATE berdasar penilaian_id
-            $evaluasi = EvaluasiMagang::findOrFail($request->penilaian_id);
-            $evaluasi->update([
-                'pendaftaran_id' => $request->pendaftaran_id,
-                'penilai_id' => $user->id,
-                'nilai_kedisiplinan' => $request->nilai_kedisiplinan,
-                'nilai_kerjasama' => $request->nilai_kerjasama,
-                'nilai_inisiatif' => $request->nilai_inisiatif,
-                'nilai_hasil_kerja' => $request->nilai_hasil_kerja,
-                'nilai_total' => $total,
-                'hasil_evaluasi' => $total >= 70 ? 'Lulus' : 'Tidak Lulus',
-            ]);
-
-            $message = 'Penilaian berhasil diperbarui!';
-        } else {
-            // CREATE baru
-            EvaluasiMagang::create([
-                'pendaftaran_id' => $request->pendaftaran_id,
-                'penilai_id' => $user->id,
-                'nilai_kedisiplinan' => $request->nilai_kedisiplinan,
-                'nilai_kerjasama' => $request->nilai_kerjasama,
-                'nilai_inisiatif' => $request->nilai_inisiatif,
-                'nilai_hasil_kerja' => $request->nilai_hasil_kerja,
-                'nilai_total' => $total,
-                'hasil_evaluasi' => $total >= 70 ? 'Lulus' : 'Tidak Lulus',
-            ]);
-
-            $message = 'Penilaian berhasil disimpan!';
-        }
-
-        return redirect()->route('penilaian.index')->with('success', $message);
+        $message = 'Penilaian berhasil disimpan!';
     }
+
+    // Update status pendaftaran berdasarkan hasil evaluasi
+    $pendaftaran->update([
+        'status_pendaftaran' => $statusPendaftaran,
+    ]);
+
+    return redirect()->route('penilaian.index')->with('success', $message);
+}
 
     public function destroy($id)
     {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\EvaluasiMagang;
 use Illuminate\Support\Facades\Auth;
 
+
 class KelulusanMagangController extends Controller
 {
     public function index()

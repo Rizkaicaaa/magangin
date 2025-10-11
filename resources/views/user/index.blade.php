@@ -9,7 +9,7 @@
         <h1 id="page-title" class="text-3xl font-bold text-gray-800">Kelola User</h1>
         <button id="create-button"
             class="py-2 px-4 rounded-md bg-navy text-white font-semibold hover:bg-baby-blue transition-colors duration-300">
-            Buat User
+            Tambah User
         </button>
     </div>
 
@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('user-form').action = "{{ route('users.store') }}";
         document.getElementById('password-field').classList.remove('hidden');
         document.getElementById('password').setAttribute('required',
-        'required'); // Pastikan password required saat membuat user baru
+            'required'); // Pastikan password required saat membuat user baru
 
         // Hapus method field jika ada
         cleanupMethodField();
