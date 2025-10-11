@@ -86,11 +86,11 @@
     {{-- Tombol Download Sertifikat --}}
     @if($evaluasi->file_sertifikat)
     <div class="mt-8">
-        <a href="{{ asset('storage/' . $evaluasi->file_sertifikat) }}"
-            class="inline-flex items-center px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition"
-            target="_blank">
-            <i class="fas fa-download mr-2"></i> Download Sertifikat
+        <a href="{{ asset('storage/' . $evaluasi->file_sertifikat) }}" target="_blank"
+            class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold">
+            Download Sertifikat
         </a>
+
     </div>
     @endif
     @endif

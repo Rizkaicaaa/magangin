@@ -4,194 +4,252 @@
     <div class="w-full px-4 lg:px-6">
         <div class="flex items-center justify-between h-16 w-full">
             <!-- Logo and Brand -->
-            <div class="flex items-center space-x-3 group flex-shrink-0">
-                <a href="{{ route('dashboard') }}" class="flex items-center space-x-3">
+            <div class="flex items-center group flex-shrink-0">
+                <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
                     <div
-                        class="bg-gradient-to-br from-white to-white-700 rounded-full p-2 group-hover:scale-105 transition-transform duration-200">
+                        class="bg-gradient-to-br from-white to-white-700 rounded-full p-1.5 group-hover:scale-105 transition-transform duration-200">
                         <img src="{{ asset('images/logomagangin.png') }}" alt="Logo MagangIn"
-                            class="h-8 w-8 object-contain">
+                            class="h-7 w-7 object-contain">
                     </div>
-                    <div class="hidden xl:block">
-                        <h2 class="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">MagangIn
+                    <div class="hidden lg:block">
+                        <h2
+                            class="text-base font-semibold text-gray-900 group-hover:text-blue-600 transition-colors leading-tight">
+                            MagangIn
                         </h2>
-                        <p class="text-xs text-gray-500">BEM KM FTI UNAND</p>
+                        <p class="text-[10px] text-gray-500 leading-tight">BEM KM FTI UNAND</p>
                     </div>
                 </a>
             </div>
+
 
             <!-- Main Navigation Links -->
             <div class="hidden md:flex items-center justify-center flex-1 px-4">
                 <div class="flex items-center space-x-1">
                     @if(Auth::user()->role == 'superadmin')
+
                     <!-- ===== SUPERADMIN MENU ===== -->
                     <a href="{{ route('dashboard') }}"
-                        class="inline-flex items-center px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg hover:bg-blue-50
-                            {{ request()->routeIs('dashboard') ? 'text-blue-600 bg-blue-50 font-semibold' : 'text-gray-700 hover:text-blue-700' }}">
+                        class="inline-flex items-center justify-start whitespace-nowrap px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg
+    {{ request()->routeIs('dashboard') ? 'text-blue-600 bg-blue-50 font-semibold shadow-sm' : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50' }}">
                         <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
                     </a>
 
-                    @php
-                    $mainNavigation = [
-                    ['url' => '/info-or', 'label' => 'Info OR', 'icon' => 'fas fa-info-circle', 'pattern' => 'info-or'],
-                    ['url' => '/pendaftar', 'label' => 'Data Pendaftar', 'icon' => 'fas fa-users', 'pattern' => 'pendaftar'],
-                    ['url' => '/jadwal-kegiatan', 'label' => 'Kelola Kegiatan', 'icon' => 'fas fa-tasks', 'pattern' => 'jadwal-kegiatan'],
-                    ['url' => '/penilaian', 'label' => 'Penilaian Magang', 'icon' => 'fas fa-star', 'pattern' => 'penilaian'],
-                    ['url' => '/users', 'label' => 'Kelola User', 'icon' => 'fas fa-user-cog', 'pattern' => 'users*']
-                    ];
-                    $wawancaraActive = request()->is('jadwal-seleksi*') || request()->is('penilaian-wawancara*') || request()->is('hasilwawancara*');
-                    @endphp
-
-                    @foreach($mainNavigation as $item)
-                    @php
-                    $isActive = Request::is($item['pattern']);
-                    @endphp
-                    <a href="{{ url($item['url']) }}"
-                        class="inline-flex items-center px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg hover:bg-blue-50
-                                {{ $isActive ? 'text-blue-600 bg-blue-50 font-semibold' : 'text-gray-700 hover:text-blue-700' }}">
-                        <i class="{{ $item['icon'] }} mr-2 text-sm"></i>
-                        {{ $item['label'] }}
+                    <a href="{{ route('info-or.index') }}"
+                        class="inline-flex items-center justify-start whitespace-nowrap px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg
+    {{ request()->is('info-or*') ? 'text-blue-600 bg-blue-50 font-semibold shadow-sm' : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50' }}">
+                        <i class="fas fa-info-circle mr-2"></i> Info OR
                     </a>
-                    @endforeach
+
+                    <a href="{{ route('pendaftar.index') }}"
+                        class="inline-flex items-center justify-start whitespace-nowrap px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg
+    {{ request()->is('pendaftar*') ? 'text-blue-600 bg-blue-50 font-semibold shadow-sm' : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50' }}">
+                        <i class="fas fa-users mr-2"></i> Data Pendaftar
+                    </a>
 
                     <!-- Dropdown Data Wawancara -->
+                    @php
+                    $wawancaraActive = request()->is('jadwal-seleksi*') || request()->is('penilaian-wawancara*') ||
+                    request()->is('hasilwawancara*');
+                    @endphp
                     <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
                         <button @click="open = !open"
-                            class="inline-flex items-center px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg hover:bg-blue-50
-                                {{ $wawancaraActive ? 'text-blue-600 bg-blue-50 font-semibold' : 'text-gray-700 hover:text-blue-700' }}">
+                            class="inline-flex items-center justify-start whitespace-nowrap px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg
+        {{ $wawancaraActive ? 'text-blue-600 bg-blue-50 font-semibold shadow-sm' : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50' }}">
                             <i class="fas fa-clipboard-list mr-2 text-sm"></i>
-                            Data Wawancara
-                            <i class="fas fa-chevron-down ml-2 text-xs transition-transform duration-200" :class="{ 'rotate-180': open }"></i>
+                            <span>Data Wawancara</span>
+                            <i class="fas fa-chevron-down ml-2 text-xs transition-transform duration-200"
+                                :class="{ 'rotate-180': open }"></i>
                         </button>
 
                         <div x-show="open" x-cloak x-transition
                             class="absolute right-0 z-50 mt-2 w-72 rounded-xl bg-white shadow-xl ring-1 ring-black/5 border border-gray-100"
                             style="transform: translateX(25%);">
                             <div class="py-2">
-                                <a href="{{ route('jadwal-seleksi.index') }}" class="flex items-center px-4 py-3 text-sm hover:bg-blue-50 {{ request()->is('jadwal-seleksi*') ? 'bg-blue-50 text-blue-700' : 'text-gray-700' }}">
+                                <a href="{{ route('jadwal-seleksi.index') }}"
+                                    class="flex items-center px-4 py-3 text-sm transition-colors
+                {{ request()->is('jadwal-seleksi*') ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600' }}">
                                     <i class="fas fa-calendar-alt text-green-600 mr-3"></i> Jadwal Wawancara
                                 </a>
-                                <a href="{{ route('penilaian-wawancara.index') }}" class="flex items-center px-4 py-3 text-sm hover:bg-blue-50 {{ request()->is('penilaian-wawancara*') ? 'bg-blue-50 text-blue-700' : 'text-gray-700' }}">
+                                <a href="{{ route('penilaian-wawancara.index') }}"
+                                    class="flex items-center px-4 py-3 text-sm transition-colors
+                {{ request()->is('penilaian-wawancara*') ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600' }}">
                                     <i class="fas fa-clipboard-check text-yellow-600 mr-3"></i> Penilaian Wawancara
                                 </a>
                             </div>
                         </div>
                     </div>
+
+                    <a href="{{ route('jadwal-kegiatan.index') }}"
+                        class="inline-flex items-center justify-start whitespace-nowrap px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg
+    {{ request()->is('jadwal-kegiatan*') ? 'text-blue-600 bg-blue-50 font-semibold shadow-sm' : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50' }}">
+                        <i class="fas fa-tasks mr-2"></i> Kelola Kegiatan
+                    </a>
+
+                    <a href="{{ route('penilaian.index') }}"
+                        class="inline-flex items-center justify-start whitespace-nowrap px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg
+    {{ request()->is('penilaian*') ? 'text-blue-600 bg-blue-50 font-semibold shadow-sm' : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50' }}">
+                        <i class="fas fa-star mr-2"></i> Penilaian Magang
+                    </a>
+
+                    <a href="{{ route('users.index') }}"
+                        class="inline-flex items-center justify-start whitespace-nowrap px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg
+    {{ request()->is('users*') ? 'text-blue-600 bg-blue-50 font-semibold shadow-sm' : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50' }}">
+                        <i class="fas fa-user-cog mr-2"></i> Kelola User
+                    </a>
+
+
+                    @elseif(Auth::user()->role == 'admin')
+                    <!-- ===== ADMIN MENU ===== -->
+                    <a href="{{ route('dashboard') }}"
+                        class="inline-flex items-center px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg
+                {{ request()->routeIs('dashboard') ? 'text-blue-600 bg-blue-50 font-semibold shadow-sm' : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50' }}">
+                        <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
+                    </a>
+
+                    <a href="{{ route('pendaftar.index') }}"
+                        class="inline-flex items-center px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg
+                {{ request()->is('pendaftar*') ? 'text-blue-600 bg-blue-50 font-semibold shadow-sm' : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50' }}">
+                        <i class="fas fa-users mr-2"></i> Data Pendaftar
+                    </a>
+
+                    <a href="{{ route('jadwal-kegiatan.index') }}"
+                        class="inline-flex items-center px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg
+                {{ request()->is('jadwal-kegiatan*') ? 'text-blue-600 bg-blue-50 font-semibold shadow-sm' : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50' }}">
+                        <i class="fas fa-calendar-alt mr-2"></i> Data Kegiatan
+                    </a>
+
+                    <a href="{{ route('penilaian.index') }}"
+                        class="inline-flex items-center px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg
+                {{ request()->is('penilaian*') ? 'text-blue-600 bg-blue-50 font-semibold shadow-sm' : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50' }}">
+                        <i class="fas fa-star mr-2"></i> Penilaian Magang
+                    </a>
+
                     @elseif(Auth::user()->role == 'mahasiswa')
                     <!-- ===== MAHASISWA MENU ===== -->
                     <a href="{{ route('dashboard') }}"
-                        class="inline-flex items-center px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg hover:bg-blue-50
-                            {{ request()->routeIs('dashboard') ? 'text-blue-600 bg-blue-50 font-semibold' : 'text-gray-700 hover:text-blue-700' }}">
+                        class="inline-flex items-center px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg
+                {{ request()->routeIs('dashboard') ? 'text-blue-600 bg-blue-50 font-semibold shadow-sm' : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50' }}">
                         <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
                     </a>
-                    <a href="/seleksi-wawancara"
-                        class="inline-flex items-center px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg hover:bg-blue-50 text-gray-700 hover:text-blue-700">
-                        <i class="fas fa-calendar-check mr-2"></i> Jadwal Seleksi Wawancara
+
+                    <a href="{{ route('mahasiswa.jadwal-seleksi') }}"
+                        class="inline-flex items-center px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg
+                {{ request()->is('seleksi-wawancara*') ? 'text-blue-600 bg-blue-50 font-semibold shadow-sm' : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50' }}">
+                        <i class="fas fa-calendar-check mr-2"></i> Jadwal Wawancara
                     </a>
-                    <a href="/kelulusan-wawancara"
-                        class="inline-flex items-center px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg hover:bg-blue-50 text-gray-700 hover:text-blue-700">
+
+                    <a href="{{ route('kelulusanwawancara.index') }}"
+                        class="inline-flex items-center px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg
+                {{ request()->is('kelulusan-wawancara*') ? 'text-blue-600 bg-blue-50 font-semibold shadow-sm' : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50' }}">
                         <i class="fas fa-clipboard-check mr-2"></i> Kelulusan Wawancara
                     </a>
-                    <a href="/jadwal-kegiatan"
-                        class="inline-flex items-center px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg hover:bg-blue-50 text-gray-700 hover:text-blue-700">
-                        <i class="fas fa-calendar-alt mr-2"></i> Jadwal Kegiatan
+
+                    <a href="{{ route('jadwal-kegiatan.index') }}"
+                        class="inline-flex items-center px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg
+                {{ request()->is('jadwal-kegiatan*') ? 'text-blue-600 bg-blue-50 font-semibold shadow-sm' : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50' }}">
+                        <i class="fas fa-calendar-alt mr-2"></i> Data Kegiatan
                     </a>
-                    <a href="#"
-                        class="inline-flex items-center px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg hover:bg-blue-50 text-gray-700 hover:text-blue-700">
+                    <a href="{{ route('kelulusan-magang.index') }}"
+                        class=" inline-flex items-center px-3 py-2 text-sm font-medium transition-all duration-200
+                        rounded-lg hover:bg-blue-50
+                        {{ request()->is('kelulusan-magang*') ? 'text-blue-600 bg-blue-50 font-semibold' : 'text-gray-700 hover:text-blue-700' }}">
                         <i class="fas fa-graduation-cap mr-2"></i> Kelulusan Magang
                     </a>
                     @endif
                 </div>
             </div>
 
+
             <!-- Right Side Navigation -->
-            <div class="flex items-center space-x-3 flex-shrink-0">
+            <!-- Right Side Navigation -->
+            <div class="flex items-center flex-shrink-0">
                 <!-- Settings Dropdown -->
                 <div class="relative" x-data="{ open: false }">
+                    <!-- Button -->
                     <button @click="open = !open"
-                        class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-lg text-gray-500 bg-white hover:text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-150">
-                        <div class="flex items-center space-x-3">
+                        class="inline-flex items-center px-2 py-1.5 border border-transparent text-sm font-medium rounded-lg text-gray-600 bg-white hover:text-blue-600 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-150">
+                        <div class="flex items-center gap-2">
                             <!-- User Avatar -->
                             <div
-                                class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                                <span class="text-white text-sm font-semibold uppercase">
-                                    {{ substr(Auth::user()->name, 0, 1) }}
-                                </span>
+                                class="w-9 h-9 rounded-full overflow-hidden flex items-center justify-center bg-gray-100">
+                                <img src="{{ asset(path: 'images/profile-icon.jpeg') }}" alt="User Avatar"
+                                    class="w-full h-full object-cover object-center">
                             </div>
+                            <!-- User Info -->
                             <div class="hidden lg:block text-left">
-                                <div class="font-medium text-gray-900 text-sm">{{ Auth::user()->name }}</div>
-                                <div class="text-xs text-gray-500 truncate max-w-32">{{ Auth::user()->email }}</div>
+                                <div class="font-medium text-gray-900 text-sm truncate max-w-[120px]">
+                                    {{ Auth::user()->name }}
+                                </div>
+                                <div class="text-xs text-gray-500 truncate max-w-[120px]">
+                                    {{ Auth::user()->email }}
+                                </div>
                             </div>
-                            <div class="ms-1">
-                                <svg class="fill-current h-4 w-4 transition-transform duration-200"
-                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </div>
+                            <!-- Dropdown Icon -->
+                            <svg class="fill-current h-4 w-4 text-gray-400 transition-transform duration-200"
+                                :class="{ 'rotate-180': open }" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.25 8.27a.75.75 0 01-.02-1.06z"
+                                    clip-rule="evenodd" />
+                            </svg>
                         </div>
                     </button>
 
-                    <!-- User Dropdown -->
+                    <!-- Dropdown -->
                     <div x-show="open" x-cloak @click.away="open = false"
                         x-transition:enter="transition ease-out duration-200"
                         x-transition:enter-start="transform opacity-0 scale-95"
                         x-transition:enter-end="transform opacity-100 scale-100"
-                        x-transition:leave="transition ease-in duration-75"
+                        x-transition:leave="transition ease-in duration-100"
                         x-transition:leave-start="transform opacity-100 scale-100"
                         x-transition:leave-end="transform opacity-0 scale-95"
-                        class="absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-lg bg-white shadow-lg ring-1 ring-black/5">
+                        class="absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-lg bg-white shadow-lg border border-gray-200">
 
                         <!-- User Info Header -->
-                        <div class="px-4 py-3 border-b border-gray-100">
-                            <div class="flex items-center space-x-3">
-                                <div
-                                    class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                                    <span class="text-white font-semibold uppercase">
-                                        {{ substr(Auth::user()->name, 0, 1) }}
-                                    </span>
+                        <div class="px-4 py-3 border-b border-gray-100 flex items-center gap-3">
+                            <div
+                                class="w-9 h-9 rounded-full overflow-hidden flex items-center justify-center bg-gray-100">
+                                <img src="{{ asset(path: 'images/profile-icon.jpeg') }}" alt="User Avatar"
+                                    class="w-full h-full object-cover object-center">
+                            </div>
+                            <div>
+                                <div class="font-medium text-gray-900">{{ Auth::user()->name }}</div>
+                                <div class="text-sm text-gray-500 truncate">{{ Auth::user()->email }}</div>
+                                @if(Auth::user()->role)
+                                <div class="text-xs text-blue-600 font-medium capitalize mt-0.5">
+                                    {{ Auth::user()->role }}
                                 </div>
-                                <div class="flex-1">
-                                    <div class="font-medium text-gray-900">{{ Auth::user()->name }}</div>
-                                    <div class="text-sm text-gray-500">{{ Auth::user()->email }}</div>
-                                    @if(Auth::user()->role)
-                                    <div class="text-xs text-blue-600 font-medium capitalize">{{ Auth::user()->role }}
-                                    </div>
-                                    @endif
-                                </div>
+                                @endif
                             </div>
                         </div>
 
                         <!-- Menu Items -->
                         <div class="py-1">
                             <a href="{{ route('profile.edit') }}"
-                                class="flex items-center px-4 py-2 text-sm hover:bg-gray-50 transition-colors">
-                                <i class="fas fa-user-circle mr-3 text-gray-400"></i>
-                                Profile Settings
+                                class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 rounded-md">
+                                <i class="fas fa-id-card-alt mr-3 text-blue-500"></i>
+                                <span>Edit Profil</span>
                             </a>
 
-                            <a href="#" class="flex items-center px-4 py-2 text-sm hover:bg-gray-50 transition-colors">
-                                <i class="fas fa-cog mr-3 text-gray-400"></i>
-                                Account Settings
+                            <a href="{{ route('profile.password.edit') }}"
+                                class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 rounded-md">
+                                <i class="fas fa-lock mr-3 text-amber-500"></i>
+                                <span>Ubah Password</span>
                             </a>
-
-                            <a href="#" class="flex items-center px-4 py-2 text-sm hover:bg-gray-50 transition-colors">
-                                <i class="fas fa-question-circle mr-3 text-gray-400"></i>
-                                Help & Support
-                            </a>
-
                             <div class="border-t border-gray-100 my-1"></div>
-
-                            <!-- Logout Button -->
-                            <button @click.stop="$refs.logoutModal.showModal()"
-                                class="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
-                                <i class="fas fa-sign-out-alt mr-3 text-red-500"></i>
-                                Log Out
-                            </button>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit"
+                                    class="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                                    <i class="fas fa-sign-out-alt mr-3 text-red-500"></i> Keluar
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
+
+
             </div>
+
 
             <!-- Mobile menu button -->
             <div class="flex items-center md:hidden">
@@ -225,10 +283,12 @@
             @php
             $mobileNavigation = [
             ['url' => '/info-or', 'label' => 'Info OR', 'icon' => 'fas fa-info-circle', 'pattern' => 'info-or'],
-            ['url' => '/pendaftar', 'label' => 'Data Pendaftar', 'icon' => 'fas fa-users', 'pattern' => 'pendaftar'],
+            ['url' => '/pendaftar', 'label' => 'Data Pendaftar', 'icon' => 'fas fa-users', 'pattern' =>
+            'pendaftar'],
             ['url' => '/jadwal-kegiatan', 'label' => 'Kelola Kegiatan', 'icon' => 'fas fa-tasks', 'pattern' =>
             'jadwal-kegiatan'],
-            ['url' => '/penilaian', 'label' => 'Penilaian Magang', 'icon' => 'fas fa-star', 'pattern' => 'penilaian'],
+            ['url' => '/penilaian', 'label' => 'Penilaian Magang', 'icon' => 'fas fa-star', 'pattern' =>
+            'penilaian'],
             ['url' => '/users', 'label' => 'Kelola User', 'icon' => 'fas fa-user-cog', 'pattern' => 'users*']
             ];
             $wawancaraActive = request()->is('jadwal-seleksi*') || request()->is('penilaian-wawancara*') ||
@@ -282,6 +342,7 @@
                         <i class="fas fa-chart-bar mr-3 text-purple-600 text-sm"></i>
                         Hasil Wawancara
                     </a>
+
                 </div>
             </div>
         </div>
