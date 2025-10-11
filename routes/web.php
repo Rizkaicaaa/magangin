@@ -2,36 +2,35 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\JadwalKegiatanController;
-use App\Http\Controllers\InfoOrController; 
+use App\Http\Controllers\InfoOrController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HasilWawancaraController;
 use App\Http\Controllers\JadwalSeleksiController;
-
 use App\Http\Controllers\UserController;
 use App\Models\InfoOr;
-
 use App\Http\Controllers\PenilaianWawancaraController;
 use App\Http\Controllers\PendaftarController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KelulusanWawancaraController;
+use App\Http\Controllers\PengumumanMagangController;
 use App\Http\Controllers\SeleksiWawancaraController;
+use App\Http\Controllers\TemplateSertifikatController;
 use App\Http\Controllers\EvaluasiMagangController;
-
 use App\Http\Controllers\KelulusanMagangController;
-Route::get('/', function () {
-    return view('welcome');
-});
 
-
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
+
 Route::get('/', function () {
     // Ambil data InfoOr terbaru yang memiliki gambar
     $latestPoster = InfoOr::whereNotNull('gambar')
-                          ->orderBy('created_at', 'desc')
-                          ->first();
+        ->orderBy('created_at', 'desc')
+        ->first();
 
     // Tentukan path gambar. Gunakan gambar default jika tidak ada di database
     $posterPath = $latestPoster ? $latestPoster->gambar : 'images/poster_default.jpg';
@@ -49,7 +48,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
 
     
-    Route::get('/kelola-info-or', [InfoOrController::class, 'index'])->name('info-or.index');
+    // Route::get('/kelola-info-or', [InfoOrController::class, 'index'])->name('info-or.index');
     Route::resource('hasilwawancara', HasilWawancaraController::class);
 
     Route::resource('/jadwal-seleksi', JadwalSeleksiController::class);
@@ -67,10 +66,18 @@ Route::middleware('auth')->group(function () {
     ->name('penilaian-wawancara.updateStatus');
 
     Route::get('penilaian-wawancara/{id}', [PenilaianWawancaraController::class, 'show'])->name('penilaian-wawancara.show');
-    Route::resource('penilaian', EvaluasiMagangController::class); 
-    Route::put('/penilaian/{id}', [EvaluasiMagangController::class, 'update'])->name('penilaian.update'); 
+
+    Route::get('/upload-template', [TemplateSertifikatController::class, 'index'])->name('template.upload');
+    Route::post('/upload-template', [TemplateSertifikatController::class, 'store'])->name('template.store');
+    Route::get('/pengumuman-kelulusan', [PengumumanMagangController::class, 'index'])->name('pengumuman.kelulusan');
+    Route::post('/pengumuman/{evaluasi_id}/store', [PengumumanMagangController::class, 'store'])->name('pengumuman.store');
+
+    // Route::resource('penilaian', EvaluasiMagangController::class); 
+    // Route::put('/penilaian/{id}', [EvaluasiMagangController::class, 'update'])->name('penilaian.update'); 
     Route::post('/penilaian/store', [EvaluasiMagangController::class, 'storeOrUpdate'])->name('penilaian.store'); 
     Route::put('penilaian/{id}', [EvaluasiMagangController::class, 'storeOrUpdate']);
+    Route::get('/penilaian', [EvaluasiMagangController::class, 'index'])->name('penilaian.index');
+    Route::delete('/{id}', [EvaluasiMagangController::class, 'destroy'])->name('penilaian.destroy');M
 });
 
 // Route::get('/auth', function () {
@@ -114,7 +121,7 @@ Route::middleware(['auth'])->group(function () {
         ->name('jadwal-kegiatan.update');
     Route::delete('/jadwal-kegiatan/{id}', [JadwalKegiatanController::class, 'destroy'])
         ->name('jadwal-kegiatan.destroy');
-    
+
     // ✅ Detail kegiatan di akhir agar tidak conflict dengan route lain
     Route::get('/jadwal-kegiatan/{id}', [JadwalKegiatanController::class, 'show'])
         ->name('jadwal-kegiatan.show')
@@ -131,8 +138,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/pendaftar/{id}/status', [PendaftarController::class, 'updateStatus'])->name('pendaftar.update-status');
     Route::post('/pendaftar/{id}/dinas', [PendaftarController::class, 'setDinasDiterima'])->name('pendaftar.set-dinas');
     Route::get('/pendaftar/{id}/view-cv', [PendaftarController::class, 'viewCV'])->name('pendaftar.view-cv');
-Route::get('/pendaftar/{id}/view-transkrip', [PendaftarController::class, 'viewTranskrip'])->name('pendaftar.view-transkrip');
-
+    Route::get('/pendaftar/{id}/view-transkrip', [PendaftarController::class, 'viewTranskrip'])->name('pendaftar.view-transkrip');
 });
 
 Route::get('/kelulusan-magang', [KelulusanMagangController::class, 'index'])

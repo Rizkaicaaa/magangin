@@ -20,33 +20,49 @@ public function index()
     try {
         $user = Auth::user();
         $userRole = $user->role;
-        
-        // Ambil semua periode untuk ditampilkan di select
+
+        // Ambil semua periode (untuk select dropdown)
         $periodes = InfoOr::select('id', 'periode', 'status', 'tanggal_buka', 'tanggal_tutup')
-            ->orderBy('id', 'desc') // Urutkan berdasarkan ID terbaru
+            ->orderBy('id', 'desc')
             ->get();
-        
-        // Inisialisasi selectedPeriode
+
+        // Default: tidak ada periode terpilih
         $selectedPeriode = null;
-        
-        // Untuk mahasiswa, ambil periode berdasarkan pendaftaran mereka
+
         if ($userRole === 'mahasiswa') {
-            // Ambil info_or_id dari tabel pendaftaran mahasiswa
+            // Untuk mahasiswa → ambil periode dari pendaftarannya
             $pendaftaran = \App\Models\Pendaftaran::where('user_id', $user->id)
                 ->latest()
                 ->first();
-            
-            $selectedPeriode = $pendaftaran->info_or_id;
+
+            $selectedPeriode = $pendaftaran ? $pendaftaran->info_or_id : null;
+        } elseif ($userRole === 'admin') {
+            // Untuk admin → hanya tampilkan kegiatan dari Info OR terbaru
+            $periodeTerbaru = $periodes->first(); // ID terbesar = terbaru
+            $selectedPeriode = $periodeTerbaru ? $periodeTerbaru->id : null;
         } else {
-            // Untuk admin/superadmin, set default ke periode terbaru
-            $periodeTerbaru = $periodes->first(); // ID terbesar = data terbaru
+            // Untuk superadmin → bisa pilih semua, default ke periode terbaru
+            $periodeTerbaru = $periodes->first();
             $selectedPeriode = $periodeTerbaru ? $periodeTerbaru->id : null;
         }
-        
-        return view('kegiatan.index', compact('periodes', 'userRole', 'selectedPeriode'));
+
+        // Ambil daftar kegiatan sesuai role
+        $kegiatanQuery = JadwalKegiatan::query()
+            ->with('infoOr')
+            ->orderBy('tanggal_kegiatan', 'asc')
+            ->orderBy('waktu_mulai', 'asc');
+
+        if ($userRole === 'admin' && $selectedPeriode) {
+            $kegiatanQuery->where('info_or_id', $selectedPeriode);
+        } elseif ($userRole === 'mahasiswa' && $selectedPeriode) {
+            $kegiatanQuery->where('info_or_id', $selectedPeriode);
+        }
+
+        $kegiatans = $kegiatanQuery->get();
+
+        return view('kegiatan.index', compact('periodes', 'userRole', 'selectedPeriode', 'kegiatans'));
     } catch (Exception $e) {
         Log::error('Error loading jadwal kegiatan page: ' . $e->getMessage());
-        
         return back()->with('error', 'Gagal memuat halaman jadwal kegiatan');
     }
 }
