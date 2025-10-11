@@ -63,6 +63,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/jadwal-seleksi/{id}', [JadwalSeleksiController::class, 'show'])->name('jadwal-seleksi.show');
     Route::resource('penilaian-wawancara', PenilaianWawancaraController::class);
+    Route::post('/penilaian-wawancara/update-status', [PenilaianWawancaraController::class, 'updateStatus'])
+    ->name('penilaian-wawancara.updateStatus');
+
     Route::get('penilaian-wawancara/{id}', [PenilaianWawancaraController::class, 'show'])->name('penilaian-wawancara.show');
     Route::resource('penilaian', EvaluasiMagangController::class); 
     Route::put('/penilaian/{id}', [EvaluasiMagangController::class, 'update'])->name('penilaian.update'); 
