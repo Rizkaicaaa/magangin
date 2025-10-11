@@ -7,11 +7,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HasilWawancaraController;
 use App\Http\Controllers\JadwalSeleksiController;
 
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> e825d59a6af5f54447d7ffb5349f3ca6d25b161b
 use App\Http\Controllers\UserController;
 use App\Models\InfoOr;
 
@@ -19,27 +14,14 @@ use App\Http\Controllers\PenilaianWawancaraController;
 use App\Http\Controllers\PendaftarController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KelulusanWawancaraController;
-<<<<<<< HEAD
 use App\Http\Controllers\PengumumanMagangController;
 use App\Http\Controllers\SeleksiWawancaraController;
 use App\Http\Controllers\TemplateSertifikatController;
->>>>>>> Stashed changes
-=======
-use App\Http\Controllers\SeleksiWawancaraController;
->>>>>>> e825d59a6af5f54447d7ffb5349f3ca6d25b161b
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-=======
-=======
->>>>>>> e825d59a6af5f54447d7ffb5349f3ca6d25b161b
 // Route::get('/dashboard', function () {
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
@@ -57,13 +39,8 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 Route::get('/', function () {
     // Ambil data InfoOr terbaru yang memiliki gambar
     $latestPoster = InfoOr::whereNotNull('gambar')
-<<<<<<< HEAD
         ->orderBy('created_at', 'desc')
         ->first();
-=======
-                          ->orderBy('created_at', 'desc')
-                          ->first();
->>>>>>> e825d59a6af5f54447d7ffb5349f3ca6d25b161b
 
     // Tentukan path gambar. Gunakan gambar default jika tidak ada di database
     $posterPath = $latestPoster ? $latestPoster->gambar : 'images/poster_default.jpg';
@@ -71,10 +48,6 @@ Route::get('/', function () {
     // Kirim path gambar ke view 'login' atau 'welcome'
     return view('welcome', compact('posterPath'));
 });
-<<<<<<< HEAD
->>>>>>> Stashed changes
-=======
->>>>>>> e825d59a6af5f54447d7ffb5349f3ca6d25b161b
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -85,11 +58,6 @@ Route::middleware('auth')->group(function () {
     Route::resource('hasilwawancara', HasilWawancaraController::class);
 
     Route::resource('/jadwal-seleksi', JadwalSeleksiController::class);
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> e825d59a6af5f54447d7ffb5349f3ca6d25b161b
 
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
@@ -101,15 +69,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/jadwal-seleksi/{id}', [JadwalSeleksiController::class, 'show'])->name('jadwal-seleksi.show');
     Route::resource('penilaian-wawancara', PenilaianWawancaraController::class);
     Route::get('penilaian-wawancara/{id}', [PenilaianWawancaraController::class, 'show'])->name('penilaian-wawancara.show');
-<<<<<<< HEAD
 
     Route::get('/upload-template', [TemplateSertifikatController::class, 'index'])->name('template.upload');
     Route::post('/upload-template', [TemplateSertifikatController::class, 'store'])->name('template.store');
     Route::get('/pengumuman-kelulusan', [PengumumanMagangController::class, 'index'])->name('pengumuman.kelulusan');
     Route::post('/pengumuman/{evaluasi_id}/store', [PengumumanMagangController::class, 'store'])->name('pengumuman.store');
->>>>>>> Stashed changes
-=======
->>>>>>> e825d59a6af5f54447d7ffb5349f3ca6d25b161b
 });
 
 // Route::get('/auth', function () {
@@ -133,26 +97,6 @@ Route::put('/kelola-info-or/{id}/tutup', [InfoOrController::class, 'updateStatus
 
 // Routes untuk Jadwal Kegiatan Management
 Route::middleware(['auth'])->group(function () {
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-    
-    // Halaman utama jadwal kegiatan
-    Route::get('/jadwal-kegiatan', [JadwalKegiatanController::class, 'index'])->name('jadwal-kegiatan.index');
-    
-    // API routes untuk AJAX
-    Route::prefix('jadwal-kegiatan')->name('jadwal-kegiatan.')->group(function () {
-        
-        // Get kegiatan by periode (untuk load tabel)
-        
-        // CRUD operations
-        Route::post('/', [JadwalKegiatanController::class, 'store'])->name('store');
-        Route::get('/{id}', [JadwalKegiatanController::class, 'show'])->name('show');
-        Route::put('/{id}', [JadwalKegiatanController::class, 'update'])->name('update');
-        Route::delete('/{id}', [JadwalKegiatanController::class, 'destroy'])->name('destroy');
-        
-    });
-    
-=======
 
     // ✅ Halaman utama jadwal kegiatan (semua role bisa akses)
     Route::get('/jadwal-kegiatan', [JadwalKegiatanController::class, 'index'])
@@ -170,25 +114,6 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/jadwal-kegiatan/{id}', [JadwalKegiatanController::class, 'destroy'])
         ->name('jadwal-kegiatan.destroy');
 
-=======
-
-    // ✅ Halaman utama jadwal kegiatan (semua role bisa akses)
-    Route::get('/jadwal-kegiatan', [JadwalKegiatanController::class, 'index'])
-        ->name('jadwal-kegiatan.index');
-
-    // ✅ API untuk get kegiatan berdasarkan periode (semua role bisa akses)
-    Route::get('/jadwal-kegiatan/api/by-periode', [JadwalKegiatanController::class, 'getByPeriode'])
-        ->name('jadwal-kegiatan.by-periode');
-
-    // ✅ CRUD operations (validasi role dilakukan di controller)
-    Route::post('/jadwal-kegiatan', [JadwalKegiatanController::class, 'store'])
-        ->name('jadwal-kegiatan.store');
-    Route::put('/jadwal-kegiatan/{id}', [JadwalKegiatanController::class, 'update'])
-        ->name('jadwal-kegiatan.update');
-    Route::delete('/jadwal-kegiatan/{id}', [JadwalKegiatanController::class, 'destroy'])
-        ->name('jadwal-kegiatan.destroy');
-    
->>>>>>> e825d59a6af5f54447d7ffb5349f3ca6d25b161b
     // ✅ Detail kegiatan di akhir agar tidak conflict dengan route lain
     Route::get('/jadwal-kegiatan/{id}', [JadwalKegiatanController::class, 'show'])
         ->name('jadwal-kegiatan.show')
@@ -204,14 +129,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pendaftar/{id}', [PendaftarController::class, 'show'])->name('pendaftar.show');
     Route::put('/pendaftar/{id}/status', [PendaftarController::class, 'updateStatus'])->name('pendaftar.update-status');
     Route::post('/pendaftar/{id}/dinas', [PendaftarController::class, 'setDinasDiterima'])->name('pendaftar.set-dinas');
-<<<<<<< HEAD
     Route::get('/pendaftar/{id}/view-cv', [PendaftarController::class, 'viewCV'])->name('pendaftar.view-cv');
     Route::get('/pendaftar/{id}/view-transkrip', [PendaftarController::class, 'viewTranskrip'])->name('pendaftar.view-transkrip');
->>>>>>> Stashed changes
-=======
-    Route::get('/pendaftar/{id}/download-cv', [PendaftarController::class, 'downloadCV'])->name('pendaftar.download-cv');
-    Route::get('/pendaftar/{id}/download-transkrip', [PendaftarController::class, 'downloadTranskrip'])->name('pendaftar.download-transkrip');
->>>>>>> e825d59a6af5f54447d7ffb5349f3ca6d25b161b
 });
 
 require __DIR__ . '/auth.php';
