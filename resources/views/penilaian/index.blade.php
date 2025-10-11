@@ -9,19 +9,16 @@
         <h1 class="text-3xl font-bold text-gray-800">Kelola Penilaian Mahasiswa Magang</h1>
 
         <div class="flex space-x-3">
-            <!-- Tombol Buat Penilaian -->
             <button id="create-button"
                 class="py-2 px-4 rounded-md bg-navy text-white font-semibold hover:bg-baby-blue transition-colors duration-300">
                 Buat Penilaian
             </button>
 
-            <!-- Tombol Buat Pengumuman Kelulusan -->
             <a href="{{ route('pengumuman.kelulusan') }}"
                 class="py-2 px-4 rounded-md bg-navy text-white font-semibold hover:bg-baby-blue transition-colors duration-300">
                 Buat Pengumuman Kelulusan
             </a>
 
-            <!-- Tombol Upload Template Sertifikat -->
             <a href="{{ route('template.upload') }}"
                 class="py-2 px-4 rounded-md bg-navy text-white font-semibold hover:bg-baby-blue transition-colors duration-300">
                 Upload Template Sertifikat
@@ -67,7 +64,7 @@
                     <td>{{ intval($item->nilai_inisiatif) }}</td>
                     <td>{{ intval($item->nilai_kerjasama) }}</td>
                     <td>{{ intval($item->nilai_hasil_kerja) }}</td>
-                    <td>{{ $item->nilai_total }}</td>
+                    <td>{{ number_format($item->nilai_total,2) }}</td>
                     <td>{{ $item->nilai_total >= 70 ? 'Lulus' : 'Tidak Lulus' }}</td>
                     <td class="flex space-x-2">
                         {{-- Edit --}}
@@ -139,8 +136,9 @@
     {{-- Form Edit --}}
     <div id="edit-form" class="hidden p-6 border rounded-lg border-gray-200 max-w-lg mx-auto mt-6">
         <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">Form Edit Penilaian</h2>
-        <form id="form-edit" action="{{ route('penilaian.store') }}" method="POST">
+        <form id="form-edit" method="POST">
             @csrf
+            @method('PUT')
             <input type="hidden" name="penilaian_id" id="penilaian_id_edit">
             <div>
                 <label>Nama Peserta</label>
@@ -171,7 +169,6 @@
         </form>
     </div>
 </div>
-
 @endsection
 
 @section('scripts')
@@ -180,10 +177,9 @@
 const inputsCreate = ['nilai_kedisiplinan_create','nilai_inisiatif_create','nilai_kerjasama_create','nilai_hasil_kerja_create']
     .map(id => document.getElementById(id));
 const totalCreate = document.getElementById('total_nilai_create');
-
 function hitungTotalCreate() {
     let sum = 0;
-    inputsCreate.forEach(i => sum += parseInt(i.value) || 0);
+    inputsCreate.forEach(i => sum += Number(i.value) || 0);
     totalCreate.value = (sum / inputsCreate.length).toFixed(2);
 }
 inputsCreate.forEach(inp => inp.addEventListener('input', hitungTotalCreate));
@@ -191,13 +187,51 @@ inputsCreate.forEach(inp => inp.addEventListener('input', hitungTotalCreate));
 const inputsEdit = ['nilai_kedisiplinan_edit','nilai_inisiatif_edit','nilai_kerjasama_edit','nilai_hasil_kerja_edit']
     .map(id => document.getElementById(id));
 const totalEdit = document.getElementById('total_nilai_edit');
-
 function hitungTotalEdit() {
     let sum = 0;
-    inputsEdit.forEach(i => sum += parseInt(i.value) || 0);
+    inputsEdit.forEach(i => sum += Number(i.value) || 0);
     totalEdit.value = (sum / inputsEdit.length).toFixed(2);
 }
 inputsEdit.forEach(inp => inp.addEventListener('input', hitungTotalEdit));
+
+// ==== Tombol Create & Cancel ====
+const createForm = document.getElementById('create-form');
+const editForm = document.getElementById('edit-form');
+const tableState = document.getElementById('table-state');
+document.getElementById('create-button').addEventListener('click', () => {
+    createForm.classList.remove('hidden');
+    tableState.classList.add('hidden');
+});
+document.getElementById('empty-create-button').addEventListener('click', () => {
+    createForm.classList.remove('hidden');
+    document.getElementById('empty-state').classList.add('hidden');
+});
+document.getElementById('cancel-create').addEventListener('click', () => {
+    createForm.classList.add('hidden');
+    tableState.classList.remove('hidden');
+});
+document.getElementById('cancel-edit').addEventListener('click', () => {
+    editForm.classList.add('hidden');
+    tableState.classList.remove('hidden');
+});
+
+// ==== Edit Button ====
+document.querySelectorAll('.edit-button').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        const url = '{{ url("penilaian") }}/' + id;
+        document.getElementById('form-edit').action = url;
+        document.getElementById('penilaian_id_edit').value = id;
+        document.getElementById('pendaftaran_edit').value = btn.dataset.pendaftaran;
+        document.getElementById('nilai_kedisiplinan_edit').value = btn.dataset.kedisiplinan;
+        document.getElementById('nilai_inisiatif_edit').value = btn.dataset.inisiatif;
+        document.getElementById('nilai_kerjasama_edit').value = btn.dataset.kerjasama;
+        document.getElementById('nilai_hasil_kerja_edit').value = btn.dataset.hasil_kerja;
+        hitungTotalEdit();
+        editForm.classList.remove('hidden');
+        tableState.classList.add('hidden');
+    });
+});
 
 // ==== SweetAlert Delete ====
 document.querySelectorAll('.delete-button').forEach(button => {
