@@ -294,6 +294,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    if (userRole === 'admin' && selectedPeriode) {
+        loadJadwalKegiatan(selectedPeriode);
+    }
+
     // Untuk mahasiswa, langsung load data berdasarkan periode yang sudah ditentukan
     if (userRole === 'mahasiswa' && selectedPeriode) {
         loadJadwalKegiatan(selectedPeriode);

@@ -8,7 +8,7 @@
         <h1 id="page-title" class="text-3xl font-bold text-gray-800">Kelola Jadwal Wawancara</h1>
         <a href="{{ route('jadwal-seleksi.create') }}"
             class="py-2 px-4 rounded-md bg-navy text-white font-semibold hover:bg-baby-blue transition-colors duration-300">
-            + Tambah Jadwal
+            Tambah Jadwal
         </a>
     </div>
 
@@ -40,29 +40,32 @@
                     <tr>
                         <th class="py-3 px-4 text-left text-gray-600 font-semibold">No</th>
                         <th class="py-3 px-4 text-left text-gray-600 font-semibold">Nama OR</th>
+                        <th class="py-3 px-4 text-left text-gray-600 font-semibold">Nama Peserta</th>
                         <th class="py-3 px-4 text-left text-gray-600 font-semibold">Tanggal Wawancara</th>
                         <th class="py-3 px-4 text-left text-gray-600 font-semibold">Waktu Wawancara</th>
                         <th class="py-3 px-4 text-left text-gray-600 font-semibold">Tempat</th>
                         <th class="py-3 px-4 text-left text-gray-600 font-semibold">Pewawancara</th>
-                        <th class="py-3 px-4 text-left text-gray-600 font-semibold text-center">Jumlah Peserta</th>
                         <th class="py-3 px-4 text-left text-gray-600 font-semibold">Aksi</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     @foreach ($jadwals as $jadwal)
                     <tr class="border-t">
                         <td class="py-3 px-4">{{ $loop->iteration }}</td>
                         <td class="py-3 px-4">{{ $jadwal->infoOr->judul ?? '-' }}</td>
-                        <td class="py-3 px-4">{{ \Carbon\Carbon::parse($jadwal->tanggal_seleksi)->format('d M Y') }}</td>
+                        <td class="py-3 px-4">
+                            {{ $jadwal->pendaftaran->user->nama_lengkap ?? '-' }}
+                        </td>
+                        <td class="py-3 px-4">{{ \Carbon\Carbon::parse($jadwal->tanggal_seleksi)->format('d M Y') }}
+                        </td>
                         <td class="px-6 py-3 text-sm text-center font-mono">
                             {{ \Carbon\Carbon::parse($jadwal->waktu_mulai)->format('H:i') }} -
                             {{ \Carbon\Carbon::parse($jadwal->waktu_selesai)->format('H:i') }} WIB
                         </td>
                         <td class="py-3 px-4">{{ $jadwal->tempat ?? '-' }}</td>
                         <td class="py-3 px-4">{{ $jadwal->pewawancara ?? '-' }}</td>
-                        <td class="py-3 px-4 text-center">
-                            {{ $jadwal->pendaftarans ? $jadwal->pendaftarans->count() : 0 }} Peserta
-                        </td>
+
                         <td class="py-3 px-4 flex gap-2">
                             {{-- Tombol Detail --}}
                             <a href="{{ route('jadwal-seleksi.show', $jadwal->id) }}"
@@ -140,7 +143,8 @@ document.querySelectorAll('.delete-button').forEach(button => {
 Swal.fire({
     icon: 'success',
     title: 'Berhasil!',
-    text: '{{ session('success') }}',
+    text: '{{ session('
+    success ') }}',
     showConfirmButton: false,
     timer: 1500
 });

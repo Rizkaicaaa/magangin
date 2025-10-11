@@ -8,16 +8,35 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('evaluasi_magang', function (Blueprint $table) {
-            // Ubah kolom jadi nullable langsung
-            $table->integer('template_sertifikat_id')->nullable()->change();
+            // 1️⃣ Hapus foreign key lama dulu
+            $table->dropForeign(['template_sertifikat_id']);
+        });
+
+        Schema::table('evaluasi_magang', function (Blueprint $table) {
+            // 2️⃣ Ubah kolom jadi nullable dan pastikan tipe-nya UNSIGNED INTEGER
+            $table->unsignedInteger('template_sertifikat_id')->nullable()->change();
+
+            // 3️⃣ Tambahkan kembali foreign key
+            $table->foreign('template_sertifikat_id')
+                ->references('id')
+                ->on('template_sertifikat')
+                ->onDelete('set null');
         });
     }
 
     public function down(): void
     {
         Schema::table('evaluasi_magang', function (Blueprint $table) {
-            // Kembalikan kolom jadi NOT NULL
-            $table->integer('template_sertifikat_id')->nullable(false)->change();
+            $table->dropForeign(['template_sertifikat_id']);
+        });
+
+        Schema::table('evaluasi_magang', function (Blueprint $table) {
+            $table->unsignedInteger('template_sertifikat_id')->nullable(false)->change();
+
+            $table->foreign('template_sertifikat_id')
+                ->references('id')
+                ->on('template_sertifikat')
+                ->onDelete('cascade');
         });
     }
 };
