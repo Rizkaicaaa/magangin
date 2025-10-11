@@ -77,7 +77,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/penilaian/store', [EvaluasiMagangController::class, 'storeOrUpdate'])->name('penilaian.store'); 
     Route::put('penilaian/{id}', [EvaluasiMagangController::class, 'storeOrUpdate']);
     Route::get('/penilaian', [EvaluasiMagangController::class, 'index'])->name('penilaian.index');
-    Route::delete('/{id}', [EvaluasiMagangController::class, 'destroy'])->name('penilaian.destroy');M
+    Route::delete('/{id}', [EvaluasiMagangController::class, 'destroy'])->name('penilaian.destroy');
 });
 
 // Route::get('/auth', function () {
