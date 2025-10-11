@@ -32,7 +32,9 @@ class Pendaftaran extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+
+        return $this->belongsTo(User::class, 'user_id');
+
     }
 
     public function infoOr()
@@ -69,4 +71,10 @@ class Pendaftaran extends Model
     {
         return $this->hasOne(EvaluasiMagang::class, 'pendaftaran_id');
     }
+
+    public function jadwals()
+    {
+        return $this->belongsToMany(JadwalSeleksi::class, 'jadwal_pendaftaran', 'pendaftaran_id', 'jadwal_id');
+    }
+
 }

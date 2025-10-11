@@ -6,10 +6,8 @@ use App\Http\Controllers\InfoOrController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HasilWawancaraController;
 use App\Http\Controllers\JadwalSeleksiController;
-
 use App\Http\Controllers\UserController;
 use App\Models\InfoOr;
-
 use App\Http\Controllers\PenilaianWawancaraController;
 use App\Http\Controllers\PendaftarController;
 use App\Http\Controllers\DashboardController;
@@ -17,25 +15,17 @@ use App\Http\Controllers\KelulusanWawancaraController;
 use App\Http\Controllers\PengumumanMagangController;
 use App\Http\Controllers\SeleksiWawancaraController;
 use App\Http\Controllers\TemplateSertifikatController;
+use App\Http\Controllers\EvaluasiMagangController;
+use App\Http\Controllers\KelulusanMagangController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
-//Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('auth')->name('dashboard');
-
-
-
-// Route::get('/dashboard', [DashboardController::class, 'index'])
-//     ->middleware(['auth', 'verified'])
-//     ->name('dashboard');
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
+
 Route::get('/', function () {
     // Ambil data InfoOr terbaru yang memiliki gambar
     $latestPoster = InfoOr::whereNotNull('gambar')
@@ -52,9 +42,13 @@ Route::get('/', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/kelola-info-or', [InfoOrController::class, 'index'])->name('info-or.index');
+    // Halaman ubah password
+    Route::get('/profile/password', [ProfileController::class, 'editPassword'])->name('profile.password.edit');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
+
+    
+    // Route::get('/kelola-info-or', [InfoOrController::class, 'index'])->name('info-or.index');
     Route::resource('hasilwawancara', HasilWawancaraController::class);
 
     Route::resource('/jadwal-seleksi', JadwalSeleksiController::class);
@@ -74,15 +68,24 @@ Route::middleware('auth')->group(function () {
     Route::post('/upload-template', [TemplateSertifikatController::class, 'store'])->name('template.store');
     Route::get('/pengumuman-kelulusan', [PengumumanMagangController::class, 'index'])->name('pengumuman.kelulusan');
     Route::post('/pengumuman/{evaluasi_id}/store', [PengumumanMagangController::class, 'store'])->name('pengumuman.store');
+
+    // Route::resource('penilaian', EvaluasiMagangController::class); 
+    // Route::put('/penilaian/{id}', [EvaluasiMagangController::class, 'update'])->name('penilaian.update'); 
+    Route::post('/penilaian/store', [EvaluasiMagangController::class, 'storeOrUpdate'])->name('penilaian.store'); 
+    Route::put('penilaian/{id}', [EvaluasiMagangController::class, 'storeOrUpdate']);
 });
 
 // Route::get('/auth', function () {
 //     return view('auth');
 // });
 
-Route::get('/penilaian', function () {
-    return view('penilaian.index');
-});
+// Route::get('/penilaian', function () {
+//    return view('penilaian.index');
+//});
+//Route::get('/penilaian', function () {
+//   return view('penilaian.index');
+//})->name('penilaian.index');
+
 
 // Route::get('/pendaftar', function () {
 //     return view('pendaftar.index');
@@ -133,4 +136,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pendaftar/{id}/view-transkrip', [PendaftarController::class, 'viewTranskrip'])->name('pendaftar.view-transkrip');
 });
 
-require __DIR__ . '/auth.php';
+Route::get('/kelulusan-magang', [KelulusanMagangController::class, 'index'])
+    ->name('kelulusan-magang.index')
+    ->middleware('auth');
+require __DIR__.'/auth.php';

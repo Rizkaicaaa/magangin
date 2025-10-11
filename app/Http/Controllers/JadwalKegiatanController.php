@@ -15,39 +15,41 @@ class JadwalKegiatanController extends Controller
     /**
      * Halaman utama jadwal kegiatan
      */
-    public function index()
-    {
-        try {
-            $user = Auth::user();
-            $userRole = $user->role;
+public function index()
+{
+    try {
+        $user = Auth::user();
+        $userRole = $user->role;
+        
+        // Ambil semua periode untuk ditampilkan di select
+        $periodes = InfoOr::select('id', 'periode', 'status', 'tanggal_buka', 'tanggal_tutup')
+            ->orderBy('id', 'desc') // Urutkan berdasarkan ID terbaru
+            ->get();
+        
+        // Inisialisasi selectedPeriode
+        $selectedPeriode = null;
+        
+        // Untuk mahasiswa, ambil periode berdasarkan pendaftaran mereka
+        if ($userRole === 'mahasiswa') {
+            // Ambil info_or_id dari tabel pendaftaran mahasiswa
+            $pendaftaran = \App\Models\Pendaftaran::where('user_id', $user->id)
+                ->latest()
+                ->first();
             
-            // Ambil semua periode untuk ditampilkan di select
-            $periodes = InfoOr::select('id', 'periode', 'status', 'tanggal_buka', 'tanggal_tutup')
-                ->orderBy('tanggal_buka', 'desc')
-                ->get();
-            
-            // Inisialisasi selectedPeriode
-            $selectedPeriode = null;
-            
-            // Untuk mahasiswa, ambil periode berdasarkan info_or_id mereka
-            if ($userRole === 'mahasiswa') {
-                // Asumsikan user memiliki relasi infoOr atau field info_or_id
-                $selectedPeriode = $user->info_or_id ?? null;
-                
-                // Jika tidak ada, ambil periode yang statusnya 'buka'
-                if (!$selectedPeriode) {
-                    $periodeBuka = $periodes->where('status', 'buka')->first();
-                    $selectedPeriode = $periodeBuka ? $periodeBuka->id : null;
-                }
-            }
-            
-            return view('kegiatan.index', compact('periodes', 'userRole', 'selectedPeriode'));
-        } catch (Exception $e) {
-            Log::error('Error loading jadwal kegiatan page: ' . $e->getMessage());
-            
-            return back()->with('error', 'Gagal memuat halaman jadwal kegiatan');
+            $selectedPeriode = $pendaftaran->info_or_id;
+        } else {
+            // Untuk admin/superadmin, set default ke periode terbaru
+            $periodeTerbaru = $periodes->first(); // ID terbesar = data terbaru
+            $selectedPeriode = $periodeTerbaru ? $periodeTerbaru->id : null;
         }
+        
+        return view('kegiatan.index', compact('periodes', 'userRole', 'selectedPeriode'));
+    } catch (Exception $e) {
+        Log::error('Error loading jadwal kegiatan page: ' . $e->getMessage());
+        
+        return back()->with('error', 'Gagal memuat halaman jadwal kegiatan');
     }
+}
 
     /**
      * Ambil daftar kegiatan berdasarkan periode

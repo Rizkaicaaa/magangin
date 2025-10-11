@@ -36,7 +36,7 @@ class EvaluasiMagang extends Model
     // Relationships
     public function pendaftaran()
     {
-        return $this->belongsTo(Pendaftaran::class);
+        return $this->belongsTo(Pendaftaran::class, 'pendaftaran_id');
     }
 
     public function penilai()

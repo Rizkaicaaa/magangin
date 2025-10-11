@@ -128,104 +128,129 @@
 
             <div class="info-list">
                 @if($infoOr)
-                    <div class="relative max-w-lg" x-data="{ open: false }">
-                        <img src="{{ asset( $infoOr->gambar ) }}" 
-                            alt="Poster MagangIn" 
-                            class="w-full h-auto rounded-3xl poster-shadow floating-animation"/>
+                <div class="relative max-w-lg" x-data="{ open: false }">
+                    <img src="{{ asset( $infoOr->gambar ) }}" alt="Poster MagangIn"
+                        class="w-full h-auto rounded-3xl poster-shadow floating-animation" />
 
-                        <button 
-                            @click="open = true" 
-                            class="absolute top-4 right-4 bg-white text-gray-800 rounded-full p-2 shadow-lg hover:bg-gray-100 transition duration-150"
-                            title="Detail Informasi">
-                            
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
-                            </svg>
-                            
-                        </button>
+                    <button @click="open = true"
+                        class="absolute top-4 right-4 bg-white text-gray-800 rounded-full p-2 shadow-lg hover:bg-gray-100 transition duration-150"
+                        title="Detail Informasi">
 
-                        <div x-show="open" 
-                            class="fixed inset-0 z-50 flex justify-center items-center" 
-                            style="display: none;"> 
-                            
-                            <div x-show="open" 
-                                x-transition:enter="ease-out duration-300" 
-                                x-transition:enter-start="opacity-0" 
-                                x-transition:enter-end="opacity-100" 
-                                x-transition:leave="ease-in duration-200" 
-                                x-transition:leave-start="opacity-100" 
-                                x-transition:leave-end="opacity-0" 
-                                @click="open = false" 
-                                class="absolute inset-0 bg-black bg-opacity-50">
-                            </div>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                        </svg>
 
-                            <div x-show="open" 
-                                x-transition:enter="ease-out duration-300" 
-                                x-transition:enter-start="opacity-0 scale-90" 
-                                x-transition:enter-end="opacity-100 scale-100" 
-                                x-transition:leave="ease-in duration-200" 
-                                x-transition:leave-start="opacity-100 scale-100" 
-                                x-transition:leave-end="opacity-0 scale-90" 
-                                class="relative bg-white rounded-lg p-6 w-full mx-4 md:w-1/2 lg:w-2/5 shadow-xl z-50">
-                                
-                                <button @click="open = false" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                </button>
-                                
-                                <h4 class="font-bold text-xl mb-4 text-gray-800 border-b pb-2">Detail {{ $infoOr->judul }}</h4>
-                                
-                                <div class="space-y-4">
-                                    
-                                    <div class="flex items-start">
-                                        <svg class="w-5 h-5 mr-3 mt-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                        <div>
-                                            <p class="text-sm font-semibold text-gray-700">Periode:</p>
-                                            <p class="text-base text-gray-800">{{ $infoOr->periode }}</p>
-                                        </div>
+                    </button>
+
+                    <div x-show="open" class="fixed inset-0 z-50 flex justify-center items-center"
+                        style="display: none;">
+
+                        <div x-show="open" x-transition:enter="ease-out duration-300"
+                            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                            x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100"
+                            x-transition:leave-end="opacity-0" @click="open = false"
+                            class="absolute inset-0 bg-black bg-opacity-50">
+                        </div>
+
+                        <div x-show="open" x-transition:enter="ease-out duration-300"
+                            x-transition:enter-start="opacity-0 scale-90" x-transition:enter-end="opacity-100 scale-100"
+                            x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 scale-100"
+                            x-transition:leave-end="opacity-0 scale-90"
+                            class="relative bg-white rounded-lg p-6 w-full mx-4 md:w-1/2 lg:w-2/5 shadow-xl z-50">
+
+                            <button @click="open = false"
+                                class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+
+                            <h4 class="font-bold text-xl mb-4 text-gray-800 border-b pb-2">Detail {{ $infoOr->judul }}
+                            </h4>
+
+                            <div class="space-y-4">
+
+                                <div class="flex items-start">
+                                    <svg class="w-5 h-5 mr-3 mt-1 text-gray-500" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                        </path>
+                                    </svg>
+                                    <div>
+                                        <p class="text-sm font-semibold text-gray-700">Periode:</p>
+                                        <p class="text-base text-gray-800">{{ $infoOr->periode }}</p>
                                     </div>
-                                    
-                                    <div class="flex items-start">
-                                        <svg class="w-5 h-5 mr-3 mt-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                        <div>
-                                            <p class="text-sm font-semibold text-gray-700">Deskripsi:</p>
-                                            <p class="text-sm text-gray-800 mt-1">{{ ucwords(strtolower($infoOr->deskripsi)) }}</p> 
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="flex items-start">
-                                        <svg class="w-5 h-5 mr-3 mt-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                        <div>
-                                            <p class="text-sm font-semibold text-gray-700">Persyaratan Umum:</p>
-                                            <p class="text-sm text-gray-800 mt-1">{{ ucfirst(strtolower($infoOr->persyaratan_umum)) }}</p> 
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="flex items-start">
-                                        <svg class="w-5 h-5 mr-3 mt-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                        <div>
-                                            <p class="text-sm font-semibold text-gray-700">Tanggal Pendaftaran:</p>
-                                            <p class="text-sm text-gray-800 mt-1">
-                                                {{ \Carbon\Carbon::parse($infoOr->tanggal_buka)->translatedFormat('j F Y') }}
-                                                –
-                                                {{ \Carbon\Carbon::parse($infoOr->tanggal_tutup)->translatedFormat('j F Y') }}
-                                            </p> 
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="flex items-start">
-                                        <svg class="w-5 h-5 mr-3 mt-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.883 7.974 7.974 0 013.141-.617 7.975 7.975 0 013.141.617 3.42 3.42 0 001.946.883 4.238 4.238 0 013.743 4.086 4.239 4.239 0 01-.284 2.474 9.596 9.596 0 00-.734 3.176 9.596 9.596 0 00.734 3.176 4.238 4.238 0 01.284 2.474 3.42 3.42 0 00-1.946.883 7.974 7.974 0 01-3.141.617 7.975 7.975 0 01-3.141-.617 3.42 3.42 0 00-1.946-.883 4.238 4.238 0 01-3.743-4.086 4.239 4.239 0 01.284-2.474 9.596 9.596 0 00.734-3.176 9.596 9.596 0 00-.734-3.176 4.238 4.238 0 01-.284-2.474z"></path></svg>
-                                        <div>
-                                            <p class="text-sm font-semibold text-gray-700">Status:</p>
-                                            <p class="text-sm text-gray-800 mt-1">{{ ucfirst(strtolower($infoOr->status)) }}</p> 
-                                        </div>
-                                    </div>
-                                    
                                 </div>
+
+                                <div class="flex items-start">
+                                    <svg class="w-5 h-5 mr-3 mt-1 text-gray-500" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                        </path>
+                                    </svg>
+                                    <div>
+                                        <p class="text-sm font-semibold text-gray-700">Deskripsi:</p>
+                                        <p class="text-sm text-gray-800 mt-1">
+                                            {{ ucwords(strtolower($infoOr->deskripsi)) }}</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start">
+                                    <svg class="w-5 h-5 mr-3 mt-1 text-gray-500" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z">
+                                        </path>
+                                    </svg>
+                                    <div>
+                                        <p class="text-sm font-semibold text-gray-700">Persyaratan Umum:</p>
+                                        <p class="text-sm text-gray-800 mt-1">
+                                            {{ ucfirst(strtolower($infoOr->persyaratan_umum)) }}</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start">
+                                    <svg class="w-5 h-5 mr-3 mt-1 text-gray-500" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <div>
+                                        <p class="text-sm font-semibold text-gray-700">Tanggal Pendaftaran:</p>
+                                        <p class="text-sm text-gray-800 mt-1">
+                                            {{ \Carbon\Carbon::parse($infoOr->tanggal_buka)->translatedFormat('j F Y') }}
+                                            –
+                                            {{ \Carbon\Carbon::parse($infoOr->tanggal_tutup)->translatedFormat('j F Y') }}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start">
+                                    <svg class="w-5 h-5 mr-3 mt-1 text-gray-500" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.883 7.974 7.974 0 013.141-.617 7.975 7.975 0 013.141.617 3.42 3.42 0 001.946.883 4.238 4.238 0 013.743 4.086 4.239 4.239 0 01-.284 2.474 9.596 9.596 0 00-.734 3.176 9.596 9.596 0 00.734 3.176 4.238 4.238 0 01.284 2.474 3.42 3.42 0 00-1.946.883 7.974 7.974 0 01-3.141.617 7.975 7.975 0 01-3.141-.617 3.42 3.42 0 00-1.946-.883 4.238 4.238 0 01-3.743-4.086 4.239 4.239 0 01.284-2.474 9.596 9.596 0 00.734-3.176 9.596 9.596 0 00-.734-3.176 4.238 4.238 0 01-.284-2.474z">
+                                        </path>
+                                    </svg>
+                                    <div>
+                                        <p class="text-sm font-semibold text-gray-700">Status:</p>
+                                        <p class="text-sm text-gray-800 mt-1">{{ ucfirst(strtolower($infoOr->status)) }}
+                                        </p>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </div>
+                </div>
                 @else
-                    <p class="text-gray-500 text-sm">Belum ada informasi terbaru.</p>
+                <p class="text-gray-500 text-sm">Maaf, belum ada informasi OR Magang BEM FTI.</p>
                 @endif
             </div>
         </div>
@@ -254,22 +279,20 @@
                         class="flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-300 bg-white text-navy shadow">
                         Login
                     </button>
-                    <button id="registerTab"
-                {{-- Atribut 'disabled' ditambahkan jika status BUKAN 'buka' --}}
-                @if (strtolower($infoOr->status) != 'buka') disabled @endif
-                
-                class="flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-300 
-                    {{-- Styling tombol diubah berdasarkan status disabled --}}
-                    @if (strtolower($infoOr->status) == 'buka')
-                        text-gray-500 hover:text-navy hover:bg-white
-                    @else
-                        text-gray-400 bg-gray-200 cursor-not-allowed
-                    @endif
-                ">
-                Register
-            </button>
-                </div>
+                    <button id="registerTab" @if (!isset($infoOr) || strtolower($infoOr->status) == 'tutup') disabled
+                        @endif
 
+                        class="flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-300
+                        {{-- Styling tombol diubah berdasarkan status --}}
+                        @if (isset($infoOr) && strtolower($infoOr->status) == 'buka')
+                        text-gray-500 hover:text-navy hover:bg-white
+                        @else
+                        text-gray-400 bg-gray-200 cursor-not-allowed
+                        @endif
+                        ">
+                        Register
+                    </button>
+                </div>
 
                 <!-- Forms Container -->
                 <div class="form-container">
@@ -295,7 +318,15 @@
                                         class="w-full px-4 py-3 rounded-xl border-gray-300 focus:border-baby-blue focus:ring focus:ring-baby-blue focus:ring-opacity-50 transition-all duration-300 input-focus pr-12" />
                                     <button type="button"
                                         class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 toggle-password">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <!-- Mata tertutup (default) -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 closed-eye" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+                                        </svg>
+                                        <!-- Mata terbuka (ketika password terlihat) -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 open-eye hidden"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -308,11 +339,7 @@
                         </div>
 
                         <div class="flex items-center justify-between text-sm">
-                            <label for="remember_me" class="flex items-center">
-                                <input id="remember_me" type="checkbox"
-                                    class="rounded border-gray-300 text-baby-blue focus:ring-baby-blue" name="remember">
-                                <span class="ml-2 text-gray-600">{{ __('Remember me') }}</span>
-                            </label>
+
                             @if (Route::has('password.request'))
                             <a href="{{ route('password.request') }}"
                                 class="text-baby-blue hover:text-navy transition-colors duration-300">
@@ -386,7 +413,15 @@
                                             required minlength="8" title="Password minimal 8 karakter.">
                                         <button type="button"
                                             class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 toggle-password">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <!-- Mata tertutup (default) -->
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 closed-eye"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+                                            </svg>
+                                            <!-- Mata terbuka (ketika password terlihat) -->
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 open-eye hidden"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -406,7 +441,15 @@
                                             required minlength="8" title="Konfirmasi password minimal 8 karakter.">
                                         <button type="button"
                                             class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 toggle-password">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <!-- Mata tertutup (default) -->
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 closed-eye"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+                                            </svg>
+                                            <!-- Mata terbuka (ketika password terlihat) -->
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 open-eye hidden"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -518,7 +561,7 @@
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("✅ Script login/register sudah dimuat.");
+    console.log(" Script login/register sudah dimuat.");
 
     // ======== ELEMENTS =========
     const loginTab = document.getElementById('loginTab');
@@ -738,24 +781,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ======== TOGGLE PASSWORD =========
     document.addEventListener('click', (e) => {
-        if (e.target.closest('.toggle-password')) {
-            const button = e.target.closest('.toggle-password');
-            const input = button.parentElement.querySelector('input');
-            const isPassword = input.type === 'password';
-            input.type = isPassword ? 'text' : 'password';
+        const btn = e.target.closest('.toggle-password');
+        if (!btn) return;
 
-            const icon = button.querySelector('svg');
-            if (isPassword) {
-                icon.innerHTML =
-                    '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"/>';
-            } else {
-                icon.innerHTML =
-                    '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>';
-            }
-            console.log("👁️ Toggle password", input.id);
+        const input = btn.parentElement.querySelector('input');
+        const closedEye = btn.querySelector('.closed-eye');
+        const openEye = btn.querySelector('.open-eye');
+
+        // Toggle type password/text
+        const isPassword = input.type === 'password';
+        input.type = isPassword ? 'text' : 'password';
+
+        // Toggle ikon sesuai best practice
+        if (isPassword) {
+            // Password sekarang terlihat → tampilkan mata terbuka
+            openEye.classList.remove('hidden');
+            closedEye.classList.add('hidden');
+        } else {
+            // Password sekarang disamarkan → tampilkan mata tertutup
+            openEye.classList.add('hidden');
+            closedEye.classList.remove('hidden');
         }
     });
-
 
     // ======== PILIHAN DINAS =========
     if (pilihanDinas1) {

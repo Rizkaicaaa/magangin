@@ -8,7 +8,7 @@
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
 
         @if($userRole === 'mahasiswa')
-        <h1 class="text-3xl font-bold text-gray-800">Jadwal Kegiatan Magang</h1>
+        <h1 class="text-3xl font-bold text-gray-800"> 🗓️ Jadwal Kegiatan Magang</h1>
         @elseif($userRole === 'admin')
         <h1 class="text-3xl font-bold text-gray-800">Jadwal Kegiatan Magang</h1>
         @else
@@ -16,8 +16,8 @@
         @endif
 
         <div class="flex items-center gap-4">
-            {{-- Select periode hanya ditampilkan untuk admin dan superadmin --}}
-            @if($userRole !== 'mahasiswa')
+            {{-- Select periode hanya ditampilkan superadmin --}}
+            @if($userRole === 'superadmin')
             <div class="mb-6">
                 <label for="periode-select" class="block text-sm font-medium text-gray-700 mb-2">
                     Pilih Periode:
@@ -26,8 +26,8 @@
                     class="block w-48 px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
                     <option value="">-- Pilih Periode --</option>
                     @foreach($periodes as $periode)
-                    <option value="{{ $periode->id }}" data-status="{{ $periode->status }}" @if($periode->status ===
-                        'buka') selected @endif>
+                    <option value="{{ $periode->id }}" data-status="{{ $periode->status }}" @if($selectedPeriode &&
+                        $periode->id == $selectedPeriode) selected @endif>
                         {{ $periode->periode }}
                         @if($periode->status === 'tutup') - Tutup
                         @elseif($periode->status === 'buka') - Buka
@@ -51,16 +51,21 @@
 
     {{-- Empty State --}}
     <div id="empty-state" class="text-center p-12 hidden">
-        @if($userRole === 'mahasiswa')
+        @if($userRole === 'superadmin')
         <p class="text-gray-500 mb-4">
-            Jadwal kegiatan untuk periode Anda akan ditampilkan di sini.
+            Silahkan pilih periode untuk melihat jadwal kegiatan yang tersedia.
+        </p>
+        @elseif($userRole === 'admin')
+        <p class="text-gray-500 mb-4">
+            Maaf, belum ada jadwal kegiatan untuk periode ini.
         </p>
         @else
         <p class="text-gray-500 mb-4">
-            Pilih periode untuk melihat jadwal kegiatan yang tersedia.
+            Maaf, belum ada jadwal kegiatan untuk periode ini.
         </p>
         @endif
     </div>
+
 
 
     {{-- Table State --}}
@@ -224,7 +229,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get user role from Laravel
     const userRole = @json($userRole);
     const selectedPeriode = @json($selectedPeriode);
-
     // Elements
     const periodeSelect = document.getElementById('periode-select');
     const addButton = document.getElementById('open-create-modal');
@@ -244,6 +248,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let deleteId = null;
     let kegiatanData = [];
 
+
     // CSRF Token
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
@@ -261,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Event listener untuk perubahan periode (hanya untuk admin/superadmin)
-    if (periodeSelect && userRole !== 'mahasiswa') {
+    if (periodeSelect && userRole === 'superadmin') {
         periodeSelect.addEventListener('change', function() {
             const periodeId = this.value;
             currentPeriodeId = periodeId;
@@ -336,15 +341,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (kegiatanData.length === 0) {
             let message = '';
-            if (userRole === 'mahasiswa') {
-                message = 'Belum ada jadwal kegiatan untuk periode Anda.';
+
+            if (userRole === 'superadmin') {
+                message =
+                    'Belum ada jadwal kegiatan untuk periode ini. Klik tombol tambah untuk membuat jadwal kegiatan.';
             } else {
-                message = 'Belum ada jadwal kegiatan untuk periode ini.' +
-                    (userRole === 'superadmin' ? ' Klik tombol tambah untuk membuat jadwal baru.' : '');
+                // Mahasiswa dan admin sama
+                message = 'Belum ada jadwal kegiatan untuk periode ini.';
             }
+
             showEmptyState(message);
             return;
         }
+
 
         // Show table
         emptyState.classList.add('hidden');
@@ -496,10 +505,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Utility functions
     function showEmptyState(message) {
         let addButtonHtml = '';
-        if (userRole === 'superadmin' && currentPeriodeId) {
-            addButtonHtml =
-                `<button onclick="openCreateModal()" class="py-2 px-4 rounded-lg bg-navy text-white font-semibold hover:bg-baby-blue transition">+ Tambah Kegiatan</button>`;
-        }
+
 
         emptyState.innerHTML = `
             <div class="text-center p-12">
