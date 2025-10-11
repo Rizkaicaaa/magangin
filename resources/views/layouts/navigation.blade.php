@@ -10,11 +10,96 @@
                     </a>
                 </div>
 
+<<<<<<< Updated upstream
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+=======
+            <!-- Main Navigation Links -->
+            <div class="hidden md:flex items-center justify-center flex-1 px-4">
+                <div class="flex items-center space-x-1">
+                    @if(Auth::user()->role == 'superadmin')
+                        <!-- ===== SUPERADMIN MENU ===== -->
+                        <a href="{{ route('dashboard') }}"
+                            class="inline-flex items-center px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg hover:bg-blue-50
+                            {{ request()->routeIs('dashboard') ? 'text-blue-600 bg-blue-50 font-semibold' : 'text-gray-700 hover:text-blue-700' }}">
+                            <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
+                        </a>
+
+                        @php
+                        $mainNavigation = [
+                            ['url' => '/info-or', 'label' => 'Info OR', 'icon' => 'fas fa-info-circle', 'pattern' => 'info-or'],
+                            ['url' => '/pendaftar', 'label' => 'Data Pendaftar', 'icon' => 'fas fa-users', 'pattern' => 'pendaftar'],
+                            ['url' => '/jadwal-kegiatan', 'label' => 'Kelola Kegiatan', 'icon' => 'fas fa-tasks', 'pattern' => 'jadwal-kegiatan'],
+                            ['url' => '/penilaian', 'label' => 'Penilaian Magang', 'icon' => 'fas fa-star', 'pattern' => 'penilaian'],
+                            ['url' => '/users', 'label' => 'Kelola User', 'icon' => 'fas fa-user-cog', 'pattern' => 'users*']
+                        ];
+                        $wawancaraActive = request()->is('jadwal-seleksi*') || request()->is('penilaian-wawancara*') || request()->is('hasilwawancara*');
+                        @endphp
+
+                        @foreach($mainNavigation as $item)
+                            @php
+                            $isActive = Request::is($item['pattern']);
+                            @endphp
+                            <a href="{{ url($item['url']) }}"
+                                class="inline-flex items-center px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg hover:bg-blue-50
+                                {{ $isActive ? 'text-blue-600 bg-blue-50 font-semibold' : 'text-gray-700 hover:text-blue-700' }}">
+                                <i class="{{ $item['icon'] }} mr-2 text-sm"></i>
+                                {{ $item['label'] }}
+                            </a>
+                        @endforeach
+
+                        <!-- Dropdown Data Wawancara -->
+                        <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
+                            <button @click="open = !open"
+                                class="inline-flex items-center px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg hover:bg-blue-50
+                                {{ $wawancaraActive ? 'text-blue-600 bg-blue-50 font-semibold' : 'text-gray-700 hover:text-blue-700' }}">
+                                <i class="fas fa-clipboard-list mr-2 text-sm"></i>
+                                Data Wawancara
+                                <i class="fas fa-chevron-down ml-2 text-xs transition-transform duration-200" :class="{ 'rotate-180': open }"></i>
+                            </button>
+
+                            <div x-show="open" x-cloak x-transition
+                                class="absolute right-0 z-50 mt-2 w-72 rounded-xl bg-white shadow-xl ring-1 ring-black/5 border border-gray-100"
+                                style="transform: translateX(25%);">
+                                <div class="py-2">
+                                    <a href="{{ route('jadwal-seleksi.index') }}" class="flex items-center px-4 py-3 text-sm hover:bg-blue-50 {{ request()->is('jadwal-seleksi*') ? 'bg-blue-50 text-blue-700' : 'text-gray-700' }}">
+                                        <i class="fas fa-calendar-alt text-green-600 mr-3"></i> Jadwal Wawancara
+                                    </a>
+                                    <a href="{{ route('penilaian-wawancara.index') }}" class="flex items-center px-4 py-3 text-sm hover:bg-blue-50 {{ request()->is('penilaian-wawancara*') ? 'bg-blue-50 text-blue-700' : 'text-gray-700' }}">
+                                        <i class="fas fa-clipboard-check text-yellow-600 mr-3"></i> Penilaian Wawancara
+                                    </a>
+                        
+                                </div>
+                            </div>
+                        </div>
+                    @elseif(Auth::user()->role == 'mahasiswa')
+                        <!-- ===== MAHASISWA MENU ===== -->
+                        <a href="{{ route('dashboard') }}"
+                            class="inline-flex items-center px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg hover:bg-blue-50
+                            {{ request()->routeIs('dashboard') ? 'text-blue-600 bg-blue-50 font-semibold' : 'text-gray-700 hover:text-blue-700' }}">
+                            <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
+                        </a>
+                        <a href="/seleksi-wawancara"
+                            class="inline-flex items-center px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg hover:bg-blue-50 text-gray-700 hover:text-blue-700">
+                            <i class="fas fa-calendar-check mr-2"></i> Jadwal Seleksi Wawancara
+                        </a>
+                        <a href="/kelulusan-wawancara"
+                            class="inline-flex items-center px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg hover:bg-blue-50 text-gray-700 hover:text-blue-700">
+                            <i class="fas fa-clipboard-check mr-2"></i> Kelulusan Wawancara
+                        </a>
+                        <a href="/jadwal-kegiatan"
+                            class="inline-flex items-center px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg hover:bg-blue-50 text-gray-700 hover:text-blue-700">
+                            <i class="fas fa-calendar-alt mr-2"></i> Jadwal Kegiatan
+                        </a>
+                        <a href="#"
+                            class="inline-flex items-center px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg hover:bg-blue-50 text-gray-700 hover:text-blue-700">
+                            <i class="fas fa-graduation-cap mr-2"></i> Kelulusan Magang
+                        </a>
+                    @endif
+>>>>>>> Stashed changes
                 </div>
             </div>
 
