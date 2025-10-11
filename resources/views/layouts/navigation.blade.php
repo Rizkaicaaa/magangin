@@ -19,16 +19,6 @@
                 </a>
             </div>
 
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-                <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-=======
-=======
->>>>>>> e825d59a6af5f54447d7ffb5349f3ca6d25b161b
             <!-- Main Navigation Links -->
             <div class="hidden md:flex items-center justify-center flex-1 px-4">
                 <div class="flex items-center space-x-1">
@@ -83,13 +73,6 @@
                                     <a href="{{ route('penilaian-wawancara.index') }}" class="flex items-center px-4 py-3 text-sm hover:bg-blue-50 {{ request()->is('penilaian-wawancara*') ? 'bg-blue-50 text-blue-700' : 'text-gray-700' }}">
                                         <i class="fas fa-clipboard-check text-yellow-600 mr-3"></i> Penilaian Wawancara
                                     </a>
-<<<<<<< HEAD
-                        
-=======
-                                    <a href="{{ route('#') }}" class="flex items-center px-4 py-3 text-sm hover:bg-blue-50 {{ request()->is('hasilwawancara*') ? 'bg-blue-50 text-blue-700' : 'text-gray-700' }}">
-                                        <i class="fas fa-chart-bar text-purple-600 mr-3"></i> Hasil Wawancara
-                                    </a>
->>>>>>> e825d59a6af5f54447d7ffb5349f3ca6d25b161b
                                 </div>
                             </div>
                         </div>
@@ -117,10 +100,6 @@
                             <i class="fas fa-graduation-cap mr-2"></i> Kelulusan Magang
                         </a>
                     @endif
-<<<<<<< HEAD
->>>>>>> Stashed changes
-=======
->>>>>>> e825d59a6af5f54447d7ffb5349f3ca6d25b161b
                 </div>
             </div>
 
