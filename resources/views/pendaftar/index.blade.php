@@ -162,16 +162,21 @@
                                 </button>
 
                                 @if($pendaftaran->file_cv)
-                                <a href="{{ route('pendaftar.download-cv', $pendaftar->id) }}"
+                                <a href="{{ route('pendaftar.view-cv', $pendaftar->id) }}" target="_blank"
                                     class="text-green-600 hover:text-green-900 px-2 py-1 text-xs bg-green-100 rounded"
-                                    title="Download CV">CV</a>
+                                    title="Lihat CV">
+                                    CV
+                                </a>
                                 @endif
 
                                 @if($pendaftaran->file_transkrip)
-                                <a href="{{ route('pendaftar.download-transkrip', $pendaftar->id) }}"
+                                <a href="{{ route('pendaftar.view-transkrip', $pendaftar->id) }}" target="_blank"
                                     class="text-blue-600 hover:text-blue-900 px-2 py-1 text-xs bg-blue-100 rounded"
-                                    title="Download Transkrip">Transkrip</a>
+                                    title="Lihat Transkrip">
+                                    Transkrip
+                                </a>
                                 @endif
+
                             </div>
                         </td>
                     </tr>

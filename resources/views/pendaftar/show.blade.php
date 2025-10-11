@@ -105,16 +105,16 @@ $pendaftaran = $pendaftar->pendaftaran->first();
             @if($pendaftaran->file_cv)
             <div class="flex items-center justify-between bg-gray-50 p-3 rounded">
                 <span class="text-sm text-gray-700">CV</span>
-                <a href="{{ route('pendaftar.download-cv', $pendaftar->id) }}"
-                    class="text-blue-600 hover:text-blue-800 text-sm font-medium">Download</a>
+                <a href="{{ route('pendaftar.view-cv', $pendaftar->id) }}
+" class="text-blue-600 hover:text-blue-800 text-sm font-medium">Download</a>
             </div>
             @endif
 
             @if($pendaftaran->file_transkrip)
             <div class="flex items-center justify-between bg-gray-50 p-3 rounded">
                 <span class="text-sm text-gray-700">Transkrip Nilai</span>
-                <a href="{{ route('pendaftar.download-transkrip', $pendaftar->id) }}"
-                    class="text-blue-600 hover:text-blue-800 text-sm font-medium">Download</a>
+                <a href="{{ route('pendaftar.view-transkrip', $pendaftar->id) }}
+" class="text-blue-600 hover:text-blue-800 text-sm font-medium">Download</a>
             </div>
             @endif
 
