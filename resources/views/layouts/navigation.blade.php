@@ -75,11 +75,7 @@
                 {{ request()->is('penilaian-wawancara*') ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600' }}">
                                     <i class="fas fa-clipboard-check text-yellow-600 mr-3"></i> Penilaian Wawancara
                                 </a>
-                                <a href="{{ route('hasilwawancara.index') }}"
-                                    class="flex items-center px-4 py-3 text-sm transition-colors
-                {{ request()->is('hasilwawancara*') ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600' }}">
-                                    <i class="fas fa-chart-bar text-purple-600 mr-3"></i> Hasil Wawancara
-                                </a>
+
                             </div>
                         </div>
                     </div>
