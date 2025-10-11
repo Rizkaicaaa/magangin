@@ -20,29 +20,31 @@
     </div>
 
     {{-- Input KKM dan Tombol Tambah Penilaian --}}
-    <div class="flex justify-between items-center gap-3 mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
-        <div class="flex items-center gap-3">
-            <label for="kkm" class="font-semibold text-gray-700">Masukkan KKM:</label>
-            <input type="number" step="0.01" id="kkm" name="kkm" 
-                value="{{ $kkm ?? '' }}" 
-                data-kkm="{{ $kkm ?? '' }}">
+    @if(count($data) > 0)
+        <div class="flex justify-between items-center gap-3 mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
+            <div class="flex items-center gap-3">
+                <label for="kkm" class="font-semibold text-gray-700">Masukkan KKM:</label>
+                <input type="number" step="0.01" id="kkm" name="kkm" 
+                    value="{{ $kkm ?? '' }}" 
+                    data-kkm="{{ $kkm ?? '' }}">
 
-            <button id="btn-kkm" 
-                class="bg-navy text-white px-4 py-2 rounded-md font-semibold hover:bg-baby-blue transition duration-300">
-                    Terapkan
-            </button>
+                <button id="btn-kkm" 
+                    class="bg-navy text-white px-4 py-2 rounded-md font-semibold hover:bg-baby-blue transition duration-300">
+                        Terapkan
+                </button>
 
-            <button id="btn-edit-kkm" 
-                class="bg-yellow-500 text-white px-4 py-2 rounded-md font-semibold hover:bg-yellow-600 transition duration-300 hidden">
-                    Edit KKM
-            </button>
+                <button id="btn-edit-kkm" 
+                    class="bg-yellow-500 text-white px-4 py-2 rounded-md font-semibold hover:bg-yellow-600 transition duration-300 hidden">
+                        Edit KKM
+                </button>
+            </div>
+
+            <a href="{{ route('penilaian-wawancara.create') }}"
+                class="py-2 px-5 rounded-md bg-navy text-white font-semibold hover:bg-baby-blue transition duration-300 shadow-sm">
+                    + Tambah Penilaian
+            </a>
         </div>
-
-        <a href="{{ route('penilaian-wawancara.create') }}"
-            class="py-2 px-5 rounded-md bg-navy text-white font-semibold hover:bg-baby-blue transition duration-300 shadow-sm">
-                + Tambah Penilaian
-        </a>
-    </div>
+    @endif
 
     {{-- Tabel data --}}
     <div id="data-state" class="{{ count($data) > 0 ? '' : 'hidden' }}">
