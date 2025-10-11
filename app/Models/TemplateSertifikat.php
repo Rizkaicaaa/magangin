@@ -16,7 +16,6 @@ class TemplateSertifikat extends Model
         'info_or_id',
         'nama_template',
         'file_template',
-        'placeholder_fields',
         'status',
     ];
 
