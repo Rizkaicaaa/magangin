@@ -1,6 +1,5 @@
 <?php
 
-// Model PenilaianWawancara
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,34 +14,52 @@ class PenilaianWawancara extends Model
     protected $fillable = [
         'pendaftaran_id',
         'penilai_id',
+        'jadwal_seleksi_id',
         'nilai_komunikasi',
         'nilai_motivasi',
         'nilai_kemampuan',
         'nilai_total',
         'nilai_rata_rata',
-        'hasil',
         'status',
+        'kkm',
     ];
+
 
     protected $casts = [
-        'nilai_komunikasi' => 'decimal:2',
-        'nilai_motivasi' => 'decimal:2',
-        'nilai_kemampuan' => 'decimal:2',
-        'nilai_total' => 'decimal:2',
+        'nilai_komunikasi' => 'integer',
+        'nilai_motivasi' => 'integer',
+        'nilai_kemampuan' => 'integer',
+        'nilai_total' => 'integer',
+        'kkm' => 'integer',
+        'nilai_rata_rata' => 'decimal:2',
     ];
 
+    // Relasi ke peserta
     public function pendaftaran()
     {
         return $this->belongsTo(Pendaftaran::class);
-    }   
-
-    public function jadwal()
-    {
-        return $this->belongsTo(JadwalSeleksi::class, 'jadwal_seleksi_id'); // pastikan kolom FK sesuai
     }
 
+    // Relasi ke jadwal seleksi
+    public function jadwal()
+    {
+        return $this->belongsTo(JadwalSeleksi::class, 'jadwal_seleksi_id');
+    }
+
+    // Relasi ke user penilai
     public function penilai()
     {
         return $this->belongsTo(User::class, 'penilai_id');
+    }
+
+    // Accessor untuk pewawancara
+    public function getPewawancaraAttribute($value)
+    {
+        return $value ?? $this->jadwal?->pewawancara ?? '-';
+    }
+
+    public function getNamaPesertaAttribute()
+    {
+        return $this->pendaftaran?->user?->nama_lengkap ?? '-';
     }
 }
