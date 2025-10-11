@@ -217,7 +217,14 @@
     }
 
     // ==== Tombol Create ====
-    document.getElementById('create-button').addEventListener('click', () => {
+    const createButton = document.getElementById('create-button');
+    const emptyCreateButton = document.getElementById('empty-create-button');
+
+    function toggleCreateButton(show) {
+        if(createButton) createButton.style.display = show ? 'inline-block' : 'none';
+    }
+
+    if(createButton) createButton.addEventListener('click', () => {
         document.getElementById('create-form').classList.remove('hidden');
         document.getElementById('edit-form').classList.add('hidden');
         document.getElementById('table-state').classList.add('hidden');
@@ -225,10 +232,13 @@
 
         // Disable peserta
         disablePeserta('pendaftaran_create');
+
+        // Sembunyikan tombol create saat form muncul
+        toggleCreateButton(false);
     });
 
-    document.getElementById('empty-create-button')?.addEventListener('click', () => {
-        document.getElementById('create-button').click();
+    emptyCreateButton?.addEventListener('click', () => {
+        createButton.click();
     });
 
     // ==== Cancel Create ====
@@ -236,8 +246,12 @@
         document.getElementById('form-create').reset();
         totalCreate.value = '';
         document.getElementById('create-form').classList.add('hidden');
+
         if({{ $penilaian->isEmpty() ? 'true':'false' }}) document.getElementById('empty-state').classList.remove('hidden');
         else document.getElementById('table-state').classList.remove('hidden');
+
+        // Tampilkan tombol create lagi jika ada tabel
+        if(!{{ $penilaian->isEmpty() ? 'true':'false' }}) toggleCreateButton(true);
     });
 
     // ==== Tombol Edit ====
@@ -257,6 +271,9 @@
 
             hitungTotalEdit();
             disablePeserta('pendaftaran_edit', btn.dataset.pendaftaran);
+
+            // Sembunyikan tombol create saat edit
+            toggleCreateButton(false);
         });
     });
 
@@ -266,6 +283,9 @@
         totalEdit.value = '';
         document.getElementById('edit-form').classList.add('hidden');
         document.getElementById('table-state').classList.remove('hidden');
+
+        // Tampilkan tombol create lagi jika ada tabel
+        if(!{{ $penilaian->isEmpty() ? 'true':'false' }}) toggleCreateButton(true);
     });
 
     // ==== SweetAlert Hapus ====
@@ -297,6 +317,8 @@
         timer: 1500
     });
     @endif
-</script>
 
+    // ==== Tampilkan tombol create saat halaman load jika ada tabel ====
+    if(!{{ $penilaian->isEmpty() ? 'true':'false' }}) toggleCreateButton(true);
+</script>
 @endsection
