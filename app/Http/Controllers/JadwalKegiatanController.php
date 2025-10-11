@@ -7,6 +7,7 @@ use App\Models\JadwalKegiatan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Exception;
 
 class JadwalKegiatanController extends Controller
@@ -17,12 +18,30 @@ class JadwalKegiatanController extends Controller
     public function index()
     {
         try {
+            $user = Auth::user();
+            $userRole = $user->role;
+            
             // Ambil semua periode untuk ditampilkan di select
             $periodes = InfoOr::select('id', 'periode', 'status', 'tanggal_buka', 'tanggal_tutup')
                 ->orderBy('tanggal_buka', 'desc')
                 ->get();
             
-            return view('kegiatan.index', compact('periodes'));
+            // Inisialisasi selectedPeriode
+            $selectedPeriode = null;
+            
+            // Untuk mahasiswa, ambil periode berdasarkan info_or_id mereka
+            if ($userRole === 'mahasiswa') {
+                // Asumsikan user memiliki relasi infoOr atau field info_or_id
+                $selectedPeriode = $user->info_or_id ?? null;
+                
+                // Jika tidak ada, ambil periode yang statusnya 'buka'
+                if (!$selectedPeriode) {
+                    $periodeBuka = $periodes->where('status', 'buka')->first();
+                    $selectedPeriode = $periodeBuka ? $periodeBuka->id : null;
+                }
+            }
+            
+            return view('kegiatan.index', compact('periodes', 'userRole', 'selectedPeriode'));
         } catch (Exception $e) {
             Log::error('Error loading jadwal kegiatan page: ' . $e->getMessage());
             
@@ -32,7 +51,6 @@ class JadwalKegiatanController extends Controller
 
     /**
      * Ambil daftar kegiatan berdasarkan periode
-     * Route: /jadwal-kegiatan/api/by-periode?periode_id=1
      */
     public function getByPeriode(Request $request)
     {
@@ -99,7 +117,7 @@ class JadwalKegiatanController extends Controller
         }
     }
 
-     /**
+    /**
      * Display the specified resource
      */
     public function show($id)
@@ -140,37 +158,44 @@ class JadwalKegiatanController extends Controller
         }
     }
 
-    
     /**
      * Store a newly created resource
      */
     public function store(Request $request)
     {
+        // Validasi role superadmin
+        if (auth()->user()->role !== 'superadmin') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized. Hanya superadmin yang dapat menambah kegiatan.'
+            ], 403);
+        }
+
         try {
             $validator = Validator::make($request->all(), [
-    'info_or_id' => 'required|integer|exists:info_or,id',
-    'nama_kegiatan' => 'required|string|max:255',
-    'deskripsi_kegiatan' => 'nullable|string|max:1000',
-    'tanggal_kegiatan' => 'required|date|after_or_equal:today|before:2100-01-01', // Tambahkan batas tahun
-    'waktu_mulai' => 'required|date_format:H:i',
-    'waktu_selesai' => 'nullable|date_format:H:i|after:waktu_mulai',
-    'tempat' => 'nullable|string|max:255',
-], [
-    'info_or_id.required' => 'Periode harus dipilih',
-    'info_or_id.exists' => 'Periode tidak valid',
-    'nama_kegiatan.required' => 'Nama kegiatan harus diisi',
-    'nama_kegiatan.max' => 'Nama kegiatan maksimal 255 karakter',
-    'deskripsi_kegiatan.max' => 'Deskripsi maksimal 1000 karakter',
-    'tanggal_kegiatan.required' => 'Tanggal kegiatan harus diisi',
-    'tanggal_kegiatan.date' => 'Format tanggal tidak valid',
-    'tanggal_kegiatan.after_or_equal' => 'Tanggal kegiatan tidak boleh kurang dari hari ini',
-    'tanggal_kegiatan.before' => 'Tanggal kegiatan tidak valid, tahun maksimal 2099', // Pesan error baru
-    'waktu_mulai.required' => 'Waktu mulai harus diisi',
-    'waktu_mulai.date_format' => 'Format waktu mulai tidak valid (HH:MM)',
-    'waktu_selesai.date_format' => 'Format waktu selesai tidak valid (HH:MM)',
-    'waktu_selesai.after' => 'Waktu selesai harus setelah waktu mulai',
-    'tempat.max' => 'Tempat maksimal 255 karakter',
-]);
+                'info_or_id' => 'required|integer|exists:info_or,id',
+                'nama_kegiatan' => 'required|string|max:255',
+                'deskripsi_kegiatan' => 'nullable|string|max:1000',
+                'tanggal_kegiatan' => 'required|date|after_or_equal:today|before:2100-01-01',
+                'waktu_mulai' => 'required|date_format:H:i',
+                'waktu_selesai' => 'nullable|date_format:H:i|after:waktu_mulai',
+                'tempat' => 'nullable|string|max:255',
+            ], [
+                'info_or_id.required' => 'Periode harus dipilih',
+                'info_or_id.exists' => 'Periode tidak valid',
+                'nama_kegiatan.required' => 'Nama kegiatan harus diisi',
+                'nama_kegiatan.max' => 'Nama kegiatan maksimal 255 karakter',
+                'deskripsi_kegiatan.max' => 'Deskripsi maksimal 1000 karakter',
+                'tanggal_kegiatan.required' => 'Tanggal kegiatan harus diisi',
+                'tanggal_kegiatan.date' => 'Format tanggal tidak valid',
+                'tanggal_kegiatan.after_or_equal' => 'Tanggal kegiatan yang anda pilih sudah lewat ',
+                'tanggal_kegiatan.before' => 'Tanggal kegiatan tidak valid, tahun maksimal 2099',
+                'waktu_mulai.required' => 'Waktu mulai harus diisi',
+                'waktu_mulai.date_format' => 'Format waktu mulai tidak valid (HH:MM)',
+                'waktu_selesai.date_format' => 'Format waktu selesai tidak valid (HH:MM)',
+                'waktu_selesai.after' => 'Waktu selesai harus setelah waktu mulai',
+                'tempat.max' => 'Tempat maksimal 255 karakter',
+            ]);
 
             if ($validator->fails()) {
                 return response()->json([
@@ -180,16 +205,18 @@ class JadwalKegiatanController extends Controller
                 ], 422);
             }
 
-            // Validasi tambahan - cek apakah sudah ada kegiatan di waktu yang sama
+            // Validasi tambahan - cek bentrok waktu
             $existingKegiatan = JadwalKegiatan::where('info_or_id', $request->info_or_id)
                 ->where('tanggal_kegiatan', $request->tanggal_kegiatan)
                 ->where(function($query) use ($request) {
-                    $query->whereBetween('waktu_mulai', [$request->waktu_mulai, $request->waktu_selesai])
-                          ->orWhereBetween('waktu_selesai', [$request->waktu_mulai, $request->waktu_selesai])
-                          ->orWhere(function($q) use ($request) {
-                              $q->where('waktu_mulai', '<=', $request->waktu_mulai)
-                                ->where('waktu_selesai', '>=', $request->waktu_selesai);
-                          });
+                    if ($request->waktu_selesai) {
+                        $query->whereBetween('waktu_mulai', [$request->waktu_mulai, $request->waktu_selesai])
+                              ->orWhereBetween('waktu_selesai', [$request->waktu_mulai, $request->waktu_selesai])
+                              ->orWhere(function($q) use ($request) {
+                                  $q->where('waktu_mulai', '<=', $request->waktu_mulai)
+                                    ->where('waktu_selesai', '>=', $request->waktu_selesai);
+                              });
+                    }
                 })
                 ->first();
 
@@ -207,7 +234,7 @@ class JadwalKegiatanController extends Controller
             Log::info('Jadwal kegiatan berhasil dibuat', [
                 'id' => $kegiatan->id,
                 'nama_kegiatan' => $kegiatan->nama_kegiatan,
-                'user_id' => auth()->id() ?? 'system'
+                'user_id' => auth()->id()
             ]);
 
             return response()->json([
@@ -226,10 +253,7 @@ class JadwalKegiatanController extends Controller
             ], 201);
 
         } catch (Exception $e) {
-            Log::error('Error creating jadwal kegiatan: ' . $e->getMessage(), [
-                'request_data' => $request->all(),
-                'trace' => $e->getTraceAsString()
-            ]);
+            Log::error('Error creating jadwal kegiatan: ' . $e->getMessage());
             
             return response()->json([
                 'success' => false,
@@ -239,39 +263,47 @@ class JadwalKegiatanController extends Controller
         }
     }
 
-   
     /**
      * Update the specified resource
      */
     public function update(Request $request, $id)
     {
+        // Validasi role superadmin
+        if (auth()->user()->role !== 'superadmin') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized. Hanya superadmin yang dapat mengedit kegiatan.'
+            ], 403);
+        }
+
         try {
             $kegiatan = JadwalKegiatan::findOrFail($id);
 
             $validator = Validator::make($request->all(), [
-    'info_or_id' => 'required|integer|exists:info_or,id',
-    'nama_kegiatan' => 'required|string|max:255',
-    'deskripsi_kegiatan' => 'nullable|string|max:1000',
-    'tanggal_kegiatan' => 'required|date|after_or_equal:today|before:2100-01-01', // Tambahkan validasi yang sama
-    'waktu_mulai' => 'required|date_format:H:i',
-    'waktu_selesai' => 'nullable|date_format:H:i|after:waktu_mulai',
-    'tempat' => 'nullable|string|max:255',
-], [
-    'info_or_id.required' => 'Periode harus dipilih',
-    'info_or_id.exists' => 'Periode tidak valid',
-    'nama_kegiatan.required' => 'Nama kegiatan harus diisi',
-    'nama_kegiatan.max' => 'Nama kegiatan maksimal 255 karakter',
-    'deskripsi_kegiatan.max' => 'Deskripsi maksimal 1000 karakter',
-    'tanggal_kegiatan.required' => 'Tanggal kegiatan harus diisi',
-    'tanggal_kegiatan.date' => 'Format tanggal tidak valid',
-    'tanggal_kegiatan.after_or_equal' => 'Tanggal kegiatan tidak boleh kurang dari hari ini', // Tambahkan pesan ini
-    'tanggal_kegiatan.before' => 'Tanggal kegiatan tidak valid, tahun maksimal 2099', // Tambahkan pesan ini
-    'waktu_mulai.required' => 'Waktu mulai harus diisi',
-    'waktu_mulai.date_format' => 'Format waktu mulai tidak valid (HH:MM)',
-    'waktu_selesai.date_format' => 'Format waktu selesai tidak valid (HH:MM)',
-    'waktu_selesai.after' => 'Waktu selesai harus setelah waktu mulai',
-    'tempat.max' => 'Tempat maksimal 255 karakter',
-]);
+                'info_or_id' => 'required|integer|exists:info_or,id',
+                'nama_kegiatan' => 'required|string|max:255',
+                'deskripsi_kegiatan' => 'nullable|string|max:1000',
+                'tanggal_kegiatan' => 'required|date|after_or_equal:today|before:2100-01-01',
+                'waktu_mulai' => 'required|date_format:H:i',
+                'waktu_selesai' => 'nullable|date_format:H:i|after:waktu_mulai',
+                'tempat' => 'nullable|string|max:255',
+            ], [
+                'info_or_id.required' => 'Periode harus dipilih',
+                'info_or_id.exists' => 'Periode tidak valid',
+                'nama_kegiatan.required' => 'Nama kegiatan harus diisi',
+                'nama_kegiatan.max' => 'Nama kegiatan maksimal 255 karakter',
+                'deskripsi_kegiatan.max' => 'Deskripsi maksimal 1000 karakter',
+                'tanggal_kegiatan.required' => 'Tanggal kegiatan harus diisi',
+                'tanggal_kegiatan.date' => 'Format tanggal tidak valid',
+                'tanggal_kegiatan.after_or_equal' => 'Tanggal kegiatan tidak boleh kurang dari hari ini',
+                'tanggal_kegiatan.before' => 'Tanggal kegiatan tidak valid, tahun maksimal 2099',
+                'waktu_mulai.required' => 'Waktu mulai harus diisi',
+                'waktu_mulai.date_format' => 'Format waktu mulai tidak valid (HH:MM)',
+                'waktu_selesai.date_format' => 'Format waktu selesai tidak valid (HH:MM)',
+                'waktu_selesai.after' => 'Waktu selesai harus setelah waktu mulai',
+                'tempat.max' => 'Tempat maksimal 255 karakter',
+            ]);
+
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
@@ -280,7 +312,7 @@ class JadwalKegiatanController extends Controller
                 ], 422);
             }
 
-            // Validasi tambahan - cek apakah sudah ada kegiatan lain di waktu yang sama (exclude current)
+            // Validasi bentrok waktu (exclude current)
             $existingKegiatan = JadwalKegiatan::where('info_or_id', $request->info_or_id)
                 ->where('id', '!=', $id)
                 ->where('tanggal_kegiatan', $request->tanggal_kegiatan)
@@ -292,8 +324,6 @@ class JadwalKegiatanController extends Controller
                                   $q->where('waktu_mulai', '<=', $request->waktu_mulai)
                                     ->where('waktu_selesai', '>=', $request->waktu_selesai);
                               });
-                    } else {
-                        $query->where('waktu_mulai', $request->waktu_mulai);
                     }
                 })
                 ->first();
@@ -312,7 +342,7 @@ class JadwalKegiatanController extends Controller
             Log::info('Jadwal kegiatan berhasil diupdate', [
                 'id' => $kegiatan->id,
                 'nama_kegiatan' => $kegiatan->nama_kegiatan,
-                'user_id' => auth()->id() ?? 'system'
+                'user_id' => auth()->id()
             ]);
 
             return response()->json([
@@ -331,11 +361,7 @@ class JadwalKegiatanController extends Controller
             ]);
 
         } catch (Exception $e) {
-            Log::error('Error updating jadwal kegiatan: ' . $e->getMessage(), [
-                'id' => $id,
-                'request_data' => $request->all(),
-                'trace' => $e->getTraceAsString()
-            ]);
+            Log::error('Error updating jadwal kegiatan: ' . $e->getMessage());
             
             return response()->json([
                 'success' => false,
@@ -350,10 +376,16 @@ class JadwalKegiatanController extends Controller
      */
     public function destroy($id)
     {
+        // Validasi role superadmin
+        if (auth()->user()->role !== 'superadmin') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized. Hanya superadmin yang dapat menghapus kegiatan.'
+            ], 403);
+        }
+
         try {
             $kegiatan = JadwalKegiatan::findOrFail($id);
-            
-            // Simpan nama kegiatan untuk log
             $namaKegiatan = $kegiatan->nama_kegiatan;
             
             $kegiatan->delete();
@@ -361,7 +393,7 @@ class JadwalKegiatanController extends Controller
             Log::info('Jadwal kegiatan berhasil dihapus', [
                 'id' => $id,
                 'nama_kegiatan' => $namaKegiatan,
-                'user_id' => auth()->id() ?? 'system'
+                'user_id' => auth()->id()
             ]);
 
             return response()->json([
@@ -370,77 +402,12 @@ class JadwalKegiatanController extends Controller
             ]);
 
         } catch (Exception $e) {
-            Log::error('Error menghapus jadwal kegiatan: ' . $e->getMessage(), [
-                'id' => $id,
-                'trace' => $e->getTraceAsString()
-            ]);
+            Log::error('Error menghapus jadwal kegiatan: ' . $e->getMessage());
             
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menghapus kegiatan. Silakan coba lagi.',
                 'error' => config('app.debug') ? $e->getMessage() : null
-            ], 500);
-        }
-    }
-
-    /**
-     * Get kegiatan by periode for public view (optional)
-     */
-    public function getPublicSchedule(Request $request)
-    {
-        try {
-            $periodeId = $request->get('periode_id');
-            
-            if (!$periodeId) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Parameter periode_id diperlukan'
-                ], 400);
-            }
-
-            $periode = InfoOr::where('id', $periodeId)
-                ->where('status', 'buka')
-                ->first();
-
-            if (!$periode) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Periode tidak ditemukan atau sudah ditutup'
-                ], 404);
-            }
-
-            $kegiatan = JadwalKegiatan::where('info_or_id', $periodeId)
-                ->where('tanggal_kegiatan', '>=', now()->format('Y-m-d'))
-                ->orderBy('tanggal_kegiatan', 'asc')
-                ->orderBy('waktu_mulai', 'asc')
-                ->get()
-                ->map(function($item) {
-                    return [
-                        'nama_kegiatan' => $item->nama_kegiatan,
-                        'deskripsi_kegiatan' => $item->deskripsi_kegiatan,
-                        'tanggal_kegiatan' => $item->tanggal_kegiatan->format('d F Y'),
-                        'waktu_mulai' => $item->waktu_mulai->format('H:i'),
-                        'waktu_selesai' => $item->waktu_selesai ? $item->waktu_selesai->format('H:i') : null,
-                        'tempat' => $item->tempat
-                    ];
-                });
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Data berhasil diambil',
-                'data' => $kegiatan,
-                'periode' => [
-                    'periode' => $periode->periode,
-                    'status' => $periode->status
-                ]
-            ]);
-
-        } catch (Exception $e) {
-            Log::error('Error mengambil jadwal public: ' . $e->getMessage());
-            
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal mengambil jadwal kegiatan'
             ], 500);
         }
     }

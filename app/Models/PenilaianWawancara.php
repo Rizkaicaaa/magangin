@@ -1,6 +1,5 @@
 <?php
 
-
 // Model PenilaianWawancara
 namespace App\Models;
 
@@ -20,6 +19,7 @@ class PenilaianWawancara extends Model
         'nilai_motivasi',
         'nilai_kemampuan',
         'nilai_total',
+        'nilai_rata_rata',
         'hasil',
         'status',
     ];
@@ -31,10 +31,14 @@ class PenilaianWawancara extends Model
         'nilai_total' => 'decimal:2',
     ];
 
-    // Relationships
     public function pendaftaran()
     {
         return $this->belongsTo(Pendaftaran::class);
+    }   
+
+    public function jadwal()
+    {
+        return $this->belongsTo(JadwalSeleksi::class, 'jadwal_seleksi_id'); // pastikan kolom FK sesuai
     }
 
     public function penilai()

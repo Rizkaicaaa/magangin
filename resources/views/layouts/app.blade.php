@@ -1,118 +1,371 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="description" content="@yield('description', 'Platform manajemen magang terpadu')">
 
-    <title>@yield('title', 'MagangIn')</title>
+    <title>@yield('title', 'MagangIn - Platform Magang Terpadu')</title>
+
+    <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ asset('images/logomagangin.png') }}">
-    @vite('resources/css/app.css')
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Toastify CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Toast notifications -->
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 
-    <!-- Toastify JS -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <!-- Vite Assets -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    @stack('head-scripts')
+    @yield('head')
 
     <style>
+    html,
     body {
-        font-family: 'Poppins', sans-serif;
-        background-color: #f3f4f6;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        max-width: 100vw;
+        overflow-x: hidden;
+        scroll-behavior: smooth;
+        background: linear-gradient(to bottom right, #f9fafb, #f0f9ff);
+    }
+
+    /* Navbar sticky */
+    .navbar-sticky {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        backdrop-filter: blur(12px);
+        background: rgba(255, 255, 255, 0.8);
+        border-bottom: 1px solid rgba(229, 231, 235, 0.6);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Smooth transitions */
+    * {
+        transition: all 0.2s ease-in-out;
+    }
+
+    /* Loading spinner */
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .animate-spin {
+        animation: spin 1s linear infinite;
+    }
+
+    /* Footer */
+    footer {
+        font-size: 0.8rem;
+        background: #fff;
+        border-top: 1px solid #e5e7eb;
+        padding: 12px 0;
+        color: #9ca3af;
+    }
+
+    footer a {
+        color: #3b82f6;
+        text-decoration: none;
+    }
+
+    footer a:hover {
+        text-decoration: underline;
     }
     </style>
 </head>
 
-<body class="bg-baby-blue">
-    <header class="bg-navy text-white p-4 flex items-center shadow-lg flex justify-between">
-        <div class="flex justify-between items-center w-full">
-            <div class="flex items-center">
-                <div class="bg-white rounded-full p-2 mr-4">
-                    <img src="{{ asset('images/logomagangin.png') }}" alt="Logo MagangIn" class="h-10 w-10">
-                </div>
-                <h1 class="text-3xl font-bold">MagangIn</h1>
-            </div>
+<body class="font-sans antialiased min-h-screen flex flex-col">
 
-            <button id="logoutButton"
-                class="py-2 px-4 rounded-md font-semibold bg-baby-blue text-gray-700 hover:bg-gray-300">
-                Logout
-            </button>
-        </div>
-    </header>
-    <nav class="bg-white text-white p-4 mb-6 flex items-center shadow-lg w-full flex space-x-4 mb-6">
-        <a href="{{ url('/info-or') }}"
-            class="py-2 px-4 rounded-md font-semibold @if(Request::is('info-or')) bg-navy text-white @else bg-gray-200 text-gray-700 hover:bg-baby-blue @endif">
-            Info OR
-        </a>
-        <a href="{{ url('/pendaftar') }}"
-            class="py-2 px-4 rounded-md font-semibold @if(Request::is('pendaftar')) bg-navy text-white @else bg-gray-200 text-gray-700 hover:bg-baby-blue @endif">
-            Data Pendaftar
-        </a>
-       
-        <a href="{{ url('/jadwal-kegiatan') }}"
-            class="py-2 px-4 rounded-md font-semibold @if(Request::is('jadwal-kegiatan')) bg-navy text-white @else bg-gray-200 text-gray-700 hover:bg-baby-blue @endif">
-            Data Kegiatan
-
-        <a href="{{ url('/jadwal-seleksi') }}" class="py-2 px-4 rounded-md font-semibold @if(Request::is('jadwal-seleksi')) bg-navy text-white @else bg-gray-200 text-gray-700 hover:bg-baby-blue @endif">
-            Kelola Jadwal Wawancara
-        </a>
-        <a href="{{ url('/penilaian') }}" class="py-2 px-4 rounded-md font-semibold @if(Request::is('penilaian')) bg-navy text-white @else bg-gray-200 text-gray-700 hover:bg-baby-blue @endif">
-            Kelola Penilaian
-        </a>
-        <a href="{{ url('/hasilwawancara') }}" class="py-2 px-4 rounded-md font-semibold @if(Request::is('hasilwawancara')) bg-navy text-white @else bg-gray-200 text-gray-700 hover:bg-baby-blue @endif">
-            Hasil Wawancara
-        </a>
-        
+    <nav class="fixed top-0 left-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm">
+        @include('layouts.navigation')
     </nav>
 
-    @yield('content')
+    <!-- ✅ Page Header (Opsional) -->
+    @if (isset($header))
+    <header class="bg-white/80 backdrop-blur-sm shadow-sm py-4 px-6 w-full">
+        <div class="max-w-7xl mx-auto">
+            {{ $header }}
+        </div>
+    </header>
+    @endif
 
-    <div id="logoutModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white p-6 rounded-lg shadow-xl text-center max-w-sm w-full">
-            <p class="text-lg font-semibold text-gray-800 mb-4">Apakah Anda yakin ingin logout?</p>
-            <div class="flex justify-center space-x-4">
-                <button id="cancelLogout"
-                    class="py-2 px-6 rounded-md bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition-colors duration-300">
-                    Tidak
-                </button>
+    <!-- ✅ Main Content -->
+    <main class="flex-1 w-full  mx-auto px-4 md:px-8 lg:px-12 py-8 pt-24">
+        @yield('content')
+    </main>
 
-                <!-- Gunakan form logout -->
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit"
-                        class="py-2 px-6 rounded-md bg-navy text-white font-semibold hover:bg-baby-blue transition-colors duration-300">
-                        Yakin
-                    </button>
-                </form>
+    <!-- ✅ Footer -->
+    <footer class="mt-auto text-center">
+        <div class="max-w-7xl mx-auto px-4">
+            &copy; {{ date('Y') }} <strong>MagangIn</strong>. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-3 max-w-sm w-full"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay"
+        class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-2xl p-8 flex flex-col items-center space-y-4 max-w-sm mx-4">
+            <div class="relative">
+                <div class="w-12 h-12 border-4 border-blue-200 rounded-full"></div>
+                <div
+                    class="absolute top-0 left-0 w-12 h-12 border-4 border-blue-600 rounded-full border-t-transparent animate-spin">
+                </div>
+            </div>
+            <div class="text-center">
+                <h3 class="text-lg font-semibold text-gray-900">Loading...</h3>
+                <p class="text-sm text-gray-500">Please wait while we process your request</p>
             </div>
         </div>
     </div>
 
-    <script>
-    // Ambil elemen modal dan tombol logout
-    const logoutButton = document.getElementById('logoutButton');
-    const logoutModal = document.getElementById('logoutModal');
-    const cancelLogout = document.getElementById('cancelLogout');
+    <!-- Success Animation Overlay -->
+    <div id="successOverlay"
+        class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-2xl p-8 flex flex-col items-center space-y-4 max-w-sm mx-4">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                <i class="fas fa-check text-green-600 text-2xl"></i>
+            </div>
+            <div class="text-center">
+                <h3 class="text-lg font-semibold text-gray-900">Success!</h3>
+                <p class="text-sm text-gray-500">Operation completed successfully</p>
+            </div>
+        </div>
+    </div>
 
-    // Tampilkan modal saat tombol logout diklik
-    logoutButton.addEventListener('click', () => {
-        logoutModal.classList.remove('hidden');
+    <!-- Scripts -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+    // Enhanced Toast notification utility
+    class ToastManager {
+        static show(message, type = 'success', duration = 4000) {
+            const colors = {
+                success: {
+                    background: 'linear-gradient(135deg, #10B981, #059669)',
+                    icon: 'fas fa-check-circle'
+                },
+                error: {
+                    background: 'linear-gradient(135deg, #EF4444, #DC2626)',
+                    icon: 'fas fa-times-circle'
+                },
+                warning: {
+                    background: 'linear-gradient(135deg, #F59E0B, #D97706)',
+                    icon: 'fas fa-exclamation-triangle'
+                },
+                info: {
+                    background: 'linear-gradient(135deg, #3B82F6, #2563EB)',
+                    icon: 'fas fa-info-circle'
+                }
+            };
+
+            const config = colors[type] || colors.success;
+
+            Toastify({
+                text: `<i class="${config.icon} mr-2"></i>${message}`,
+                duration: duration,
+                gravity: "top",
+                position: "right",
+                background: config.background,
+                className: "rounded-lg font-medium shadow-lg border border-white/20",
+                stopOnFocus: true,
+                close: true,
+                escapeMarkup: false,
+                style: {
+                    padding: "16px 20px",
+                    fontSize: "14px",
+                    boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)"
+                }
+            }).showToast();
+        }
+
+        static success(message) {
+            this.show(message, 'success');
+        }
+
+        static error(message) {
+            this.show(message, 'error', 5000);
+        }
+
+        static warning(message) {
+            this.show(message, 'warning', 4500);
+        }
+
+        static info(message) {
+            this.show(message, 'info');
+        }
+    }
+
+    // Enhanced Loading utilities
+    class LoadingManager {
+        static show(message = 'Loading...') {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.querySelector('h3').textContent = message;
+                overlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        static hide() {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        static showSuccess(message = 'Success!') {
+            this.hide();
+            const overlay = document.getElementById('successOverlay');
+            if (overlay) {
+                overlay.querySelector('h3').textContent = message;
+                overlay.classList.remove('hidden');
+                setTimeout(() => {
+                    overlay.classList.add('hidden');
+                    document.body.style.overflow = 'auto';
+                }, 2000);
+            }
+        }
+    }
+
+    // Initialize when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        // Show session messages
+        @if(session('success'))
+        ToastManager.success("{{ session('success') }}");
+        @endif
+
+        @if(session('error'))
+        ToastManager.error("{{ session('error') }}");
+        @endif
+
+        @if(session('warning'))
+        ToastManager.warning("{{ session('warning') }}");
+        @endif
+
+        @if(session('info'))
+        ToastManager.info("{{ session('info') }}");
+        @endif
+
+        // Enhanced form handling
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                const submitBtn = form.querySelector('button[type="submit"]');
+                if (submitBtn && !submitBtn.disabled) {
+                    submitBtn.disabled = true;
+                    const originalContent = submitBtn.innerHTML;
+
+                    // Add loading state
+                    submitBtn.innerHTML = `
+                        <div class="flex items-center justify-center">
+                            <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                            Processing...
+                        </div>
+                    `;
+
+                    // Reset after timeout as fallback
+                    setTimeout(() => {
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = originalContent;
+                        }
+                    }, 15000);
+                }
+            });
+        });
+
+        // Enhanced link handling with loading states
+        document.querySelectorAll('a[href]').forEach(link => {
+            // Skip external links and javascript links
+            if (link.href.startsWith('http') && !link.href.includes(window.location.hostname)) return;
+            if (link.href.startsWith('javascript:')) return;
+            if (link.hasAttribute('target')) return;
+
+            link.addEventListener('click', function(e) {
+                // Add subtle loading indication for internal navigation
+                const icon = link.querySelector('i');
+                if (icon && !icon.classList.contains('fa-external-link-alt')) {
+                    const originalClass = icon.className;
+                    icon.className = 'fas fa-spinner fa-spin';
+
+                    setTimeout(() => {
+                        icon.className = originalClass;
+                    }, 2000);
+                }
+            });
+        });
+
+        // Auto-hide alerts after some time
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(alert => {
+                alert.style.transition = 'opacity 0.5s ease-out';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 500);
+            });
+        }, 8000);
     });
 
-    // Sembunyikan modal saat tombol "Tidak" diklik
-    cancelLogout.addEventListener('click', () => {
-        logoutModal.classList.add('hidden');
+    // Global error handler with better UX
+    window.addEventListener('error', function(e) {
+        console.error('Global error:', e.error);
+        LoadingManager.hide();
+        ToastManager.error('Terjadi kesalahan pada sistem. Silakan coba lagi.');
+    });
+
+    // Handle online/offline status
+    window.addEventListener('online', () => {
+        ToastManager.success('Koneksi internet tersambung kembali');
+    });
+
+    window.addEventListener('offline', () => {
+        ToastManager.warning('Koneksi internet terputus');
+    });
+
+    // Make utilities globally available
+    window.Toast = ToastManager;
+    window.Loading = LoadingManager;
+
+    // Enhanced keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        // Escape key to close modals
+        if (e.key === 'Escape') {
+            document.querySelectorAll('[x-data]').forEach(el => {
+                const component = el.__x?.$data;
+                if (component && component.showLogoutModal) {
+                    component.showLogoutModal = false;
+                }
+                if (component && component.open) {
+                    component.open = false;
+                }
+            });
+        }
     });
     </script>
 
+    @stack('scripts')
     @yield('scripts')
-
-
-    <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-3 max-w-sm w-full"></div>
-
 </body>
 
 </html>

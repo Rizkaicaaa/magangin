@@ -1,14 +1,23 @@
 @extends('layouts.app')
 
-@section('title', 'Kelola Jadwal Kegiatan | MagangIn')
+@section('title', 'Jadwal Kegiatan | MagangIn')
 
 @section('content')
 <div class="bg-white p-8 rounded-xl shadow-lg mx-6">
 
-    <div class="flex justify-between items-center mb-6">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+
+        @if($userRole === 'mahasiswa')
+        <h1 class="text-3xl font-bold text-gray-800">Jadwal Kegiatan Magang</h1>
+        @elseif($userRole === 'admin')
+        <h1 class="text-3xl font-bold text-gray-800">Jadwal Kegiatan Magang</h1>
+        @else
         <h1 class="text-3xl font-bold text-gray-800">Kelola Jadwal Kegiatan</h1>
+        @endif
 
         <div class="flex items-center gap-4">
+            {{-- Select periode hanya ditampilkan untuk admin dan superadmin --}}
+            @if($userRole !== 'mahasiswa')
             <div class="mb-6">
                 <label for="periode-select" class="block text-sm font-medium text-gray-700 mb-2">
                     Pilih Periode:
@@ -17,29 +26,42 @@
                     class="block w-48 px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
                     <option value="">-- Pilih Periode --</option>
                     @foreach($periodes as $periode)
-                    <option value="{{ $periode->id }}" data-status="{{ $periode->status }}">
+                    <option value="{{ $periode->id }}" data-status="{{ $periode->status }}" @if($periode->status ===
+                        'buka') selected @endif>
                         {{ $periode->periode }}
-                        @if($periode->status === 'tutup') - TUTUP @endif
+                        @if($periode->status === 'tutup') - Tutup
+                        @elseif($periode->status === 'buka') - Buka
+                        @endif
                     </option>
                     @endforeach
                 </select>
             </div>
+            @endif
 
-            <!-- Button Tambah Kegiatan -->
+            {{-- Button Tambah Kegiatan hanya untuk superadmin --}}
+            @if($userRole === 'superadmin')
             <button id="open-create-modal"
                 class="py-2 px-4 rounded-lg bg-navy text-white font-semibold hover:bg-baby-blue transition disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled>
-                + Tambah Kegiatan
+                @if($userRole !=='superadmin' || !$selectedPeriode) disabled @endif>
+                Tambah Kegiatan
             </button>
+            @endif
         </div>
     </div>
 
     {{-- Empty State --}}
-    <div id="empty-state" class="text-center p-12">
+    <div id="empty-state" class="text-center p-12 hidden">
+        @if($userRole === 'mahasiswa')
+        <p class="text-gray-500 mb-4">
+            Jadwal kegiatan untuk periode Anda akan ditampilkan di sini.
+        </p>
+        @else
         <p class="text-gray-500 mb-4">
             Pilih periode untuk melihat jadwal kegiatan yang tersedia.
         </p>
+        @endif
     </div>
+
 
     {{-- Table State --}}
     <div id="table-state" class="overflow-x-auto hidden">
@@ -60,11 +82,11 @@
     </div>
 </div>
 
-{{-- Modal Form (Tambah & Edit) --}}
+{{-- Modal Form (Tambah & Edit) - Hanya untuk superadmin --}}
+@if($userRole === 'superadmin')
 <div id="form-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 relative">
 
-        {{-- Tombol X (close) --}}
         <button id="close-form-modal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition">
             ✕
         </button>
@@ -74,7 +96,6 @@
         <form id="kegiatan-form" class="space-y-4">
             <input type="hidden" id="form-id" name="id">
 
-            <!-- Hidden periode id -->
             <input type="hidden" id="info_or_id" name="info_or_id">
 
             <div>
@@ -88,25 +109,27 @@
                 <textarea id="deskripsi_kegiatan" name="deskripsi_kegiatan" rows="3" class="input-field"
                     placeholder="Masukkan deskripsi kegiatan"></textarea>
             </div>
-
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label for="tanggal_kegiatan" class="block text-sm font-medium text-gray-700">Tanggal</label>
                     <input type="date" id="tanggal_kegiatan" name="tanggal_kegiatan" class="input-field" required>
                 </div>
                 <div>
-                    <label for="waktu_mulai" class="block text-sm font-medium text-gray-700">Waktu Mulai</label>
-                    <input type="time" id="waktu_mulai" name="waktu_mulai" class="input-field" required>
-                </div>
-                <div class="col-span-2">
-                    <label for="waktu_selesai" class="block text-sm font-medium text-gray-700">Waktu Selesai</label>
-                    <input type="time" id="waktu_selesai" name="waktu_selesai" class="input-field">
+                    <label for="tempat" class="block text-sm font-medium text-gray-700">Tempat</label>
+                    <input type="text" id="tempat" name="tempat" class="input-field"
+                        placeholder="Masukkan tempat kegiatan">
                 </div>
             </div>
 
-            <div>
-                <label for="tempat" class="block text-sm font-medium text-gray-700">Tempat</label>
-                <input type="text" id="tempat" name="tempat" class="input-field" placeholder="Masukkan tempat kegiatan">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="waktu_mulai" class="block text-sm font-medium text-gray-700">Waktu Mulai</label>
+                    <input type="time" id="waktu_mulai" name="waktu_mulai" class="input-field" required>
+                </div>
+                <div>
+                    <label for="waktu_selesai" class="block text-sm font-medium text-gray-700">Waktu Selesai</label>
+                    <input type="time" id="waktu_selesai" name="waktu_selesai" class="input-field">
+                </div>
             </div>
 
             <div class="flex justify-end gap-3 pt-4">
@@ -133,11 +156,11 @@
     </div>
 </div>
 
-{{-- Modal Delete --}}
+{{-- Modal Delete - Hanya untuk superadmin --}}
+
 <div id="delete-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
     <div class="bg-white rounded-xl shadow-lg p-6 text-center w-full max-w-sm relative">
 
-        {{-- Tombol X (close) --}}
         <button id="close-delete-modal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition">
             ✕
         </button>
@@ -178,6 +201,8 @@
     </div>
 </div>
 
+@endif
+
 @endsection
 
 @section('scripts')
@@ -196,6 +221,10 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Get user role from Laravel
+    const userRole = @json($userRole);
+    const selectedPeriode = @json($selectedPeriode);
+
     // Elements
     const periodeSelect = document.getElementById('periode-select');
     const addButton = document.getElementById('open-create-modal');
@@ -203,7 +232,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const emptyState = document.getElementById('empty-state');
     const tableState = document.getElementById('table-state');
 
-    // Modal elements
+    // Modal elements (hanya ada untuk superadmin)
     const formModal = document.getElementById('form-modal');
     const form = document.getElementById('kegiatan-form');
     const modalTitle = document.getElementById('modal-title');
@@ -211,7 +240,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const deleteModal = document.getElementById('delete-modal');
 
     // Variables
-    let currentPeriodeId = null;
+    let currentPeriodeId = selectedPeriode;
     let deleteId = null;
     let kegiatanData = [];
 
@@ -231,24 +260,39 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Event listener untuk perubahan periode
-    periodeSelect.addEventListener('change', function() {
-        const periodeId = this.value;
-        currentPeriodeId = periodeId;
+    // Event listener untuk perubahan periode (hanya untuk admin/superadmin)
+    if (periodeSelect && userRole !== 'mahasiswa') {
+        periodeSelect.addEventListener('change', function() {
+            const periodeId = this.value;
+            currentPeriodeId = periodeId;
 
-        // Clear table body
-        tableBody.innerHTML = '';
+            // Clear table body
+            tableBody.innerHTML = '';
 
-        if (!periodeId) {
-            addButton.disabled = true;
-            showEmptyState('Pilih periode untuk melihat jadwal kegiatan yang tersedia.');
-            return;
+            if (!periodeId) {
+                if (addButton) addButton.disabled = true;
+                showEmptyState('Pilih periode untuk melihat jadwal kegiatan yang tersedia.');
+                return;
+            }
+
+            // Enable button dan load data
+            if (addButton) addButton.disabled = false;
+            loadJadwalKegiatan(periodeId);
+        });
+
+        //  Cek apakah ada periode yang sudah terpilih (status = buka) saat pertama kali load
+        const selectedOption = periodeSelect.options[periodeSelect.selectedIndex];
+        if (selectedOption && selectedOption.value) {
+            currentPeriodeId = selectedOption.value;
+            if (addButton) addButton.disabled = false;
+            loadJadwalKegiatan(currentPeriodeId);
         }
+    }
 
-        // Enable button dan load data
-        addButton.disabled = false;
-        loadJadwalKegiatan(periodeId);
-    });
+    // Untuk mahasiswa, langsung load data berdasarkan periode yang sudah ditentukan
+    if (userRole === 'mahasiswa' && selectedPeriode) {
+        loadJadwalKegiatan(selectedPeriode);
+    }
 
     // Function untuk load jadwal kegiatan
     function loadJadwalKegiatan(periodeId) {
@@ -291,9 +335,14 @@ document.addEventListener('DOMContentLoaded', function() {
         tableBody.innerHTML = '';
 
         if (kegiatanData.length === 0) {
-            showEmptyState(
-                'Belum ada jadwal kegiatan untuk periode ini. Klik tombol tambah untuk membuat jadwal baru.'
-            );
+            let message = '';
+            if (userRole === 'mahasiswa') {
+                message = 'Belum ada jadwal kegiatan untuk periode Anda.';
+            } else {
+                message = 'Belum ada jadwal kegiatan untuk periode ini.' +
+                    (userRole === 'superadmin' ? ' Klik tombol tambah untuk membuat jadwal baru.' : '');
+            }
+            showEmptyState(message);
             return;
         }
 
@@ -302,6 +351,41 @@ document.addEventListener('DOMContentLoaded', function() {
         tableState.classList.remove('hidden');
 
         kegiatanData.forEach((item, index) => {
+            // Buat kolom aksi hanya untuk superadmin
+            let actionColumn = `
+    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+        <div class="flex justify-center space-x-2">
+            <button onclick="showDetail(${item.id})" 
+                    class="inline-flex items-center p-2 text-indigo-600 hover:text-indigo-900 hover:bg-indigo-50 rounded-full transition-all duration-200" title="Lihat Detail">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+            </button>
+`;
+
+            if (userRole === 'superadmin') {
+                actionColumn += `
+        <button onclick="editKegiatan(${item.id})" 
+                class="inline-flex items-center p-2 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded-full transition-all duration-200" title="Edit Kegiatan">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+            </svg>
+        </button>
+        <button onclick="deleteKegiatan(${item.id})" 
+                class="inline-flex items-center p-2 text-red-600 hover:text-red-900 hover:bg-red-50 rounded-full transition-all duration-200" title="Hapus Kegiatan">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+        </button>
+    `;
+            }
+
+            actionColumn += `</div></td>`;
+
+
             const row = `
                 <tr class="hover:bg-gray-50 transition-colors">
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${index + 1}</td>
@@ -318,29 +402,53 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${escapeHtml(item.tempat || '-')}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                        <div class="flex justify-center space-x-2">
-                            <button onclick="editKegiatan(${item.id})" 
-                                    class="inline-flex items-center p-2 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded-full transition-all duration-200" title="Edit Kegiatan">
-                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                </svg>
-                            </button>
-                            <button onclick="deleteKegiatan(${item.id})" 
-                                    class="inline-flex items-center p-2 text-red-600 hover:text-red-900 hover:bg-red-50 rounded-full transition-all duration-200" title="Hapus Kegiatan">
-                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </td>
+                    ${actionColumn}
                 </tr>
             `;
             tableBody.innerHTML += row;
         });
     }
+
+
+    function showDetail(id) { // ✅ Harus di luar fungsi lain
+        fetch(`/jadwal-kegiatan/${id}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const d = data.data;
+                    Swal.fire({
+                        title: d.nama_kegiatan,
+                        html: `
+                        <div class="text-left space-y-2">
+                            <p><strong> Tanggal:</strong> ${d.tanggal_kegiatan_formatted}</p>
+                            <p><strong> Waktu:</strong> ${d.waktu_mulai} - ${d.waktu_selesai || '-'}</p>
+                            <p><strong> Tempat:</strong> ${d.tempat}</p>
+                            <p><strong> Deskripsi:</strong> ${d.deskripsi_kegiatan || '-'}</p>
+                            <p><strong> Periode:</strong> ${d.periode ? d.periode.periode : '-'}</p>
+                        </div>
+                    `,
+                        confirmButtonColor: '#3b82f6',
+                        icon: 'info'
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal Memuat Detail',
+                        text: data.message || 'Data tidak ditemukan'
+                    });
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Terjadi Kesalahan',
+                    text: 'Tidak dapat mengambil detail kegiatan.'
+                });
+            });
+    }
+
+    window.showDetail = showDetail;
 
     // Helper function to escape HTML
     function escapeHtml(text) {
@@ -387,6 +495,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Utility functions
     function showEmptyState(message) {
+        let addButtonHtml = '';
+        if (userRole === 'superadmin' && currentPeriodeId) {
+            addButtonHtml =
+                `<button onclick="openCreateModal()" class="py-2 px-4 rounded-lg bg-navy text-white font-semibold hover:bg-baby-blue transition">+ Tambah Kegiatan</button>`;
+        }
+
         emptyState.innerHTML = `
             <div class="text-center p-12">
                 <div class="mx-auto h-24 w-24 text-gray-300 mb-4">
@@ -395,7 +509,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </svg>
                 </div>
                 <p class="text-gray-500 text-lg mb-4">${message}</p>
-                ${currentPeriodeId ? `<button onclick="openCreateModal()" class="py-2 px-4 rounded-lg bg-navy text-white font-semibold hover:bg-baby-blue transition">+ Tambah Kegiatan</button>` : ''}
+                ${addButtonHtml}
             </div>
         `;
         emptyState.classList.remove('hidden');
@@ -418,8 +532,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Modal handlers
-    if (addButton) {
+    // Modal handlers (hanya untuk superadmin)
+    if (addButton && userRole === 'superadmin') {
         addButton.addEventListener('click', function() {
             if (!currentPeriodeId) {
                 Swal.fire({
@@ -435,7 +549,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function openCreateModal() {
-        if (!form) return;
+        if (!form || userRole !== 'superadmin') return;
 
         form.reset();
         if (formId) formId.value = '';
@@ -446,17 +560,21 @@ document.addEventListener('DOMContentLoaded', function() {
         if (periodeInput) periodeInput.value = currentPeriodeId;
 
         // Reset submit button
-        document.getElementById('submit-text').classList.remove('hidden');
-        document.getElementById('submit-loading').classList.add('hidden');
+        const submitText = document.getElementById('submit-text');
+        const submitLoading = document.getElementById('submit-loading');
+        if (submitText) submitText.classList.remove('hidden');
+        if (submitLoading) submitLoading.classList.add('hidden');
 
         if (formModal) formModal.classList.remove('hidden');
     }
 
-    // Make openCreateModal global
-    window.openCreateModal = openCreateModal;
+    // Make openCreateModal global untuk superadmin
+    if (userRole === 'superadmin') {
+        window.openCreateModal = openCreateModal;
+    }
 
-    // Form submit handler
-    if (form) {
+    // Form submit handler (hanya untuk superadmin)
+    if (form && userRole === 'superadmin') {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             handleFormSubmit();
@@ -464,14 +582,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function handleFormSubmit() {
-        const submitButton = form.querySelector('button[type="submit"]');
-        const submitText = document.getElementById('submit-text');
-        const submitLoading = document.getElementById('submit-loading');
+        if (userRole !== 'superadmin') return;
 
-        // Show loading state
+        const submitButton = form.querySelector('button[type="submit"]');
+        const submitText = submitButton?.querySelector('#submit-text');
+        const submitLoading = submitButton?.querySelector('#submit-loading');
+
+        // ✅ Tampilkan loading state dengan aman
         submitButton.disabled = true;
-        submitText.classList.add('hidden');
-        submitLoading.classList.remove('hidden');
+        if (submitText) submitText.classList.add('hidden');
+        if (submitLoading) submitLoading.classList.remove('hidden');
 
         const formData = new FormData(form);
         const isEdit = formId.value !== '';
@@ -493,11 +613,10 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    formModal.classList.add('hidden');
+                    if (formModal) formModal.classList.add('hidden');
                     loadJadwalKegiatan(currentPeriodeId);
                     showSuccess(data.message || 'Data berhasil disimpan');
                 } else {
-                    // Handle validation errors
                     if (data.errors) {
                         let errorMessage = 'Terjadi kesalahan:\n';
                         Object.values(data.errors).forEach(error => {
@@ -519,58 +638,65 @@ document.addEventListener('DOMContentLoaded', function() {
                 showError('Terjadi kesalahan saat menyimpan data');
             })
             .finally(() => {
-                // Reset loading state
+                //  Reset loading state aman
                 submitButton.disabled = false;
-                submitText.classList.remove('hidden');
-                submitLoading.classList.add('hidden');
+                if (submitText) submitText.classList.remove('hidden');
+                if (submitLoading) submitLoading.classList.add('hidden');
             });
     }
 
-    // Global functions untuk edit dan delete
-    window.editKegiatan = function(id) {
-        const item = kegiatanData.find(d => d.id === id);
-        if (!item || !form) return;
-
-        formId.value = item.id;
-        document.getElementById('nama_kegiatan').value = item.nama_kegiatan || '';
-        document.getElementById('deskripsi_kegiatan').value = item.deskripsi_kegiatan || '';
-        document.getElementById('tanggal_kegiatan').value = item.tanggal_kegiatan || '';
-        document.getElementById('waktu_mulai').value = item.waktu_mulai || '';
-        document.getElementById('waktu_selesai').value = item.waktu_selesai || '';
-        document.getElementById('tempat').value = item.tempat || '';
-        document.getElementById('info_or_id').value = item.info_or_id || currentPeriodeId;
-
-        modalTitle.textContent = 'Edit Kegiatan';
-
-        // Reset submit button
-        document.getElementById('submit-text').classList.remove('hidden');
-        document.getElementById('submit-loading').classList.add('hidden');
-
-        formModal.classList.remove('hidden');
-    };
-
-    window.deleteKegiatan = function(id) {
-        deleteId = id;
-        const item = kegiatanData.find(d => d.id === id);
-
-        Swal.fire({
-            title: 'Hapus Kegiatan?',
-            html: `Apakah Anda yakin ingin menghapus kegiatan <strong>"${item?.nama_kegiatan || 'ini'}"</strong>?<br><span class="text-sm text-gray-500">Tindakan ini tidak dapat dibatalkan.</span>`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#dc2626',
-            cancelButtonColor: '#6b7280',
-            confirmButtonText: 'Ya, Hapus!',
-            cancelButtonText: 'Batal',
-            reverseButtons: true
-        }).then((result) => {
-            if (result.isConfirmed) {
-                performDelete(id);
+    // Fungsi edit (hanya untuk superadmin)
+    if (userRole === 'superadmin') {
+        window.editKegiatan = function(id) {
+            const item = kegiatanData.find(d => d.id === id);
+            if (!item || !form || !formModal) {
+                console.error('❌ Modal atau form belum terload.');
+                return;
             }
-        });
-    };
+
+            formId.value = item.id;
+            document.getElementById('nama_kegiatan').value = item.nama_kegiatan || '';
+            document.getElementById('deskripsi_kegiatan').value = item.deskripsi_kegiatan || '';
+            document.getElementById('tanggal_kegiatan').value = item.tanggal_kegiatan || '';
+            document.getElementById('waktu_mulai').value = item.waktu_mulai || '';
+            document.getElementById('waktu_selesai').value = item.waktu_selesai || '';
+            document.getElementById('tempat').value = item.tempat || '';
+            document.getElementById('info_or_id').value = item.info_or_id || currentPeriodeId;
+
+            modalTitle.textContent = 'Edit Kegiatan';
+
+            document.getElementById('submit-text').classList.remove('hidden');
+            document.getElementById('submit-loading').classList.add('hidden');
+
+            formModal.classList.remove('hidden');
+        }
+
+        window.deleteKegiatan = function(id) {
+            deleteId = id;
+            const item = kegiatanData.find(d => d.id === id);
+
+            Swal.fire({
+                title: 'Hapus Kegiatan?',
+                html: `Apakah Anda yakin ingin menghapus kegiatan <strong>"${item?.nama_kegiatan || 'ini'}"</strong>?<br><span class="text-sm text-gray-500">Tindakan ini tidak dapat dibatalkan.</span>`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    performDelete(id);
+                }
+            });
+        };
+    }
+
 
     function performDelete(id) {
+        if (userRole !== 'superadmin') return;
+
         // Show loading alert
         Swal.fire({
             title: 'Menghapus...',
@@ -608,34 +734,36 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    // Close modal handlers
-    const closeFormModal = document.getElementById('close-form-modal');
-    if (closeFormModal) {
-        closeFormModal.addEventListener('click', function() {
-            if (formModal) formModal.classList.add('hidden');
-        });
-    }
-
-    const cancelForm = document.getElementById('cancel-form');
-    if (cancelForm) {
-        cancelForm.addEventListener('click', function() {
-            if (formModal) formModal.classList.add('hidden');
-        });
-    }
-
-    // Close modal when clicking outside
-    [formModal, deleteModal].forEach(modal => {
-        if (modal) {
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    modal.classList.add('hidden');
-                }
+    // Close modal handlers (hanya untuk superadmin)
+    if (userRole === 'superadmin') {
+        const closeFormModal = document.getElementById('close-form-modal');
+        if (closeFormModal) {
+            closeFormModal.addEventListener('click', function() {
+                if (formModal) formModal.classList.add('hidden');
             });
         }
-    });
+
+        const cancelForm = document.getElementById('cancel-form');
+        if (cancelForm) {
+            cancelForm.addEventListener('click', function() {
+                if (formModal) formModal.classList.add('hidden');
+            });
+        }
+
+        // Close modal when clicking outside
+        [formModal, deleteModal].forEach(modal => {
+            if (modal) {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        modal.classList.add('hidden');
+                    }
+                });
+            }
+        });
+    }
 
     // Initialize
-    console.log('Jadwal Kegiatan script initialized');
+    console.log('Jadwal Kegiatan script initialized for role:', userRole);
 });
 </script>
 @endsection
