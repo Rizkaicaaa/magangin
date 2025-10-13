@@ -86,7 +86,7 @@ Route::middleware('auth')->group(function () {
 
 // Route::get('/penilaian', function () {
 //    return view('penilaian.index');
-//});
+// });
 //Route::get('/penilaian', function () {
 //   return view('penilaian.index');
 //})->name('penilaian.index');
