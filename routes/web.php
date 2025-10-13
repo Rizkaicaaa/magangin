@@ -73,6 +73,8 @@ Route::middleware('auth')->group(function () {
     // Route::put('/penilaian/{id}', [EvaluasiMagangController::class, 'update'])->name('penilaian.update'); 
     Route::post('/penilaian/store', [EvaluasiMagangController::class, 'storeOrUpdate'])->name('penilaian.store'); 
     Route::put('penilaian/{id}', [EvaluasiMagangController::class, 'storeOrUpdate']);
+    Route::get('/penilaian', [EvaluasiMagangController::class, 'index'])->name('penilaian.index');
+    Route::delete('/{id}', [EvaluasiMagangController::class, 'destroy'])->name('penilaian.destroy');
 });
 
 // Route::get('/auth', function () {
@@ -81,7 +83,7 @@ Route::middleware('auth')->group(function () {
 
 // Route::get('/penilaian', function () {
 //    return view('penilaian.index');
-//});
+// });
 //Route::get('/penilaian', function () {
 //   return view('penilaian.index');
 //})->name('penilaian.index');
