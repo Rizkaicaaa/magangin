@@ -32,8 +32,10 @@ class PengumumanMagangController extends Controller
         $idPendaftaran = $pendaftaran->id;
         $namaMahasiswa = str_replace(' ', '_', strtolower($pendaftaran->user->nama_lengkap));
 
-        // Hitung rata-rata nilai & tentukan status
-        $rataRata = $evaluasi->nilai_total / 4;
+        // 💡 Gunakan langsung nilai total tanpa dibagi 4
+        $rataRata = $evaluasi->nilai_total;
+
+        // Tentukan status kelulusan
         $hasilEvaluasi = $rataRata >= 75 ? 'Lulus' : 'Tidak Lulus';
         $warnaStatus = $hasilEvaluasi === 'Lulus' ? 'text-green' : 'text-red';
 
@@ -67,7 +69,7 @@ class PengumumanMagangController extends Controller
             ? 'data:image/png;base64,' . base64_encode(file_get_contents($pathKetua))
             : '';
 
-        // Replace placeholder
+        // Replace placeholder di template
         $replacedContent = str_replace(
             [
                 '{{nama_mahasiswa}}',
@@ -97,9 +99,8 @@ class PengumumanMagangController extends Controller
             ->setPaper('a4', 'landscape')
             ->setOptions([
                 'isHtml5ParserEnabled' => true,
-                'isRemoteEnabled' => true, 
+                'isRemoteEnabled' => true,
             ]);
-
 
         $fileName = 'Sertifikat_' . $namaMahasiswa . '.pdf';
         $path = 'sertifikat/' . $fileName;
