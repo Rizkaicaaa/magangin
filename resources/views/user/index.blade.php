@@ -173,6 +173,9 @@
 
 @endsection
 
+{{-- ========================================================== --}}
+{{-- BAGIAN SCRIPT (SUDAH DIPERBAIKI) --}}
+{{-- ========================================================== --}}
 @section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -187,24 +190,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Elemen-elemen state
     const emptyState = document.getElementById('empty-state');
-    // Tidak perlu ambil elemen adminTableState dan mahasiswaTableState di JS karena sudah dihandle Blade
-    // const adminTableState = document.getElementById('admin-table-state');
-    // const mahasiswaTableState = document.getElementById('mahasiswa-table-state');
 
     function manageView() {
-        // Cek apakah ada data secara keseluruhan (mengandalkan variabel global $users dari Blade)
-        // Note: Ini hanya berfungsi sebagai fallback, logika utama sudah dihandle di Blade
-        const totalDataRows = {
-            {
-                count($users)
-            }
-        }; // Menggunakan variabel Blade
+        // PERBAIKAN SINTAKS: Mengganti { { count($users) } } dengan sintaks Blade yang benar
+        const totalDataRows = {{ count($users) }}; 
         const hasData = totalDataRows > 0;
 
         // Logika untuk Empty State Global
         if (!hasData) {
             emptyState.classList.remove('hidden');
-            // Tidak perlu mengubah display table state, biarkan Blade yang mengaturnya
             if (createButton) createButton.classList.add('hidden');
         } else {
             emptyState.classList.add('hidden');
@@ -212,6 +206,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Hanya panggil manageView jika ada data user yang masuk (tidak harus, tapi menjaga kode tetap ringkas)
+    // Walaupun ada error, `count($users)` tetap akan dieksekusi oleh PHP.
     manageView();
 
     // Fungsi untuk memastikan input method PUT/DELETE dihapus saat mode CREATE
@@ -227,10 +223,10 @@ document.addEventListener('DOMContentLoaded', () => {
         formModal.classList.remove('hidden');
         document.getElementById('form-title').textContent = 'Tambah User Baru';
         document.getElementById('user-form').reset();
-        document.getElementById('user-form').action = "{{ route('users.store') }}";
+        document.getElementById('user-form').action = "{{ route('users.store') }}"; 
+        
         document.getElementById('password-field').classList.remove('hidden');
-        document.getElementById('password').setAttribute('required',
-            'required'); // Pastikan password required saat membuat user baru
+        document.getElementById('password').setAttribute('required', 'required');
 
         // Hapus method field jika ada
         cleanupMethodField();
@@ -244,43 +240,50 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Tutup modal form
-    closeFormModalButton.addEventListener('click', () => formModal.classList.add('hidden'));
-    formCancelButton.addEventListener('click', () => formModal.classList.add('hidden'));
-
-    // Tampilkan modal hapus
-    // Menggunakan delegasi event pada elemen body untuk memastikan tombol yang di-render Blade terdeteksi
-    document.querySelectorAll('.delete-button').forEach(button => {
-        button.addEventListener('click', (e) => {
-            const id = e.currentTarget.dataset.id; // Menggunakan currentTarget untuk button
-            // Ubah URL untuk DELETE
-            deleteForm.action = `/users/${id}/destroy`;
-            deleteModal.classList.remove('hidden');
-        });
-    });
+    if (closeFormModalButton) closeFormModalButton.addEventListener('click', () => formModal.classList.add('hidden'));
+    if (formCancelButton) formCancelButton.addEventListener('click', () => formModal.classList.add('hidden'));
 
     // Tutup modal hapus
-    modalCancelButton.addEventListener('click', () => deleteModal.classList.add('hidden'));
+    if (modalCancelButton) modalCancelButton.addEventListener('click', () => deleteModal.classList.add('hidden'));
 
-    // Tampilkan modal edit
-    document.querySelectorAll('.edit-button').forEach(button => {
-        button.addEventListener('click', (e) => {
-            const id = e.currentTarget.dataset.id; // Menggunakan currentTarget untuk button
+    // ==========================================================
+    // Event Delegation untuk Tombol EDIT dan HAPUS 
+    // ==========================================================
+    document.addEventListener('click', (e) => {
+        // Menggunakan closest() untuk memastikan kita menangkap tombol, bahkan jika ikon SVG yang diklik
+        const editButton = e.target.closest('.edit-button');
+        const deleteButton = e.target.closest('.delete-button');
+
+        // === LOGIKA TOMBOL HAPUS ===
+        if (deleteButton) {
+            e.preventDefault(); 
+            const id = deleteButton.dataset.id; 
+            // Pastikan URL DELETE sesuai dengan route Anda
+            deleteForm.action = `/users/${id}/destroy`; 
+            deleteModal.classList.remove('hidden');
+            return;
+        }
+
+        // === LOGIKA TOMBOL EDIT ===
+        if (editButton) {
+            e.preventDefault(); 
+            const id = editButton.dataset.id; 
 
             // Hapus method field lama jika ada
             cleanupMethodField();
 
-            // Fetch data user dari server (menggunakan fetch API)
+            // Fetch data user dari server 
             fetch(`/users/${id}/edit`)
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('Network response was not ok');
+                        throw new Error(`Gagal mengambil data user. Status: ${response.status}`);
                     }
                     return response.json();
                 })
                 .then(data => {
                     // Isi form dengan data yang didapat
                     document.getElementById('form-title').textContent = 'Edit User';
-                    document.getElementById('user-form').action = `/users/${id}`;
+                    document.getElementById('user-form').action = `/users/${id}`; 
 
                     // Tambahkan method field untuk PUT
                     const form = document.getElementById('user-form');
@@ -304,10 +307,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
                 .catch(error => {
                     console.error('Error fetching user data:', error);
-                    // Di lingkungan live, Anda bisa menampilkan pesan error yang ramah pengguna
+                    alert('Gagal memuat data user. Silakan cek console untuk detail.');
                 });
-        });
+        }
     });
+
 });
 </script>
 @endsection

@@ -690,8 +690,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 html: `Apakah Anda yakin ingin menghapus kegiatan <strong>"${item?.nama_kegiatan || 'ini'}"</strong>?<br><span class="text-sm text-gray-500">Tindakan ini tidak dapat dibatalkan.</span>`,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#dc2626',
-                cancelButtonColor: '#6b7280',
+                confirmButtonColor: '#6b7280',
+                cancelButtonColor: '#d33',
                 confirmButtonText: 'Ya, Hapus!',
                 cancelButtonText: 'Batal',
                 reverseButtons: true

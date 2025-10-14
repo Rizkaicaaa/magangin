@@ -127,8 +127,8 @@ document.querySelectorAll('.delete-button').forEach(button => {
             text: "Data jadwal wawancara ini akan dihapus!",
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
+            confirmButtonColor: '#6b7280',
+            cancelButtonColor: '#d33',
             confirmButtonText: 'Ya, hapus!',
             cancelButtonText: 'Batal'
         }).then((result) => {

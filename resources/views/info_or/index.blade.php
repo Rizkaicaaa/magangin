@@ -264,8 +264,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 text: "Anda akan menutup pendaftaran Info OR ini. Setelah ditutup, pendaftaran tidak dapat dibuka lagi.",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#dc2626',
-                cancelButtonColor: '#6b7280',
+                confirmButtonColor: '#6b7280',
+                cancelButtonColor: '#dc2626',
                 confirmButtonText: 'Ya, Tutup!',
                 cancelButtonText: 'Batal',
                 reverseButtons: true
