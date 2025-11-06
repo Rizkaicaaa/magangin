@@ -9,21 +9,14 @@
 
     <title>@yield('title', 'MagangIn - Platform Magang Terpadu')</title>
 
-    <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ asset('images/logomagangin.png') }}">
 
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-    <!-- Toast notifications -->
-    <!-- <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"> -->
-
-    <!-- Vite Assets -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     @stack('head-scripts')
@@ -55,6 +48,11 @@
     /* Smooth transitions */
     * {
         transition: all 0.2s ease-in-out;
+    }
+
+    /* Tambahkan ini untuk Alpine.js agar elemen x-show tidak muncul sebelum inisialisasi */
+    [x-cloak] {
+        display: none !important;
     }
 
     /* Loading spinner */
@@ -98,7 +96,6 @@
         @include('layouts.navigation')
     </nav>
 
-    <!-- ✅ Page Header (Opsional) -->
     @if (isset($header))
     <header class="bg-white/80 backdrop-blur-sm shadow-sm py-4 px-6 w-full">
         <div class="max-w-7xl mx-auto">
@@ -107,22 +104,18 @@
     </header>
     @endif
 
-    <!-- ✅ Main Content -->
-    <main class="flex-1 w-full  mx-auto px-4 md:px-8 lg:px-12 py-8 pt-24">
+    <main class="flex-1 w-full  mx-auto px-4 md:px-8 lg:px-12 py-8 pt-24">
         @yield('content')
     </main>
 
-    <!-- ✅ Footer -->
     <footer class="mt-auto text-center">
         <div class="max-w-7xl mx-auto px-4">
             &copy; {{ date('Y') }} <strong>MagangIn</strong>. All rights reserved.
         </div>
     </footer>
 
-    <!-- Toast Container -->
     <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-3 max-w-sm w-full"></div>
 
-    <!-- Loading Overlay -->
     <div id="loadingOverlay"
         class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-xl shadow-2xl p-8 flex flex-col items-center space-y-4 max-w-sm mx-4">
@@ -139,7 +132,6 @@
         </div>
     </div>
 
-    <!-- Success Animation Overlay -->
     <div id="successOverlay"
         class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-xl shadow-2xl p-8 flex flex-col items-center space-y-4 max-w-sm mx-4">
@@ -153,7 +145,6 @@
         </div>
     </div>
 
-    <!-- Scripts -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 

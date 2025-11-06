@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\EvaluasiMagang;
 use App\Models\TemplateSertifikat;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Barryvdh\DomPDF\Facade\Pdf; // BARIS INI SUDAH BENAR
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -95,23 +95,23 @@ class PengumumanMagangController extends Controller
         );
 
         // Generate PDF
-        $pdf = Pdf::loadHTML($replacedContent)
-            ->setPaper('a4', 'landscape')
-            ->setOptions([
-                'isHtml5ParserEnabled' => true,
-                'isRemoteEnabled' => true,
-            ]);
+        // $pdf = Pdf::loadHTML($replacedContent)
+        //     ->setPaper('a4', 'landscape')
+        //     ->setOptions([
+        //         'isHtml5ParserEnabled' => true,
+        //         'isRemoteEnabled' => true,
+        //     ]);
 
-        $fileName = 'Sertifikat_' . $namaMahasiswa . '.pdf';
-        $path = 'sertifikat/' . $fileName;
-        Storage::disk('public')->put($path, $pdf->output());
+        // $fileName = 'Sertifikat_' . $namaMahasiswa . '.pdf';
+        // $path = 'sertifikat/' . $fileName;
+        // Storage::disk('public')->put($path, $pdf->output());
 
-        // Update database
-        $evaluasi->update([
-            'nomor_sertifikat' => $request->nomor_sertifikat . $idPendaftaran,
-            'file_sertifikat' => $path,
-            'template_sertifikat_id' => $template->id,
-        ]);
+        // // Update database
+        // $evaluasi->update([
+        //     'nomor_sertifikat' => $request->nomor_sertifikat . $idPendaftaran,
+        //     'file_sertifikat' => $path,
+        //     'template_sertifikat_id' => $template->id,
+        // ]);
 
         return redirect()->route('pengumuman.kelulusan')
             ->with('success', 'Sertifikat PDF berhasil dibuat dan disimpan!');

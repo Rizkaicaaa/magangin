@@ -11,7 +11,7 @@ class TemplateSertifikatController extends Controller
 {
     public function index()
     {
-        $infoOrList = InfoOr::where('status', 'buka')->get();
+        $infoOrList = InfoOr::get();
         return view('template-sertifikat.index', compact('infoOrList'));
     }
 

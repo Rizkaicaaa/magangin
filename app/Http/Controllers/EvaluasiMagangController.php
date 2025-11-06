@@ -14,13 +14,11 @@ class EvaluasiMagangController extends Controller
         $user = Auth::user();
 
         $pendaftar = Pendaftaran::where('dinas_diterima_id', $user->dinas_id)
-    ->whereIn('status_pendaftaran', ['lulus_magang', 'tidak_lulus_magang'])
+    ->whereIn('status_pendaftaran', ['lulus_wawancara'])
     ->with('user') 
     ->get();
 
-        $penilaian = EvaluasiMagang::whereIn('pendaftaran_id', $pendaftar->pluck('id'))
-            ->with('pendaftaran.user')
-            ->get();
+        $penilaian = EvaluasiMagang::get();
 
         return view('penilaian.index', compact('pendaftar', 'penilaian'));
     }
