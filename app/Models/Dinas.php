@@ -1,7 +1,5 @@
 <?php
 
-// File: app/Models/Dinas.php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,12 +15,9 @@ class Dinas extends Model
         'nama_dinas',
         'deskripsi',
         'kontak_person',
-        'kuota_magang',
-        'status',
     ];
 
     protected $casts = [
-        'kuota_magang' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -47,12 +42,6 @@ class Dinas extends Model
     public function users()
     {
         return $this->hasMany(User::class, 'dinas_id');
-    }
-
-    // Scope untuk dinas aktif
-    public function scopeActive($query)
-    {
-        return $query->where('status', 'aktif');
     }
 
     // Method untuk menghitung jumlah pendaftar pilihan 1

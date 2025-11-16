@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Dinas;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -11,34 +12,19 @@ use Illuminate\Support\Str;
  */
 class UserFactory extends Factory
 {
-    /**
-     * The current password being used by the factory.
-     */
-    protected static ?string $password;
-
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
+            'email' => $this->faker->unique()->safeEmail(),
+            'password' => Hash::make('password123'),
+            'role' => $this->faker->randomElement(['superadmin', 'admin', 'mahasiswa']),
+            'nama_lengkap' => $this->faker->name(),
+            'nim' => $this->faker->optional()->numerify('22########'),
+            'no_telp' => $this->faker->phoneNumber(),
+            'tanggal_daftar' => $this->faker->date(),
+            'status' => $this->faker->randomElement(['aktif', 'non_aktif']),
+            'dinas_id' => Dinas::factory(), // relasi ke Dinas
             'remember_token' => Str::random(10),
         ];
-    }
-
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
-    public function unverified(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
-        ]);
     }
 }
