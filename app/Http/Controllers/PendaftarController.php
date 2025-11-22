@@ -376,49 +376,5 @@ public function viewTranskrip($id)
     ]);
 }
 
-/**
- * Download CV file (existing method - modified to force download)
- */
-// public function downloadCV($id)
-// {
-//     $pendaftar = Pendaftar::findOrFail($id);
-//     $pendaftaran = $pendaftar->pendaftaran->first();
-    
-//     if (!$pendaftaran || !$pendaftaran->file_cv) {
-//         abort(404, 'File CV tidak ditemukan');
-//     }
-    
-//     $filePath = storage_path('app/' . $pendaftaran->file_cv);
-    
-//     if (!file_exists($filePath)) {
-//         abort(404, 'File CV tidak ditemukan');
-//     }
-    
-//     $fileName = 'CV_' . $pendaftar->nama_lengkap . '_' . $pendaftar->nim . '.' . pathinfo($filePath, PATHINFO_EXTENSION);
-    
-//     return response()->download($filePath, $fileName);
-// }
 
-// /**
-//  * Download Transkrip file (existing method - modified to force download)
-//  */
-// public function downloadTranskrip($id)
-// {
-//     $pendaftar = Pendaftar::findOrFail($id);
-//     $pendaftaran = $pendaftar->pendaftaran->first();
-    
-//     if (!$pendaftaran || !$pendaftaran->file_transkrip) {
-//         abort(404, 'File Transkrip tidak ditemukan');
-//     }
-    
-//     $filePath = storage_path('app/' . $pendaftaran->file_transkrip);
-    
-//     if (!file_exists($filePath)) {
-//         abort(404, 'File Transkrip tidak ditemukan');
-//     }
-    
-//     $fileName = 'Transkrip_' . $pendaftar->nama_lengkap . '_' . $pendaftar->nim . '.' . pathinfo($filePath, PATHINFO_EXTENSION);
-    
-//     return response()->download($filePath, $fileName);
-// }
 }
