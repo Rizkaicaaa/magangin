@@ -10,13 +10,23 @@ use Illuminate\Support\Facades\Storage;
 
 class PengumumanMagangController extends Controller
 {
-    public function index()
-    {
-        $evaluasiList = EvaluasiMagang::with('pendaftaran.user')->latest()->get();
-        $templates = TemplateSertifikat::orderBy('created_at', 'desc')->get();
+   public function index()
+{
+    $evaluasiList = $this->getEvaluasiList();
+    $templates = $this->getTemplates();
 
-        return view('pengumuman-magang.index', compact('evaluasiList', 'templates'));
-    }
+    return view('pengumuman-magang.index', compact('evaluasiList', 'templates'));
+}
+protected function getEvaluasiList()
+{
+    return EvaluasiMagang::with('pendaftaran.user')->latest()->get();
+}
+
+protected function getTemplates()
+{
+    return TemplateSertifikat::orderBy('created_at', 'desc')->get();
+}
+
 
     public function store(Request $request, $id)
     {
