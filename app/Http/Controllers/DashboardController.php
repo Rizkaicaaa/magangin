@@ -80,7 +80,6 @@ class DashboardController extends Controller
         'additionalStats' => []
     ];
 } else {
-    // Filter by selected info_or
     $data = [
         'totalPendaftar' => Pendaftaran::where('info_or_id', $selectedInfoOr)->count(),
         'totalDinas' => Dinas::count(), // ✅ perbaikan di sini
@@ -132,7 +131,7 @@ class DashboardController extends Controller
     }
     
     /**
-     * Data untuk Admin - FIXED: hanya bisa lihat data dinas mereka dan filter per periode
+     * Data untuk Admin : hanya bisa lihat data dinas mereka dan filter per periode
      */
 private function getAdminData(Request $request, $user)
     {
@@ -175,12 +174,12 @@ private function getAdminData(Request $request, $user)
         $pendaftarTerbaru = $baseQuery->orderBy('created_at', 'desc')->limit(10)->get();
 
         $additionalStats = [
-   'terdaftar' => (clone $baseQuery)->where('status_pendaftaran', 'terdaftar')->count(),
-    'pendaftar_lulus_wawancara' => (clone $baseQuery)->where('status_pendaftaran', 'lulus_wawancara')->count(),
-    'pendaftar_ditolak' => (clone $baseQuery)->where('status_pendaftaran', 'tidak_lulus_wawancara')->count(),
-    'pendaftar_lulus_magang' => (clone $baseQuery)->where('status_pendaftaran', 'lulus_magang')->count(),
-    'pendaftar_tidak_lulus_magang' => (clone $baseQuery)->where('status_pendaftaran', 'tidak_lulus_magang')->count(),
-];
+        'terdaftar' => (clone $baseQuery)->where('status_pendaftaran', 'terdaftar')->count(),
+        'pendaftar_lulus_wawancara' => (clone $baseQuery)->where('status_pendaftaran', 'lulus_wawancara')->count(),
+        'pendaftar_ditolak' => (clone $baseQuery)->where('status_pendaftaran', 'tidak_lulus_wawancara')->count(),
+        'pendaftar_lulus_magang' => (clone $baseQuery)->where('status_pendaftaran', 'lulus_magang')->count(),
+        'pendaftar_tidak_lulus_magang' => (clone $baseQuery)->where('status_pendaftaran', 'tidak_lulus_magang')->count(),
+        ];
 
         $totalPendaftar = $baseQuery->count();
         $totalKegiatan = JadwalKegiatan::whereIn('info_or_id', $allInfoOr->pluck('id'))->count();
@@ -221,72 +220,14 @@ private function getAdminData(Request $request, $user)
                             ->limit(8)
                             ->get();
 
-        // $statusSummary = [
-        //     'total_pendaftaran' => $pendaftaranUser->count(),
-        //     'menunggu_seleksi' => $pendaftaranUser->where('status_pendaftaran', 'terdaftar')->count(),
-        //     'diterima' => $pendaftaranUser->where('status_pendaftaran', 'lulus_wawancara')->count(),
-        //     'ditolak' => $pendaftaranUser->where('status_pendaftaran', 'tidak_lulus_wawancara')->count(),
-        // ];
-
         return [
-        //     'totalPendaftar' => $statusSummary['total_pendaftaran'],
-        //     'totalDinas' => $pendaftaranUser->unique('dinas_id')->count(),
-         //   'totalInfo' => $statusSummary['diterima'],
             'totalKegiatan' => $kegiatanUser->count(),
             'pendaftaranUser' => $pendaftaranUser,
             'kegiatanTerdekat' => $kegiatanUser,
-           // 'additionalStats' => $statusSummary,
             'selectedInfoOr' => 'all',
             'selectedInfoOrData' => null,
             'allInfoOr' => collect(),
             'showFilter' => false
         ];
     }
-    
-    /**
-     * Get statistics for specific info_or (API endpoint)
-     * PERBAIKAN: Tambahkan filtering berdasarkan role
-     */
-    // public function getInfoOrStats($infoOrId)
-    // {
-    //     $user = Auth::user();
-        
-    //     $baseQuery = Pendaftaran::where('info_or_id', $infoOrId);
-        
-    //     // Filter berdasarkan role
-    //     if (in_array($user->role, ['admin', 'admin_dinas'])) {
-    //         // Admin hanya bisa lihat data untuk dinas mereka
-    //         if (!$user->dinas_id) {
-    //             return response()->json([
-    //                 'total_pendaftar' => 0,
-    //                 'pendaftar_diterima' => 0,
-    //                 'pendaftar_ditolak' => 0,
-    //                 'pendaftar_menunggu' => 0,
-    //                 'total_kegiatan' => 0,
-    //             ]);
-    //         }
-    //         // Filter berdasarkan pilihan dinas atau dinas yang menerima
-    //         $baseQuery->where(function($query) use ($user) {
-    //             $query->where('pilihan_dinas_1', $user->dinas_id)
-    //                   ->orWhere('pilihan_dinas_2', $user->dinas_id)
-    //                   ->orWhere('dinas_diterima_id', $user->dinas_id);
-    //         });
-    //     } elseif (in_array($user->role, ['mahasiswa', 'user'])) {
-    //         // Mahasiswa hanya bisa lihat data untuk pendaftaran mereka sendiri
-    //         $baseQuery->where('user_id', $user->id);
-    //     }
-    //     // Superadmin bisa lihat semua data (tidak ada filter tambahan)
-        
-    //     $stats = [
-    //         'total_pendaftar' => $baseQuery->count(),
-    //         'terdaftar' => (clone $baseQuery)->where('status_pendaftaran', 'terdaftar')->count(),
-    //         'pendaftar_lulus_wawancara' => (clone $baseQuery)->where('status_pendaftaran', 'lulus_wawancara')->count(),
-    //         'pendaftar_ditolak' => (clone $baseQuery)->where('status_pendaftaran', 'tidak_lulus_wawancara')->count(),
-    //         'pendaftar_lulus_magang' => (clone $baseQuery)->where('status_pendaftaran', 'lulus_magang')->count(),
-    //         'pendaftar_tidak_lulus_magang' => (clone $baseQuery)->where('status_pendaftaran', 'tidak_lulus_magang')->count(),
-    //         'total_kegiatan' => JadwalKegiatan::where('info_or_id', $infoOrId)->count(),
-    //     ];
-        
-    //     return response()->json($stats);
-    // }
 }

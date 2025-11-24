@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Controllers;
 
 use Tests\TestCase;
 use Illuminate\Http\Request;
