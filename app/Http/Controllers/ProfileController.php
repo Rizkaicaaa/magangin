@@ -55,7 +55,7 @@ class ProfileController extends Controller
     public function editPassword(): View
 {
     return view('profile.edit-password', [
-        'user' => auth()->user(),
+        'user' => Auth::user(),
     ]);
 }
 
