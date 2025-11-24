@@ -165,68 +165,72 @@ class PendaftarControllerTest extends TestCase
         $this->assertEquals('budi@example.com', $data['data']['email']);
     }
 
-    /** @test */
-    public function create_gagal_validation_error()
-    {
-        Log::shouldReceive('info')->zeroOrMoreTimes();
-        Log::shouldReceive('error')->once();
-        DB::shouldReceive('rollBack')->once();
+ /** @test */
+public function create_gagal_validation_error()
+{
+    Log::shouldReceive('info')->zeroOrMoreTimes();
+    Log::shouldReceive('error')->once();
+    DB::shouldReceive('rollBack')->once();
 
-        // Create invalid request data
-        $requestData = [
-            'nama_lengkap' => '',
-            'nim' => '',
-            'email' => 'not-an-email',
-            'password' => '123',
-            'password_confirmation' => '1234',
-        ];
+    // Create invalid request data
+    $requestData = [
+        'nama_lengkap' => '',
+        'nim' => '',
+        'email' => 'not-an-email',
+        'password' => '123',
+        'password_confirmation' => '1234',
+    ];
 
-        $request = Mockery::mock(Request::class)->makePartial();
-        $request->shouldReceive('all')->andReturn($requestData);
-        $request->shouldReceive('except')->andReturn($requestData);
-        $request->shouldReceive('allFiles')->andReturn([]);
-        
-        // Mock ValidationException with proper message bag
-        $messageBag = Mockery::mock(\Illuminate\Support\MessageBag::class);
-        $messageBag->shouldReceive('toArray')->andReturn([
-            'nama_lengkap' => ['Nama lengkap harus diisi'],
-            'nim' => ['NIM harus diisi'],
-            'email' => ['Format email tidak valid'],
-            'password' => ['Password minimal 8 karakter'],
-        ]);
-        $messageBag->shouldReceive('all')->andReturn([
-            'Nama lengkap harus diisi',
-            'NIM harus diisi',
-            'Format email tidak valid',
-            'Password minimal 8 karakter',
-        ]);
-        
-        $mockValidator = Mockery::mock(\Illuminate\Validation\Validator::class);
-        $mockValidator->shouldReceive('errors')->andReturn($messageBag);
-        
-        // Mock Translator dengan method get() dan choice() - accept any arguments
-        $mockTranslator = Mockery::mock(\Illuminate\Contracts\Translation\Translator::class);
-        $mockTranslator->shouldReceive('get')
-            ->andReturn('The given data was invalid.');
-        $mockTranslator->shouldReceive('choice')
-            ->withAnyArgs() // Accept any arguments for choice()
-            ->andReturn('(and 3 more errors)');
-        
-        $mockValidator->shouldReceive('getTranslator')->andReturn($mockTranslator);
+    $request = Mockery::mock(Request::class)->makePartial();
+    $request->shouldReceive('all')->andReturn($requestData);
+    $request->shouldReceive('except')->andReturn($requestData);
+    $request->shouldReceive('allFiles')->andReturn([]);
+    
+    // Define error messages
+    $errorMessages = [
+        'nama_lengkap' => ['Nama lengkap harus diisi'],
+        'nim' => ['NIM harus diisi'],
+        'email' => ['Format email tidak valid'],
+        'password' => ['Password minimal 8 karakter'],
+    ];
+    
+    // Mock MessageBag dengan semua method yang diperlukan
+    $messageBag = Mockery::mock(\Illuminate\Support\MessageBag::class);
+    $messageBag->shouldReceive('toArray')->andReturn($errorMessages);
+    $messageBag->shouldReceive('messages')->andReturn($errorMessages); // TAMBAHKAN INI
+    $messageBag->shouldReceive('all')->andReturn([
+        'Nama lengkap harus diisi',
+        'NIM harus diisi',
+        'Format email tidak valid',
+        'Password minimal 8 karakter',
+    ]);
+    
+    $mockValidator = Mockery::mock(\Illuminate\Validation\Validator::class);
+    $mockValidator->shouldReceive('errors')->andReturn($messageBag);
+    
+    // Mock Translator dengan method get() dan choice()
+    $mockTranslator = Mockery::mock(\Illuminate\Contracts\Translation\Translator::class);
+    $mockTranslator->shouldReceive('get')
+        ->andReturn('The given data was invalid.');
+    $mockTranslator->shouldReceive('choice')
+        ->withAnyArgs()
+        ->andReturn('(and 3 more errors)');
+    
+    $mockValidator->shouldReceive('getTranslator')->andReturn($mockTranslator);
 
-        $validationException = new ValidationException($mockValidator);
-        
-        $request->shouldReceive('validate')
-            ->andThrow($validationException);
+    $validationException = new ValidationException($mockValidator);
+    
+    $request->shouldReceive('validate')
+        ->andThrow($validationException);
 
-        $controller = new PendaftarController();
-        $response = $controller->create($request);
+    $controller = new PendaftarController();
+    $response = $controller->create($request);
 
-        $this->assertEquals(422, $response->getStatusCode());
-        $data = $response->getData(true);
-        $this->assertFalse($data['success']);
-        $this->assertArrayHasKey('errors', $data);
-    }
+    $this->assertEquals(422, $response->getStatusCode());
+    $data = $response->getData(true);
+    $this->assertFalse($data['success']);
+    $this->assertArrayHasKey('errors', $data);
+}
 
     /** @test */
     public function create_gagal_ketika_tidak_ada_info_or_aktif()
