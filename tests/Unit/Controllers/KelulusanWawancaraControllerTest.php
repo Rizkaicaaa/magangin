@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use App\Http\Controllers\KelulusanWawancaraController;
 use App\Models\PenilaianWawancara;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses; // Tambahkan ini
 
+#[RunTestsInSeparateProcesses] // Tambahkan ini
 class KelulusanWawancaraControllerTest extends TestCase
 {
     protected function tearDown(): void

@@ -10,7 +10,9 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\EvaluasiMagangController;
 use Illuminate\Validation\ValidationException;
 use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses; // Tambahkan ini
 
+#[RunTestsInSeparateProcesses] // Tambahkan ini
 
 class EvaluasiMagangControllerTest extends TestCase
 {
@@ -73,7 +75,7 @@ class EvaluasiMagangControllerTest extends TestCase
         $pendaftaranMock->shouldReceive('with')->andReturnSelf();
         $pendaftaranMock->shouldReceive('get')->andReturn(collect(['dummy_pendaftar']));
 
-        $evaluasiMock = Mockery::mock('overload:App\Models\EvaluasiMagang')->shouldIgnoreMissing();
+        $evaluasiMock = Mockery::mock('overload:App\Models\EvaluasiMagangModel')->shouldIgnoreMissing();
         $evaluasiMock->shouldReceive('get')->andReturn(collect(['dummy_penilaian']));
 
         View::shouldReceive('make')->once()->andReturnSelf();
@@ -110,7 +112,7 @@ class EvaluasiMagangControllerTest extends TestCase
         $pendaftaranMock->shouldReceive('find')->andReturn($pendaftaranRecord);
         $pendaftaranMock->shouldReceive('findOrFail')->andReturn($pendaftaranRecord);
 
-        $evaluasiMock = Mockery::mock('overload:App\Models\EvaluasiMagang')->shouldIgnoreMissing();
+        $evaluasiMock = Mockery::mock('overload:App\Models\EvaluasiMagangModel')->shouldIgnoreMissing();
         $evaluasiMock->shouldReceive('create')->once();
 
         $response = $controller->storeOrUpdate($request);
@@ -148,7 +150,7 @@ class EvaluasiMagangControllerTest extends TestCase
         $evaRecord = Mockery::mock();
         $evaRecord->shouldReceive('update')->once();
 
-        $evaluasiMock = Mockery::mock('overload:App\Models\EvaluasiMagang')->shouldIgnoreMissing();
+        $evaluasiMock = Mockery::mock('overload:App\Models\EvaluasiMagangModel')->shouldIgnoreMissing();
         $evaluasiMock->shouldReceive('findOrFail')->with(7)->andReturn($evaRecord);
 
         $response = $controller->storeOrUpdate($request);
@@ -179,7 +181,7 @@ class EvaluasiMagangControllerTest extends TestCase
         $evaluasiRecord = Mockery::mock();
         $evaluasiRecord->shouldReceive('delete')->once();
 
-        $evaluasiMock = Mockery::mock('overload:App\Models\EvaluasiMagang')->shouldIgnoreMissing();
+        $evaluasiMock = Mockery::mock('overload:App\Models\EvaluasiMagangModel')->shouldIgnoreMissing();
         $evaluasiMock->shouldReceive('findOrFail')->with(99)->andReturn($evaluasiRecord);
 
         $response = $controller->destroy(99);

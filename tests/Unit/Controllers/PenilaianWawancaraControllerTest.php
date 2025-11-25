@@ -9,7 +9,9 @@ use App\Models\InfoOr;
 use App\Models\JadwalSeleksi;
 use App\Models\PenilaianWawancara;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses; // Tambahkan ini
 
+#[RunTestsInSeparateProcesses] // Tambahkan ini
 class PenilaianWawancaraControllerTest extends TestCase
 {
     use RefreshDatabase;

@@ -13,7 +13,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\ValidationException;
 use App\Http\Controllers\PendaftarController;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses; // Tambahkan ini
 
+#[RunTestsInSeparateProcesses] // Tambahkan ini
 class PendaftarControllerTest extends TestCase
 {
     protected function setUp(): void

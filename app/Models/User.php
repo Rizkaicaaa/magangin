@@ -52,6 +52,6 @@ class User extends Authenticatable
 
     public function evaluasiMagangAsPenilai()
     {
-        return $this->hasMany(EvaluasiMagang::class, 'penilai_id');
+        return $this->hasMany(EvaluasiMagangModel::class, 'penilai_id');
     }
 }

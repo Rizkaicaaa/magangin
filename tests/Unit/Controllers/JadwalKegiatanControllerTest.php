@@ -13,7 +13,9 @@ use Illuminate\Validation\Validator as ValidationValidator;
 use Mockery;
 use Tests\TestCase;
 use Exception;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses; // Tambahkan ini
 
+#[RunTestsInSeparateProcesses] // Tambahkan ini
 class JadwalKegiatanControllerTest extends TestCase
 {
     protected $controller;

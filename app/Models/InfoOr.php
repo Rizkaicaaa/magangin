@@ -59,6 +59,6 @@ class InfoOr extends Model
      */
     public function templateSertifikat()
     {
-        return $this->hasMany(TemplateSertifikat::class, 'info_or_id');
+        return $this->hasMany(TemplateSertifikatModel::class, 'info_or_id');
     }
 }

@@ -3,7 +3,7 @@
 namespace Tests\Unit\Models;
 
 use Tests\TestCase;
-use App\Models\TemplateSertifikat;
+use App\Models\TemplateSertifikatModel;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -12,7 +12,7 @@ class TemplateSertifikatModelTest extends TestCase
     /** @test */
     public function model_memiliki_nama_tabel_yang_sesuai()
     {
-        $model = new TemplateSertifikat;
+        $model = new TemplateSertifikatModel;
 
         $this->assertEquals('template_sertifikat', $model->getTable());
     }
@@ -20,7 +20,7 @@ class TemplateSertifikatModelTest extends TestCase
     /** @test */
     public function model_memiliki_fillable_yang_sesuai()
     {
-        $model = new TemplateSertifikat;
+        $model = new TemplateSertifikatModel;
 
         $this->assertEquals([
             'info_or_id',
@@ -33,7 +33,7 @@ class TemplateSertifikatModelTest extends TestCase
     /** @test */
     public function model_memiliki_casts_yang_sesuai()
     {
-        $model = new TemplateSertifikat;
+        $model = new TemplateSertifikatModel;
         $casts = $model->getCasts();
 
         // hanya dicek casts yang didefinisikan
@@ -44,21 +44,21 @@ class TemplateSertifikatModelTest extends TestCase
     /** @test */
     public function model_memiliki_primary_key_default()
     {
-        $model = new TemplateSertifikat;
+        $model = new TemplateSertifikatModel;
         $this->assertEquals('id', $model->getKeyName());
     }
 
     /** @test */
     public function model_menggunakan_timestamps_default()
     {
-        $model = new TemplateSertifikat;
+        $model = new TemplateSertifikatModel;
         $this->assertTrue($model->usesTimestamps());
     }
 
     /** @test */
     public function relasi_ke_info_or_mengembalikan_belongs_to()
     {
-        $model = new TemplateSertifikat;
+        $model = new TemplateSertifikatModel;
 
         $this->assertInstanceOf(BelongsTo::class, $model->infoOr());
     }
@@ -66,7 +66,7 @@ class TemplateSertifikatModelTest extends TestCase
     /** @test */
     public function relasi_ke_evaluasi_magang_mengembalikan_has_many()
     {
-        $model = new TemplateSertifikat;
+        $model = new TemplateSertifikatModel;
 
         $this->assertInstanceOf(HasMany::class, $model->evaluasiMagang());
     }

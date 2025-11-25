@@ -10,7 +10,9 @@ use Illuminate\Validation\Rule;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses; // Tambahkan ini
 
+#[RunTestsInSeparateProcesses] // Tambahkan ini
 class ProfileControllerTest extends TestCase
 {
     protected $controller;

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\InfoOr;
-use App\Models\TemplateSertifikat;
+use App\Models\TemplateSertifikatModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -40,7 +40,7 @@ class TemplateSertifikatController extends Controller
         $path = $request->file('file_template')->storeAs($directory, $fileName, 'public');
 
         // Simpan ke database
-        TemplateSertifikat::create([
+        TemplateSertifikatModel::create([
             'info_or_id' => $request->info_or_id,
             'nama_template' => $request->nama_template,
             'file_template' => $path,
