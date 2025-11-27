@@ -6,7 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class EvaluasiMagang extends Model
+class EvaluasiMagangModel extends Model
 {
     use HasFactory;
 
@@ -46,6 +46,6 @@ class EvaluasiMagang extends Model
 
     public function templateSertifikat()
     {
-        return $this->belongsTo(TemplateSertifikat::class);
+        return $this->belongsTo(TemplateSertifikatModel::class);
     }
 }

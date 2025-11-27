@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use App\Http\Controllers\KelulusanMagangController;
 use App\Models\EvaluasiMagang;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses; // Tambahkan ini
 
+#[RunTestsInSeparateProcesses] // Tambahkan ini
 class KelulusanMagangControllerTest extends TestCase
 {
     protected function tearDown(): void

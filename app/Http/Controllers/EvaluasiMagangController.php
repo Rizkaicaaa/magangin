@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\EvaluasiMagang;
+use App\Models\EvaluasiMagangModel;
 use App\Models\Pendaftaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +18,7 @@ class EvaluasiMagangController extends Controller
     ->with('user') 
     ->get();
 
-        $penilaian = EvaluasiMagang::get();
+        $penilaian = EvaluasiMagangModel::get();
 
         return view('penilaian.index', compact('pendaftar', 'penilaian'));
     }
@@ -50,7 +50,7 @@ class EvaluasiMagangController extends Controller
 
     if ($request->penilaian_id) {
         // UPDATE penilaian
-        $evaluasi = EvaluasiMagang::findOrFail($request->penilaian_id);
+        $evaluasi = EvaluasiMagangModel::findOrFail($request->penilaian_id);
         $evaluasi->update([
             'pendaftaran_id' => $request->pendaftaran_id,
             'penilai_id' => $user->id,
@@ -65,7 +65,7 @@ class EvaluasiMagangController extends Controller
         $message = 'Penilaian berhasil diperbarui!';
     } else {
         // CREATE penilaian baru
-        EvaluasiMagang::create([
+        EvaluasiMagangModel::create([
             'pendaftaran_id' => $request->pendaftaran_id,
             'penilai_id' => $user->id,
             'nilai_kedisiplinan' => $request->nilai_kedisiplinan,
@@ -89,7 +89,7 @@ class EvaluasiMagangController extends Controller
 
     public function destroy($id)
     {
-        $evaluasi = EvaluasiMagang::findOrFail($id);
+        $evaluasi = EvaluasiMagangModel::findOrFail($id);
         $evaluasi->delete();
 
         return redirect()->route('penilaian.index')->with('success', 'Penilaian berhasil dihapus!');

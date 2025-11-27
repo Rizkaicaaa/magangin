@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\EvaluasiMagang;
-use App\Models\TemplateSertifikat;
+use App\Models\EvaluasiMagangModel;
+use App\Models\TemplateSertifikatModel;
 use Barryvdh\DomPDF\Facade\Pdf; // BARIS INI SUDAH BENAR
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -19,12 +19,12 @@ class PengumumanMagangController extends Controller
 }
 protected function getEvaluasiList()
 {
-    return EvaluasiMagang::with('pendaftaran.user')->latest()->get();
+    return EvaluasiMagangModel::with('pendaftaran.user')->latest()->get();
 }
 
 protected function getTemplates()
 {
-    return TemplateSertifikat::orderBy('created_at', 'desc')->get();
+    return TemplateSertifikatModel::orderBy('created_at', 'desc')->get();
 }
 
 
@@ -37,7 +37,7 @@ protected function getTemplates()
         ]);
 
         // Ambil data evaluasi & mahasiswa
-        $evaluasi = EvaluasiMagang::with('pendaftaran.user')->findOrFail($id);
+        $evaluasi = EvaluasiMagangModel::with('pendaftaran.user')->findOrFail($id);
         $pendaftaran = $evaluasi->pendaftaran;
         $idPendaftaran = $pendaftaran->id;
         $namaMahasiswa = str_replace(' ', '_', strtolower($pendaftaran->user->nama_lengkap));
@@ -56,7 +56,7 @@ protected function getTemplates()
         ]);
 
         // Ambil template
-        $template = TemplateSertifikat::findOrFail($request->template_id);
+        $template = TemplateSertifikatModel::findOrFail($request->template_id);
 
         // Path absolut ke template HTML
         $templatePath = storage_path('app/public/' . ltrim($template->file_template, '/'));

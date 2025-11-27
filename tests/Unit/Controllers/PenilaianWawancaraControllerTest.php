@@ -1,5 +1,6 @@
 <?php
 
+<<<<<<< HEAD
 namespace Tests\Unit\Http\Controllers;
 
 use Tests\TestCase;
@@ -10,7 +11,20 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\PenilaianWawancaraController;
 use PHPUnit\Framework\Attributes\Test;
+=======
+namespace Tests\Unit\Controllers;
 
+use Tests\TestCase;
+use App\Models\User;
+use App\Models\Pendaftaran;
+use App\Models\InfoOr;
+use App\Models\JadwalSeleksi;
+use App\Models\PenilaianWawancara;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses; // Tambahkan ini
+>>>>>>> 1e01d5373929534494a5073383229adcf96ce04b
+
+#[RunTestsInSeparateProcesses] // Tambahkan ini
 class PenilaianWawancaraControllerTest extends TestCase
 {
     protected function setUp(): void
@@ -256,7 +270,10 @@ class PenilaianWawancaraControllerTest extends TestCase
 
         $controller->updateStatus($request);
 
+<<<<<<< HEAD
         // Verifikasi bahwa method save dipanggil
         $this->assertTrue(true);
     }
+=======
+>>>>>>> 1e01d5373929534494a5073383229adcf96ce04b
 }

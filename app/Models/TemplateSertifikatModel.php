@@ -6,7 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TemplateSertifikat extends Model
+class TemplateSertifikatModel extends Model
 {
     use HasFactory;
 
@@ -31,6 +31,6 @@ class TemplateSertifikat extends Model
 
     public function evaluasiMagang()
     {
-        return $this->hasMany(EvaluasiMagang::class);
+        return $this->hasMany(EvaluasiMagangModel::class);
     }
 }
