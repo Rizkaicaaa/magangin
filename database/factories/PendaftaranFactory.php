@@ -1,38 +1,44 @@
 <?php
-
 namespace Database\Factories;
 
 use App\Models\Pendaftaran;
 use App\Models\User;
 use App\Models\InfoOr;
-use App\Models\Dinas;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PendaftaranFactory extends Factory
 {
-    protected $model = Pendaftaran::class;
+protected $model = Pendaftaran::class;
 
-    public function definition()
-    {
-        return [
-            'user_id' => User::factory(),
-            'info_or_id' => InfoOr::factory(),
-            'jadwal_seleksi_id' => null,
-            'pilihan_dinas_1' => Dinas::factory(),
-            'pilihan_dinas_2' => Dinas::factory(),
-            'motivasi' => $this->faker->paragraph(),
-            'pengalaman' => $this->faker->sentence(),
-            'file_cv' => 'cv_' . $this->faker->word() . '.pdf',
-            'file_transkrip' => 'transkrip_' . $this->faker->word() . '.pdf',
-            'status_pendaftaran' => $this->faker->randomElement([
-                'terdaftar',
-                'lulus_wawancara',
-                'tidak_lulus_wawancara',
-                'lulus_magang',
-                'tidak_lulus_magang',
-            ]),
-            'dinas_diterima_id' => null,
-            'tanggal_daftar' => $this->faker->dateTimeBetween('-1 year', 'now'),
-        ];
-    }
+public function definition(): array
+{
+return [
+'user_id' => User::factory(),
+'info_or_id' => InfoOr::factory(),
+'jadwal_seleksi_id' => null,
+'pilihan_dinas_1' => null,
+'pilihan_dinas_2' => null,
+'motivasi' => 'Motivasi singkat',
+'pengalaman' => 'Pengalaman singkat',
+'file_cv' => null,
+'file_transkrip' => null,
+'status_pendaftaran' => 'pending',
+'dinas_diterima_id' => null,
+'tanggal_daftar' => now(),
+];
+}
+
+public function untukUser(int $userId): static
+{
+return $this->state(fn (array $attributes) => [
+'user_id' => $userId,
+]);
+}
+
+public function untukPeriode(int $infoOrId): static
+{
+return $this->state(fn (array $attributes) => [
+'info_or_id' => $infoOrId,
+]);
+}
 }

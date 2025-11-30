@@ -1,30 +1,60 @@
 <?php
-
 namespace Database\Factories;
 
-use App\Models\Dinas;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
- */
 class UserFactory extends Factory
 {
+    protected $model = User::class;
+    protected static ?string $password = null;
+
     public function definition(): array
     {
         return [
-            'email' => $this->faker->unique()->safeEmail(),
-            'password' => Hash::make('password123'),
-            'role' => $this->faker->randomElement(['superadmin', 'admin', 'mahasiswa']),
-            'nama_lengkap' => $this->faker->name(),
-            'nim' => $this->faker->optional()->numerify('22########'),
-            'no_telp' => $this->faker->phoneNumber(),
-            'tanggal_daftar' => $this->faker->date(),
-            'status' => $this->faker->randomElement(['aktif', 'non_aktif']),
-            'dinas_id' => Dinas::factory(), // relasi ke Dinas
+            'email' => fake()->unique()->safeEmail(),
+            'password' => static::$password ??= Hash::make('password'),
+            'role' => 'mahasiswa',
+            'nama_lengkap' => fake()->name(),
+            'nim' => fake()->unique()->numerify('##########'),
+            'no_telp' => fake()->numerify('08##########'),
+            'tanggal_daftar' => now(),
+            'status' => 'aktif',
+            'dinas_id' => null,
             'remember_token' => Str::random(10),
         ];
+    }
+
+    public function superadmin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'superadmin',
+            'nim' => null,
+        ]);
+    }
+
+    public function admin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'admin',
+            'nim' => null,
+        ]);
+    }
+
+    public function mahasiswa(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'mahasiswa',
+            'nim' => fake()->unique()->numerify('##########'),
+        ]);
+    }
+
+    public function nonAktif(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => 'non_aktif',
+        ]);
     }
 }
