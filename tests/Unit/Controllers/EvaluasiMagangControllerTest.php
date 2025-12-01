@@ -26,7 +26,7 @@ class EvaluasiMagangControllerTest extends TestCase
     \DB::shouldReceive('useWritePdo')->andReturnSelf(); // untuk DB::connection()
 
     // ⭐ FAKE QUERY BUILDER
-    $fakeQuery = \Mockery::mock();
+    $fakeQuery = Mockery::mock();
     $fakeQuery->shouldReceive('where')->andReturnSelf();
     $fakeQuery->shouldReceive('whereIn')->andReturnSelf();
     $fakeQuery->shouldReceive('with')->andReturnSelf();

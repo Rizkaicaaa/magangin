@@ -149,7 +149,7 @@ class PenilaianWawancaraController extends Controller
             return response()->json(['message' => 'KKM tidak valid!'], 400);
         }
 
-        $penilaian = \App\Models\PenilaianWawancara::with('pendaftaran')->get();
+        $penilaian = PenilaianWawancara::with('pendaftaran')->get();
 
         foreach ($penilaian as $item) {
             // Update nilai KKM di tabel penilaian_wawancara

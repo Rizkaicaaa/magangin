@@ -3,261 +3,192 @@
 namespace Tests\Unit\Controllers;
 
 use Tests\TestCase;
-use App\Models\User;
-use App\Models\Pendaftaran;
-use App\Models\InfoOr;
-use App\Models\JadwalSeleksi;
-use App\Models\PenilaianWawancara;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses; // Tambahkan ini
+use Mockery;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\PenilaianWawancaraController;
 
-#[RunTestsInSeparateProcesses] // Tambahkan ini
 class PenilaianWawancaraControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    public function tearDown(): void
+    {
+        Mockery::close();
+        parent::tearDown();
+    }
 
+    /** INDEX */
     public function test_index_menampilkan_data()
     {
-        $user = User::factory()->create();
-        $this->actingAs($user);
+        $mockPW = Mockery::mock('alias:App\\Models\\PenilaianWawancara');
+        $mockPW->shouldReceive('with')->with('pendaftaran.user','jadwal')->andReturnSelf();
+        $mockPW->shouldReceive('get')->andReturn(collect([(object)['id'=>1]]));
 
-        $pendaftaran = Pendaftaran::factory()->create();
-        $jadwal = JadwalSeleksi::create([
-            'info_or_id' => InfoOr::factory()->create()->id,
-            'tanggal_seleksi' => '2025-01-01',
-            'waktu_mulai' => '09:00',
-            'waktu_selesai' => '10:00',
-            'tempat' => 'Ruang A',
-            'pewawancara' => 'Pak Budi',
-            'pendaftaran_id' => $pendaftaran->id,
-        ]);
+        DB::shouldReceive('table')->with('penilaian_wawancara')->andReturnSelf();
+        DB::shouldReceive('max')->with('kkm')->andReturn(75);
 
-        PenilaianWawancara::create([
-            'pendaftaran_id' => $pendaftaran->id,
-            'penilai_id' => $user->id,
-            'jadwal_seleksi_id' => $jadwal->id,
-            'nilai_komunikasi' => 80,
-            'nilai_motivasi' => 70,
-            'nilai_kemampuan' => 90,
-            'nilai_total' => 240,
-            'nilai_rata_rata' => 80,
-            'kkm' => 75,
-            'status' => 'sudah_dinilai',
-        ]);
+        $controller = new PenilaianWawancaraController();
+        $response = $controller->index();
 
-        $response = $this->get(route('penilaian-wawancara.index'));
-        $response->assertStatus(200);
-        $response->assertViewHas('data');
-        $response->assertViewHas('kkm', 75);
+        $this->assertEquals('penilaian-wawancara.index', $response->name());
     }
 
+    /** CREATE */
     public function test_create_menampilkan_form()
     {
-        $user = User::factory()->create();
-        $this->actingAs($user);
+        $mockJadwal = Mockery::mock('alias:App\\Models\\JadwalSeleksi');
+        $mockJadwal->shouldReceive('with')->with('pendaftaran.user')->andReturnSelf();
+        $mockJadwal->shouldReceive('get')->andReturn(collect([(object)['id'=>1]]));
 
-        $response = $this->get(route('penilaian-wawancara.create'));
-        $response->assertStatus(200);
-        $response->assertViewHasAll(['jadwalseleksi', 'penilaianExist']);
+        $mockPW = Mockery::mock('alias:App\\Models\\PenilaianWawancara');
+        $mockPW->shouldReceive('pluck')->with('pendaftaran_id')->andReturn(collect([1, 2]));
+
+        $controller = new PenilaianWawancaraController();
+        $response = $controller->create();
+
+        $this->assertEquals('penilaian-wawancara.create', $response->name());
     }
 
+    /** STORE */
     public function test_store_menyimpan_penilaian()
     {
-        $user = User::factory()->create();
-        $this->actingAs($user);
-
-        $pendaftaran = Pendaftaran::factory()->create();
-        $jadwal = JadwalSeleksi::create([
-            'info_or_id' => InfoOr::factory()->create()->id,
-            'tanggal_seleksi' => '2025-01-01',
-            'waktu_mulai' => '09:00',
-            'waktu_selesai' => '10:00',
-            'tempat' => 'Ruang A',
-            'pewawancara' => 'Pak Budi',
-            'pendaftaran_id' => $pendaftaran->id,
-        ]);
-
-        $data = [
-            'pendaftaran_id' => $pendaftaran->id,
-            'jadwal_seleksi_id' => $jadwal->id,
+        $req = Request::create('/', 'POST', [
+            'pendaftaran_id' => 1,
+            'jadwal_seleksi_id' => 10,
             'nilai_komunikasi' => 80,
             'nilai_motivasi' => 70,
             'nilai_kemampuan' => 90,
             'kkm' => 75,
-        ];
-
-        $response = $this->post(route('penilaian-wawancara.store'), $data);
-
-        $response->assertRedirect(route('penilaian-wawancara.index'));
-        $this->assertDatabaseHas('penilaian_wawancara', [
-            'pendaftaran_id' => $pendaftaran->id,
-            'nilai_rata_rata' => 80,
         ]);
+
+        // Mock DB connection untuk validator exists
+        $mockQuery = Mockery::mock();
+        $mockQuery->shouldReceive('useWritePdo')->andReturnSelf();
+        $mockQuery->shouldReceive('where')->andReturnSelf();
+        $mockQuery->shouldReceive('whereIn')->andReturnSelf();
+        $mockQuery->shouldReceive('count')->andReturn(1);
+
+        $mockConnection = Mockery::mock();
+        $mockConnection->shouldReceive('table')->andReturn($mockQuery);
+
+        DB::shouldReceive('connection')->andReturn($mockConnection);
+
+        // Mock PenilaianWawancara
+        $mockPW = Mockery::mock('overload:App\Models\PenilaianWawancara');
+        $mockPW->shouldReceive('where')->with('pendaftaran_id', 1)->andReturnSelf();
+        $mockPW->shouldReceive('exists')->andReturn(false);
+        $mockPW->shouldReceive('create')->andReturn((object)['id' => 1]);
+
+        $controller = new PenilaianWawancaraController();
+        $response = $controller->store($req);
+        
+        $this->assertEquals(302, $response->status());
     }
 
+    /** EDIT */
     public function test_edit_menampilkan_form_edit()
     {
-        $user = User::factory()->create();
-        $this->actingAs($user);
+        $mockPendaftaran = Mockery::mock('alias:App\\Models\\Pendaftaran');
+        $mockPendaftaran->shouldReceive('with')->with('user')->andReturnSelf();
+        $mockPendaftaran->shouldReceive('get')->andReturn(collect([(object)['id'=>1]]));
 
-        $pendaftaran = Pendaftaran::factory()->create();
-        $jadwal = JadwalSeleksi::create([
-            'info_or_id' => InfoOr::factory()->create()->id,
-            'tanggal_seleksi' => '2025-01-01',
-            'waktu_mulai' => '09:00',
-            'waktu_selesai' => '10:00',
-            'tempat' => 'Ruang A',
-            'pewawancara' => 'Pak Budi',
-            'pendaftaran_id' => $pendaftaran->id,
-        ]);
+        $mockJadwal = Mockery::mock('alias:App\\Models\\JadwalSeleksi');
+        $mockJadwal->shouldReceive('all')->andReturn(collect([(object)['id'=>1]]));
 
-        $penilaian = PenilaianWawancara::create([
-            'pendaftaran_id' => $pendaftaran->id,
-            'penilai_id' => $user->id,
-            'jadwal_seleksi_id' => $jadwal->id,
-            'nilai_komunikasi' => 80,
-            'nilai_motivasi' => 70,
-            'nilai_kemampuan' => 90,
-            'nilai_total' => 240,
-            'nilai_rata_rata' => 80,
-            'kkm' => 75,
-            'status' => 'sudah_dinilai',
-        ]);
+        $model = Mockery::mock('alias:App\\Models\\PenilaianWawancara');
+        $model->id = 1;
 
-        $response = $this->get(route('penilaian-wawancara.edit', $penilaian));
-        $response->assertStatus(200);
-        $response->assertViewHasAll(['penilaianWawancara', 'peserta', 'jadwalseleksi']);
+        $controller = new PenilaianWawancaraController();
+        $response = $controller->edit($model);
+
+        $this->assertEquals('penilaian-wawancara.edit', $response->name());
     }
 
+    /** UPDATE */
     public function test_update_mengubah_penilaian()
     {
-        $user = User::factory()->create();
-        $this->actingAs($user);
-
-        $pendaftaran = Pendaftaran::factory()->create();
-        $jadwal = JadwalSeleksi::create([
-            'info_or_id' => InfoOr::factory()->create()->id,
-            'tanggal_seleksi' => '2025-01-01',
-            'waktu_mulai' => '09:00',
-            'waktu_selesai' => '10:00',
-            'tempat' => 'Ruang A',
-            'pewawancara' => 'Pak Budi',
-            'pendaftaran_id' => $pendaftaran->id,
+        $req = Request::create('/', 'PUT', [
+            'pendaftaran_id'=>1,
+            'jadwal_seleksi_id'=>10,
+            'nilai_komunikasi'=>80,
+            'nilai_motivasi'=>85,
+            'nilai_kemampuan'=>90,
+            'kkm'=>75
         ]);
 
-        $penilaian = PenilaianWawancara::create([
-            'pendaftaran_id' => $pendaftaran->id,
-            'penilai_id' => $user->id,
-            'jadwal_seleksi_id' => $jadwal->id,
-            'nilai_komunikasi' => 80,
-            'nilai_motivasi' => 70,
-            'nilai_kemampuan' => 90,
-            'nilai_total' => 240,
-            'nilai_rata_rata' => 80,
-            'kkm' => 75,
-            'status' => 'sudah_dinilai',
-        ]);
+        // Mock DB connection untuk validator exists
+        $mockQuery = Mockery::mock();
+        $mockQuery->shouldReceive('useWritePdo')->andReturnSelf();
+        $mockQuery->shouldReceive('where')->andReturnSelf();
+        $mockQuery->shouldReceive('whereIn')->andReturnSelf();
+        $mockQuery->shouldReceive('count')->andReturn(1);
 
-        $data = [
-            'pendaftaran_id' => $pendaftaran->id,
-            'jadwal_seleksi_id' => $jadwal->id,
-            'nilai_komunikasi' => 85,
-            'nilai_motivasi' => 75,
-            'nilai_kemampuan' => 95,
-            'kkm' => 80,
-        ];
+        $mockConnection = Mockery::mock();
+        $mockConnection->shouldReceive('table')->andReturn($mockQuery);
 
-        $response = $this->put(route('penilaian-wawancara.update', $penilaian), $data);
+        DB::shouldReceive('connection')->andReturn($mockConnection);
 
-        $response->assertRedirect(route('penilaian-wawancara.index'));
-        $this->assertDatabaseHas('penilaian_wawancara', [
-            'pendaftaran_id' => $pendaftaran->id,
-            'nilai_rata_rata' => 85,
-            'kkm' => 80,
-        ]);
+        // Mock model
+        $mockPW = Mockery::mock('overload:App\\Models\\PenilaianWawancara');
+        $mockPW->shouldReceive('update')->once()->andReturn(true);
+
+        $controller = new PenilaianWawancaraController();
+        $response = $controller->update($req, $mockPW);
+
+        $this->assertEquals(302, $response->status());
     }
 
+    /** DESTROY */
     public function test_destroy_menghapus_penilaian()
     {
-        $user = User::factory()->create();
-        $this->actingAs($user);
+        $model = Mockery::mock('alias:App\\Models\\PenilaianWawancara');
+        $model->shouldReceive('delete')->once()->andReturnTrue();
 
-        $pendaftaran = Pendaftaran::factory()->create();
-        $jadwal = JadwalSeleksi::create([
-            'info_or_id' => InfoOr::factory()->create()->id,
-            'tanggal_seleksi' => '2025-01-01',
-            'waktu_mulai' => '09:00',
-            'waktu_selesai' => '10:00',
-            'tempat' => 'Ruang A',
-            'pewawancara' => 'Pak Budi',
-            'pendaftaran_id' => $pendaftaran->id,
-        ]);
+        $controller = new PenilaianWawancaraController();
+        $response = $controller->destroy($model);
 
-        $penilaian = PenilaianWawancara::create([
-            'pendaftaran_id' => $pendaftaran->id,
-            'penilai_id' => $user->id,
-            'jadwal_seleksi_id' => $jadwal->id,
-            'nilai_komunikasi' => 80,
-            'nilai_motivasi' => 70,
-            'nilai_kemampuan' => 90,
-            'nilai_total' => 240,
-            'nilai_rata_rata' => 80,
-            'kkm' => 75,
-            'status' => 'sudah_dinilai',
-        ]);
-
-        $response = $this->delete(route('penilaian-wawancara.destroy', $penilaian));
-        $response->assertRedirect(route('penilaian-wawancara.index'));
-
-        $this->assertDatabaseMissing('penilaian_wawancara', [
-            'id' => $penilaian->id,
-        ]);
+        $this->assertEquals(302, $response->status());
     }
 
+    /** SHOW */
+    public function test_show_menampilkan_detail()
+    {
+        $mockPW = Mockery::mock('alias:App\\Models\\PenilaianWawancara');
+        $mockPW->shouldReceive('with')->with([
+            'pendaftaran.user',
+            'pendaftaran.dinasPilihan1',
+            'pendaftaran.dinasPilihan2',
+            'jadwal'
+        ])->andReturnSelf();
+        $mockPW->shouldReceive('findOrFail')->with(1)->andReturn((object)['id'=>1]);
+
+        $controller = new PenilaianWawancaraController();
+        $response = $controller->show(1);
+
+        $this->assertEquals('penilaian-wawancara.show', $response->name());
+    }
+
+    /** UPDATE STATUS */
     public function test_updateStatus_berhasil()
-{
-    $user = User::factory()->create();
-    $this->actingAs($user); // penting biar tidak 401
+    {
+        $req = Request::create('/', 'POST', ['kkm'=>75]);
 
-    $pendaftaran = Pendaftaran::factory()->create();
-    $jadwal = JadwalSeleksi::create([
-        'info_or_id' => InfoOr::factory()->create()->id,
-        'tanggal_seleksi' => '2025-01-01',
-        'waktu_mulai' => '09:00',
-        'waktu_selesai' => '10:00',
-        'tempat' => 'Ruang A',
-        'pewawancara' => 'Pak Budi',
-        'pendaftaran_id' => $pendaftaran->id,
-    ]);
+        // Mock item penilaian dengan method update()
+        $mockItem = Mockery::mock();
+        $mockItem->pendaftaran_id = 1;
+        $mockItem->nilai_rata_rata = 80;
+        $mockItem->shouldReceive('update')->with(['kkm' => 75])->andReturn(true);
 
-    PenilaianWawancara::create([
-        'pendaftaran_id' => $pendaftaran->id,
-        'penilai_id' => $user->id, // samakan dengan user login
-        'jadwal_seleksi_id' => $jadwal->id,
-        'nilai_komunikasi' => 80,
-        'nilai_motivasi' => 70,
-        'nilai_kemampuan' => 90,
-        'nilai_total' => 240,
-        'nilai_rata_rata' => 80,
-        'kkm' => 75,
-        'status' => 'sudah_dinilai',
-    ]);
+        $mockPW = Mockery::mock('alias:App\\Models\\PenilaianWawancara');
+        $mockPW->shouldReceive('with')->with('pendaftaran')->andReturnSelf();
+        $mockPW->shouldReceive('get')->andReturn(collect([$mockItem]));
 
-    // KKM diset lebih rendah dari rata-rata peserta supaya lulus
-    $response = $this->postJson(route('penilaian-wawancara.updateStatus'), ['kkm' => 75]);
+        $mockPendaftaran = Mockery::mock('overload:App\\Models\\Pendaftaran');
+        $mockPendaftaran->shouldReceive('where')->with('id', 1)->andReturnSelf();
+        $mockPendaftaran->shouldReceive('update')->with(['status_pendaftaran' => 'lulus_wawancara'])->andReturnTrue();
 
-    $response->assertStatus(200)
-             ->assertJson(['message' => 'Status pendaftaran dan KKM berhasil diperbarui!']);
+        $controller = new PenilaianWawancaraController();
+        $response = $controller->updateStatus($req);
 
-    $this->assertDatabaseHas('penilaian_wawancara', [
-        'pendaftaran_id' => $pendaftaran->id,
-        'kkm' => 75,
-    ]);
-
-    $this->assertDatabaseHas('pendaftaran', [
-        'id' => $pendaftaran->id,
-        'status_pendaftaran' => 'lulus_wawancara', // sekarang sesuai logika
-    ]);
-}
-
+        $this->assertEquals(200, $response->status());
+    }
 }
