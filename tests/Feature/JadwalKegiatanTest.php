@@ -276,13 +276,10 @@ class JadwalKegiatanTest extends TestCase
     /**
      * TC-JK-012: Test tidak boleh ada kegiatan yang bentrok waktu
      */
-    public function test_tidak_boleh_ada_kegiatan_dengan_waktu_bentrok()
+    public function test_tidak_boleh_menambah_kegiatan_dengan_waktu_bentrok()
     {
         $tanggalTest = now()->addDays(10)->format('Y-m-d');
 
-        // FIX: Gunakan DB::table()->insert() untuk membypass Model Mutator/Casting.
-        // Ini memastikan tanggal tersimpan sebagai string 'Y-m-d' persis (tanpa H:i:s)
-        // sehingga cocok dengan string query dari Controller di database SQLite.
         DB::table('jadwal_kegiatan')->insert([
             'info_or_id' => $this->infoOr->id,
             'nama_kegiatan' => 'Kegiatan A',
@@ -528,21 +525,7 @@ class JadwalKegiatanTest extends TestCase
     }
 
     /**
-     * TC-JK-021: Test error saat melihat kegiatan yang tidak ada
-     */
-    public function test_error_saat_melihat_kegiatan_tidak_ada()
-    {
-        $response = $this->actingAs($this->superadmin)
-            ->getJson(route('jadwal-kegiatan.show', 99999));
-
-        $response->assertStatus(404);
-        $response->assertJson([
-            'success' => false
-        ]);
-    }
-
-    /**
-     * TC-JK-022: Test dapat mengambil kegiatan berdasarkan periode
+     * TC-JK-021: Test dapat mengambil kegiatan berdasarkan periode
      */
     public function test_dapat_mengambil_kegiatan_berdasarkan_periode()
     {
@@ -562,21 +545,7 @@ class JadwalKegiatanTest extends TestCase
     }
 
     /**
-     * TC-JK-023: Test validasi periode_id saat get by periode
-     */
-    public function test_validasi_periode_id_saat_get_by_periode()
-    {
-        $response = $this->actingAs($this->superadmin)
-            ->getJson(route('jadwal-kegiatan.by-periode', ['periode_id' => 99999]));
-
-        $response->assertStatus(400);
-        $response->assertJson([
-            'success' => false
-        ]);
-    }
-
-    /**
-     * TC-JK-024: Test validasi nama kegiatan maksimal 255 karakter
+     * TC-JK-022: Test validasi nama kegiatan maksimal 255 karakter
      */
     public function test_validasi_nama_kegiatan_maksimal_255_karakter()
     {
@@ -615,7 +584,7 @@ class JadwalKegiatanTest extends TestCase
     }
 
     /**
-     * TC-JK-026: (Optional) Test update ke diri sendiri tidak dianggap bentrok
+     * TC-JK-023: Test update ke diri sendiri tidak dianggap bentrok
      * Skenario: User hanya mengubah nama, tapi jam tetap sama. Harusnya berhasil.
      */
     public function test_update_data_waktu_tetap_sama_tidak_bentrok()

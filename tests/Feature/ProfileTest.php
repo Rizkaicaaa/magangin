@@ -3,97 +3,184 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class ProfileTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseMigrations;
 
-    public function test_profile_page_is_displayed(): void
+    /**
+     * TEST CASE 1: Pastikan halaman edit profil bisa diakses oleh user yang login.
+     */
+    public function test_halaman_edit_profil_bisa_diakses(): void
     {
+        // 1. Buat user dummy
         $user = User::factory()->create();
 
-        $response = $this
-            ->actingAs($user)
-            ->get('/profile');
+        // 2. Login sebagai user tersebut dan akses route profile.edit
+        $response = $this->actingAs($user)
+                         ->get(route('profile.edit'));
 
-        $response->assertOk();
+        // 3. Pastikan statusnya 200 OK dan view-nya benar
+        $response->assertStatus(200)
+                 ->assertViewIs('profile.edit');
     }
 
-    public function test_profile_information_can_be_updated(): void
+    /**
+     * TEST CASE 2: Pastikan tamu (guest) tidak bisa akses halaman profil.
+     */
+    public function test_tamu_tidak_bisa_akses_halaman_profil(): void
     {
-        $user = User::factory()->create();
+        // Akses tanpa login
+        $response = $this->get(route('profile.edit'));
 
-        $response = $this
-            ->actingAs($user)
-            ->patch('/profile', [
-                'name' => 'Test User',
-                'email' => 'test@example.com',
-            ]);
-
-        $response
-            ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
-
-        $user->refresh();
-
-        $this->assertSame('Test User', $user->name);
-        $this->assertSame('test@example.com', $user->email);
-        $this->assertNull($user->email_verified_at);
+        // Harusnya di-redirect ke halaman login (status 302)
+        $response->assertStatus(302);
     }
 
-    public function test_email_verification_status_is_unchanged_when_the_email_address_is_unchanged(): void
+    /**
+     * TEST CASE 3: Update profil (Nama dan Email) berhasil.
+     */
+    public function test_update_data_profil_berhasil(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create([
+            'nama_lengkap' => 'Nama Lama',
+            'email' => 'lama@example.com',
+        ]);
 
-        $response = $this
-            ->actingAs($user)
-            ->patch('/profile', [
-                'name' => 'Test User',
-                'email' => $user->email,
-            ]);
+        $response = $this->actingAs($user)
+                         ->patch(route('profile.update'), [
+                             'nama_lengkap' => 'Nama Baru',
+                             'email' => 'baru@example.com',
+                         ]);
 
-        $response
-            ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
-
-        $this->assertNotNull($user->refresh()->email_verified_at);
+        // Pastikan tidak ada error session dan redirect kembali ke halaman edit
+        $response->assertSessionHasNoErrors()
+                 ->assertRedirect(route('profile.edit'));
+        
+        // Cek database apakah data user benar-benar berubah
+        $user->refresh(); // Refresh data user dari DB
+        $this->assertSame('Nama Baru', $user->nama_lengkap);
+        $this->assertSame('baru@example.com', $user->email);
     }
 
-    public function test_user_can_delete_their_account(): void
+    /**
+     * TEST CASE 4: Update profil gagal jika email sudah dipakai user lain.
+     */
+    public function test_update_profil_gagal_jika_email_sudah_terdaftar(): void
     {
-        $user = User::factory()->create();
+        // Buat user A
+        $user = User::factory()->create(['email' => 'user1@example.com']);
+        // Buat user B (pemilik email target)
+        User::factory()->create(['email' => 'user2@example.com']);
 
-        $response = $this
-            ->actingAs($user)
-            ->delete('/profile', [
-                'password' => 'password',
-            ]);
+        // User A mencoba mengganti emailnya menjadi email User B
+        $response = $this->actingAs($user)
+                         ->patch(route('profile.update'), [
+                             'nama_lengkap' => 'User Satu',
+                             'email' => 'user2@example.com', // Email milik user B
+                         ]);
 
-        $response
-            ->assertSessionHasNoErrors()
-            ->assertRedirect('/');
-
-        $this->assertGuest();
-        $this->assertNull($user->fresh());
+        // Harusnya gagal validasi
+        $response->assertSessionHasErrors('email');
     }
 
-    public function test_correct_password_must_be_provided_to_delete_account(): void
+    /**
+     * TEST CASE 5: Update profil berhasil jika email tidak diubah (mengabaikan ID sendiri).
+     */
+    public function test_update_profil_berhasil_jika_email_tidak_berubah(): void
+    {
+        $user = User::factory()->create(['email' => 'tetap@example.com']);
+
+        $response = $this->actingAs($user)
+                         ->patch(route('profile.update'), [
+                             'nama_lengkap' => 'Ganti Nama Saja',
+                             'email' => 'tetap@example.com', // Email sama
+                         ]);
+
+        $response->assertSessionHasNoErrors()
+                 ->assertRedirect(route('profile.edit'));
+    }
+
+    /**
+     * TEST CASE 6: Halaman ubah password bisa diakses.
+     */
+    public function test_halaman_ubah_password_bisa_diakses(): void
     {
         $user = User::factory()->create();
 
-        $response = $this
-            ->actingAs($user)
-            ->from('/profile')
-            ->delete('/profile', [
-                'password' => 'wrong-password',
-            ]);
+        $response = $this->actingAs($user)
+                         ->get(route('profile.password.edit')); // Sesuaikan route di web.php
 
-        $response
-            ->assertSessionHasErrorsIn('userDeletion', 'password')
-            ->assertRedirect('/profile');
+        $response->assertStatus(200)
+                 ->assertViewIs('profile.edit-password');
+    }
 
-        $this->assertNotNull($user->fresh());
+    /**
+     * TEST CASE 7: Update password berhasil dengan input valid.
+     */
+    public function test_update_password_berhasil(): void
+    {
+        $user = User::factory()->create([
+            'password' => Hash::make('password_lama'),
+        ]);
+
+        $response = $this->actingAs($user)
+                         ->put(route('profile.password.update'), [
+                             'current_password' => 'password_lama',
+                             'password' => 'password_baru',
+                             'password_confirmation' => 'password_baru',
+                         ]);
+
+        $response->assertSessionHasNoErrors()
+                 ->assertRedirect(route('profile.password.edit'))
+                 ->assertSessionHas('status', 'password-updated');
+
+        // Verifikasi password di database sudah berubah
+        $this->assertTrue(Hash::check('password_baru', $user->fresh()->password));
+    }
+
+    /**
+     * TEST CASE 8: Update password gagal jika password lama salah.
+     */
+    public function test_update_password_gagal_jika_password_lama_salah(): void
+    {
+        $user = User::factory()->create([
+            'password' => Hash::make('password_asli'),
+        ]);
+
+        $response = $this->actingAs($user)
+                         ->put(route('profile.password.update'), [
+                             'current_password' => 'password_salah', // Salah
+                             'password' => 'password_baru',
+                             'password_confirmation' => 'password_baru',
+                         ]);
+
+        // Harus error di field current_password
+        $response->assertSessionHasErrors(['current_password']);
+        
+        // Pastikan password TIDAK berubah
+        $this->assertTrue(Hash::check('password_asli', $user->fresh()->password));
+    }
+
+    /**
+     * TEST CASE 9: Update password gagal jika konfirmasi password tidak cocok.
+     */
+    public function test_update_password_gagal_jika_konfirmasi_tidak_cocok(): void
+    {
+        $user = User::factory()->create([
+            'password' => Hash::make('password123'),
+        ]);
+
+        $response = $this->actingAs($user)
+                         ->put(route('profile.password.update'), [
+                             'current_password' => 'password123',
+                             'password' => 'password_baru',
+                             'password_confirmation' => 'password_beda', // Tidak sama
+                         ]);
+
+        $response->assertSessionHasErrors(['password']);
     }
 }

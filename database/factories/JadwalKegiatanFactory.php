@@ -18,9 +18,8 @@ $waktuSelesai = date('H:i:s', strtotime($waktuMulai) + 7200);
 return [
 'info_or_id' => InfoOr::factory(),
 'nama_kegiatan' => fake()->randomElement([
-'Seminar Orientasi',
 'Workshop Kepemimpinan',
-'Pengenalan Kampus',
+'Pengenalan BEM dan DPM',
 'Outbound Training',
 'Pelatihan Soft Skills',
 ]),
@@ -29,9 +28,9 @@ return [
 'waktu_mulai' => $waktuMulai,
 'waktu_selesai' => $waktuSelesai,
 'tempat' => fake()->randomElement([
-'Aula Utama',
-'Gedung A Lantai 2',
-'Ruang Seminar',
+'Seminar SI ',
+'Gedung H Lantai 2',
+'Ruang Seminar E',
 ]),
 ];
 }
