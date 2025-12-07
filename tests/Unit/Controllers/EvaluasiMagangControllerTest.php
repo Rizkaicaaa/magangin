@@ -10,9 +10,9 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\EvaluasiMagangController;
 use Illuminate\Validation\ValidationException;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses; // Tambahkan ini
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses; 
 
-#[RunTestsInSeparateProcesses] // Tambahkan ini
+#[RunTestsInSeparateProcesses] 
 
 class EvaluasiMagangControllerTest extends TestCase
 {
@@ -20,12 +20,10 @@ class EvaluasiMagangControllerTest extends TestCase
 {
     parent::setUp();
 
-    // Fake DB manager
     \DB::shouldReceive('connection')->andReturnSelf();
     \DB::shouldReceive('raw')->andReturnSelf();
-    \DB::shouldReceive('useWritePdo')->andReturnSelf(); // untuk DB::connection()
+    \DB::shouldReceive('useWritePdo')->andReturnSelf(); 
 
-    // ⭐ FAKE QUERY BUILDER
     $fakeQuery = Mockery::mock();
     $fakeQuery->shouldReceive('where')->andReturnSelf();
     $fakeQuery->shouldReceive('whereIn')->andReturnSelf();
@@ -36,20 +34,16 @@ class EvaluasiMagangControllerTest extends TestCase
     $fakeQuery->shouldReceive('get')->andReturn(collect());
     $fakeQuery->shouldReceive('value')->andReturn(1);
 
-    // ⭐ INI YANG WAJIB DITAMBAHKAN
     $fakeQuery->shouldReceive('useWritePdo')->andReturnSelf();
 
-    // DB::table() → fake query builder
     \DB::shouldReceive('table')->andReturn($fakeQuery);
 
-    // Block method lain
     \DB::shouldReceive('select')->andReturn([]);
     \DB::shouldReceive('insert')->andReturn(true);
     \DB::shouldReceive('update')->andReturn(true);
     \DB::shouldReceive('delete')->andReturn(true);
     \DB::shouldReceive('statement')->andReturn(true);
 }
-
 
     protected function tearDown(): void
     {

@@ -8,22 +8,20 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Controllers\JadwalSeleksiController;
-use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses; // Tambahkan ini
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses; 
 
-#[RunTestsInSeparateProcesses] // Tambahkan ini
+#[RunTestsInSeparateProcesses] 
 class JadwalSeleksiControllerTest extends TestCase
 {
     public function test_index_menampilkan_daftar_jadwal()
     {
         $jadwals = new Collection(['jadwal1', 'jadwal2']);
 
-        // Mock View
         View::shouldReceive('make')
             ->once()
             ->with('jadwal-seleksi.index', ['jadwals' => $jadwals])
             ->andReturn('mocked view');
 
-        // Dummy controller logic: panggil View langsung
         $controller = new JadwalSeleksiController();
         $response = View::make('jadwal-seleksi.index', ['jadwals' => $jadwals]);
 
@@ -63,7 +61,6 @@ class JadwalSeleksiControllerTest extends TestCase
             'pendaftaran_id' => 1,
         ]);
 
-        // Mock create dan update JadwalSeleksi & Pendaftaran
         $response = Redirect::route('jadwal-seleksi.index');
 
         $this->assertEquals('redirected', $response);
