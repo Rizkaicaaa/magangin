@@ -9,60 +9,71 @@ use App\Models\InfoOr;
 use App\Models\Pendaftaran;
 use App\Models\JadwalSeleksi;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Foundation\Testing\WithFaker;
 
 class JadwalSeleksiTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, WithFaker;
 
     protected $admin;
     protected $mahasiswa;
     protected $dinas;
     protected $infoOr;
     protected $pendaftaran;
+    protected static $counter = 0;
 
     protected function setUp(): void
     {
         parent::setUp();
+        
+        self::$counter++;
 
-        // Setup dinas
-        $this->dinas = DB::table('dinas')->insertGetId([
-            'nama_dinas' => 'Dinas Test',
-            'created_at' => now(),
-            'updated_at' => now(),
+        $this->dinas = Dinas::create([
+            'nama_dinas' => 'Dinas Test ' . self::$counter . '-' . uniqid() . '-' . time(),
+            'deskripsi' => 'Deskripsi Test',
+            'kontak_person' => '08123456789',
         ]);
-        $this->dinas = (object)['id' => $this->dinas];
 
-        // Setup users
         $this->admin = User::factory()->create([
             'role' => 'admin',
-            'email' => 'admin@test.com',
-            'nama_lengkap' => 'Admin Test',
+            'email' => 'admin' . self::$counter . '@test.com',
+            'nama_lengkap' => 'Admin Test ' . self::$counter,
             'dinas_id' => $this->dinas->id,
         ]);
 
         $this->mahasiswa = User::factory()->create([
             'role' => 'mahasiswa',
-            'email' => 'mahasiswa@test.com',
-            'nama_lengkap' => 'Mahasiswa Test',
+            'email' => 'mahasiswa' . self::$counter . '@test.com',
+            'nama_lengkap' => 'Mahasiswa Test ' . self::$counter,
             'dinas_id' => null,
         ]);
 
-        // Setup info OR
         $this->infoOr = InfoOr::factory()->create([
-            'periode' => '2024/2025',
+            'periode' => '2024/2025-' . self::$counter,
             'status' => 'buka',
         ]);
 
-        // Setup pendaftaran menggunakan factory (sesuai factory kamu)
         $this->pendaftaran = Pendaftaran::factory()->create([
             'user_id' => $this->mahasiswa->id,
             'info_or_id' => $this->infoOr->id,
-            'dinas_diterima_id' => $this->dinas->id,
-            // factory sudah set status_pendaftaran => 'pending'
+            'pilihan_dinas_1' => $this->dinas->id,
+            'motivasi' => 'Motivasi test untuk orientasi riset',
+            'file_cv' => 'cv_test.pdf',
+            'file_transkrip' => 'transkrip_test.pdf',
+            'status_pendaftaran' => 'terdaftar',
             'jadwal_seleksi_id' => null,
-            // pilihan dinas boleh null sesuai factory
         ]);
+    }
+
+    protected function tearDown(): void
+    {
+        JadwalSeleksi::query()->delete();
+        Pendaftaran::query()->delete();
+        User::query()->delete();
+        InfoOr::query()->delete();
+        Dinas::query()->delete();
+        
+        parent::tearDown();
     }
 
     public function test_admin_dapat_mengakses_halaman_index_jadwal_seleksi()
@@ -77,9 +88,7 @@ class JadwalSeleksiTest extends TestCase
 
     public function test_index_dapat_filter_berdasarkan_tanggal()
     {
-        $jadwal = JadwalSeleksi::factory()->create([
-            'info_or_id' => $this->infoOr->id,
-            'pendaftaran_id' => $this->pendaftaran->id,
+        $jadwal = $this->createJadwalManual([
             'tanggal_seleksi' => '2025-12-15',
         ]);
 
@@ -92,9 +101,7 @@ class JadwalSeleksiTest extends TestCase
 
     public function test_index_dapat_search_berdasarkan_pewawancara()
     {
-        $jadwal = JadwalSeleksi::factory()->create([
-            'info_or_id' => $this->infoOr->id,
-            'pendaftaran_id' => $this->pendaftaran->id,
+        $jadwal = $this->createJadwalManual([
             'pewawancara' => 'Dr. Budi Santoso',
         ]);
 
@@ -107,9 +114,7 @@ class JadwalSeleksiTest extends TestCase
 
     public function test_index_dapat_search_berdasarkan_tempat()
     {
-        $jadwal = JadwalSeleksi::factory()->create([
-            'info_or_id' => $this->infoOr->id,
-            'pendaftaran_id' => $this->pendaftaran->id,
+        $jadwal = $this->createJadwalManual([
             'tempat' => 'Ruang Rapat Lt. 3',
         ]);
 
@@ -149,17 +154,17 @@ class JadwalSeleksiTest extends TestCase
         $response->assertRedirect(route('jadwal-seleksi.index'));
         $response->assertSessionHas('success', 'Jadwal wawancara berhasil ditambahkan.');
 
-        $this->assertDatabaseHas('jadwal_seleksi', [
-            'info_or_id' => $this->infoOr->id,
-            'pendaftaran_id' => $this->pendaftaran->id,
-            'tanggal_seleksi' => '2025-12-20',
-            'pewawancara' => 'Dr. Ahmad',
-        ]);
+        $this->assertDatabaseCount('jadwal_seleksi', 1);
+        $jadwal = JadwalSeleksi::first();
+        $this->assertEquals($this->infoOr->id, $jadwal->info_or_id);
+        $this->assertEquals($this->pendaftaran->id, $jadwal->pendaftaran_id);
 
-        // Cek pendaftaran terupdate
+        $this->assertEquals('2025-12-20', \Carbon\Carbon::parse($jadwal->tanggal_seleksi)->format('Y-m-d'));
+        $this->assertEquals('Dr. Ahmad', $jadwal->pewawancara);
+
         $this->assertDatabaseHas('pendaftaran', [
             'id' => $this->pendaftaran->id,
-            'jadwal_seleksi_id' => JadwalSeleksi::first()->id,
+            'jadwal_seleksi_id' => $jadwal->id,
         ]);
     }
 
@@ -393,10 +398,7 @@ class JadwalSeleksiTest extends TestCase
 
     public function test_admin_dapat_mengakses_halaman_edit()
     {
-        $jadwal = JadwalSeleksi::factory()->create([
-            'info_or_id' => $this->infoOr->id,
-            'pendaftaran_id' => $this->pendaftaran->id,
-        ]);
+        $jadwal = $this->createJadwalManual();
 
         $response = $this->actingAs($this->admin)
             ->get(route('jadwal-seleksi.edit', $jadwal->id));
@@ -408,18 +410,18 @@ class JadwalSeleksiTest extends TestCase
 
     public function test_halaman_edit_menampilkan_pendaftaran_yang_belum_dijadwalkan()
     {
-        // buat pendaftaran baru pakai factory sehingga status sesuai factory ("pending")
-        $pendaftaranBaru = Pendaftaran::factory()->create([
+        $pendaftaranBaru = Pendaftaran::create([
             'user_id' => $this->mahasiswa->id,
             'info_or_id' => $this->infoOr->id,
-            'dinas_diterima_id' => $this->dinas->id,
+            'pilihan_dinas_1' => $this->dinas->id,
+            'motivasi' => 'Motivasi test untuk orientasi riset',
+            'file_cv' => 'cv_test_2.pdf',
+            'file_transkrip' => 'transkrip_test_2.pdf',
+            'status_pendaftaran' => 'terdaftar',
             'jadwal_seleksi_id' => null,
         ]);
 
-        $jadwal = JadwalSeleksi::factory()->create([
-            'info_or_id' => $this->infoOr->id,
-            'pendaftaran_id' => $this->pendaftaran->id,
-        ]);
+        $jadwal = $this->createJadwalManual();
 
         $response = $this->actingAs($this->admin)
             ->get(route('jadwal-seleksi.edit', $jadwal->id));
@@ -432,9 +434,7 @@ class JadwalSeleksiTest extends TestCase
 
     public function test_admin_dapat_update_jadwal_seleksi()
     {
-        $jadwal = JadwalSeleksi::factory()->create([
-            'info_or_id' => $this->infoOr->id,
-            'pendaftaran_id' => $this->pendaftaran->id,
+        $jadwal = $this->createJadwalManual([
             'pewawancara' => 'Dr. Lama',
         ]);
 
@@ -464,12 +464,8 @@ class JadwalSeleksiTest extends TestCase
 
     public function test_admin_dapat_menghapus_jadwal_seleksi()
     {
-        $jadwal = JadwalSeleksi::factory()->create([
-            'info_or_id' => $this->infoOr->id,
-            'pendaftaran_id' => $this->pendaftaran->id,
-        ]);
+        $jadwal = $this->createJadwalManual();
 
-        // Set jadwal_seleksi_id di pendaftaran
         $this->pendaftaran->update(['jadwal_seleksi_id' => $jadwal->id]);
 
         $response = $this->actingAs($this->admin)
@@ -483,7 +479,6 @@ class JadwalSeleksiTest extends TestCase
             'id' => $jadwal->id,
         ]);
 
-        // Cek pendaftaran jadwal_seleksi_id kembali null
         $this->assertDatabaseHas('pendaftaran', [
             'id' => $this->pendaftaran->id,
             'jadwal_seleksi_id' => null,
@@ -492,10 +487,7 @@ class JadwalSeleksiTest extends TestCase
 
     public function test_admin_dapat_melihat_detail_jadwal_seleksi()
     {
-        $jadwal = JadwalSeleksi::factory()->create([
-            'info_or_id' => $this->infoOr->id,
-            'pendaftaran_id' => $this->pendaftaran->id,
-        ]);
+        $jadwal = $this->createJadwalManual();
 
         $response = $this->actingAs($this->admin)
             ->get(route('jadwal-seleksi.show', $jadwal->id));
@@ -530,17 +522,18 @@ class JadwalSeleksiTest extends TestCase
 
     public function test_pendaftaran_terupdate_ketika_jadwal_diupdate()
     {
-        $pendaftaranBaru = Pendaftaran::factory()->create([
+        $pendaftaranBaru = Pendaftaran::create([
             'user_id' => $this->mahasiswa->id,
             'info_or_id' => $this->infoOr->id,
-            'dinas_diterima_id' => $this->dinas->id,
+            'pilihan_dinas_1' => $this->dinas->id,
+            'motivasi' => 'Motivasi test untuk orientasi riset',
+            'file_cv' => 'cv_test_2.pdf',
+            'file_transkrip' => 'transkrip_test_2.pdf',
+            'status_pendaftaran' => 'terdaftar',
             'jadwal_seleksi_id' => null,
         ]);
 
-        $jadwal = JadwalSeleksi::factory()->create([
-            'info_or_id' => $this->infoOr->id,
-            'pendaftaran_id' => $this->pendaftaran->id,
-        ]);
+        $jadwal = $this->createJadwalManual();
 
         $dataUpdate = [
             'info_or_id' => $this->infoOr->id,
@@ -581,10 +574,7 @@ class JadwalSeleksiTest extends TestCase
 
     public function test_validasi_semua_field_wajib_saat_update()
     {
-        $jadwal = JadwalSeleksi::factory()->create([
-            'info_or_id' => $this->infoOr->id,
-            'pendaftaran_id' => $this->pendaftaran->id,
-        ]);
+        $jadwal = $this->createJadwalManual();
 
         $dataUpdate = [];
 
@@ -600,5 +590,18 @@ class JadwalSeleksiTest extends TestCase
             'pewawancara',
             'pendaftaran_id',
         ]);
+    }
+
+    protected function createJadwalManual($attributes = [])
+    {
+        return JadwalSeleksi::create(array_merge([
+            'info_or_id' => $this->infoOr->id,
+            'pendaftaran_id' => $this->pendaftaran->id,
+            'tanggal_seleksi' => '2025-12-15',
+            'waktu_mulai' => '09:00',
+            'waktu_selesai' => '11:00',
+            'tempat' => 'Ruang Rapat',
+            'pewawancara' => 'Dr. Test',
+        ], $attributes));
     }
 }
