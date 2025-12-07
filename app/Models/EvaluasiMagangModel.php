@@ -1,6 +1,5 @@
 <?php
 
-// Model EvaluasiMagang
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -21,6 +20,7 @@ class EvaluasiMagangModel extends Model
         'nilai_inisiatif',
         'nilai_hasil_kerja',
         'nilai_total',
+        'hasil_evaluasi',        // ← TAMBAHKAN INI
         'nomor_sertifikat',
         'file_sertifikat',
     ];
@@ -33,7 +33,6 @@ class EvaluasiMagangModel extends Model
         'nilai_total' => 'decimal:2',
     ];
 
-    // Relationships
     public function pendaftaran()
     {
         return $this->belongsTo(Pendaftaran::class, 'pendaftaran_id');

@@ -92,7 +92,7 @@ Route::middleware('auth')->group(function () {
 
     // Evaluasi & Kelulusan Magang Routes
     Route::post('/penilaian/store', [EvaluasiMagangController::class, 'storeOrUpdate'])->name('penilaian.store');
-    Route::put('penilaian/{id}', [EvaluasiMagangController::class, 'storeOrUpdate']);
+    Route::put('/penilaian/{id}', [EvaluasiMagangController::class, 'storeOrUpdate'])->name('penilaian.update');
     Route::get('/penilaian', [EvaluasiMagangController::class, 'index'])->name('penilaian.index');
     Route::delete('/penilaian/{id}', [EvaluasiMagangController::class, 'destroy'])->name('penilaian.destroy');
     Route::get('/pengumuman-kelulusan', [PengumumanMagangController::class, 'index'])->name('pengumuman.kelulusan');
