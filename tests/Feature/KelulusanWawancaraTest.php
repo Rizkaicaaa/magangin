@@ -24,12 +24,14 @@ class KelulusanWawancaraTest extends TestCase
     protected $infoOr;
     protected $dinas;
 
-    
+    /**
+     * Setup yang dijalankan sebelum setiap test
+     */
     protected function setUp(): void
     {
         parent::setUp();
 
-        
+        // 1. Buat user dengan berbagai role
         $this->superadmin = User::factory()->create([
             'nama_lengkap' => 'Superadmin Test',
             'role' => 'superadmin',
@@ -65,7 +67,7 @@ class KelulusanWawancaraTest extends TestCase
             'dinas_id' => null,
         ]);
 
-        
+        // 2. Buat data master
         $this->dinas = Dinas::factory()->create([
             'nama_dinas' => 'Dinas Test',
         ]);
@@ -78,6 +80,9 @@ class KelulusanWawancaraTest extends TestCase
         ]);
     }
 
+    /**
+     * TC-KW-001: Test mahasiswa dapat mengakses halaman kelulusan wawancara
+     */
     public function test_mahasiswa_dapat_mengakses_halaman_kelulusan_wawancara(): void
     {
         Pendaftaran::factory()->create([
@@ -87,7 +92,8 @@ class KelulusanWawancaraTest extends TestCase
             'pilihan_dinas_2' => $this->dinas->id,
         ]);
 
-        $response = $this->actingAs($this->mahasiswa)
+        $response = $this->withoutVite()
+            ->actingAs($this->mahasiswa)
             ->get(route('kelulusanwawancara.index'));
 
         $response->assertStatus(200);
@@ -95,7 +101,9 @@ class KelulusanWawancaraTest extends TestCase
         $response->assertViewHas('penilaian');
     }
 
-    
+    /**
+     * TC-KW-002: Test guest tidak dapat mengakses halaman
+     */
     public function test_guest_tidak_dapat_mengakses_halaman_kelulusan_wawancara(): void
     {
         $response = $this->get(route('kelulusanwawancara.index'));
@@ -103,7 +111,9 @@ class KelulusanWawancaraTest extends TestCase
         $response->assertRedirect(route('login'));
     }
 
-   
+    /**
+     * TC-KW-003: Test halaman menampilkan penilaian jika ada
+     */
     public function test_halaman_menampilkan_penilaian_jika_ada(): void
     {
         $pendaftaran = Pendaftaran::factory()->create([
@@ -123,7 +133,8 @@ class KelulusanWawancaraTest extends TestCase
             'status' => 'sudah_dinilai',
         ]);
 
-        $response = $this->actingAs($this->mahasiswa)
+        $response = $this->withoutVite()
+            ->actingAs($this->mahasiswa)
             ->get(route('kelulusanwawancara.index'));
 
         $response->assertStatus(200);
@@ -134,7 +145,9 @@ class KelulusanWawancaraTest extends TestCase
         $this->assertEquals(85, $penilaian->nilai_kemampuan);
     }
 
-   
+    /**
+     * TC-KW-004: Test halaman menampilkan null jika belum dinilai
+     */
     public function test_halaman_menampilkan_null_jika_belum_dinilai(): void
     {
         Pendaftaran::factory()->create([
@@ -144,7 +157,8 @@ class KelulusanWawancaraTest extends TestCase
             'pilihan_dinas_2' => $this->dinas->id,
         ]);
 
-        $response = $this->actingAs($this->mahasiswa)
+        $response = $this->withoutVite()
+            ->actingAs($this->mahasiswa)
             ->get(route('kelulusanwawancara.index'));
 
         $response->assertStatus(200);
@@ -152,7 +166,9 @@ class KelulusanWawancaraTest extends TestCase
         $this->assertNull($penilaian);
     }
 
-    
+    /**
+     * TC-KW-005: Test filter user_id dengan Auth::id() bekerja benar
+     */
     public function test_filter_user_id_dengan_auth_id_bekerja_benar(): void
     {
         $pendaftaran1 = Pendaftaran::factory()->create([
@@ -169,7 +185,7 @@ class KelulusanWawancaraTest extends TestCase
             'pilihan_dinas_2' => $this->dinas->id,
         ]);
 
-        
+        // Buat penilaian untuk kedua mahasiswa
         PenilaianWawancara::create([
             'pendaftaran_id' => $pendaftaran1->id,
             'penilai_id' => $this->penilai->id,
@@ -190,12 +206,15 @@ class KelulusanWawancaraTest extends TestCase
             'status' => 'sudah_dinilai',
         ]);
 
-       
-        $response1 = $this->actingAs($this->mahasiswa)
+        // Mahasiswa 1 hanya melihat penilaiannya sendiri
+        $response1 = $this->withoutVite()
+            ->actingAs($this->mahasiswa)
             ->get(route('kelulusanwawancara.index'));
         $penilaian1 = $response1->viewData('penilaian');
 
-        $response2 = $this->actingAs($this->mahasiswaLain)
+        // Mahasiswa 2 hanya melihat penilaiannya sendiri
+        $response2 = $this->withoutVite()
+            ->actingAs($this->mahasiswaLain)
             ->get(route('kelulusanwawancara.index'));
         $penilaian2 = $response2->viewData('penilaian');
 
@@ -204,7 +223,9 @@ class KelulusanWawancaraTest extends TestCase
         $this->assertNotEquals($penilaian1->id, $penilaian2->id);
     }
 
-    
+    /**
+     * TC-KW-006: Test whereHas relasi pendaftaran bekerja
+     */
     public function test_wherehas_relasi_pendaftaran_bekerja(): void
     {
         $pendaftaran = Pendaftaran::factory()->create([
@@ -224,6 +245,7 @@ class KelulusanWawancaraTest extends TestCase
             'status' => 'sudah_dinilai',
         ]);
 
+        // Test query dengan whereHas
         $penilaian = PenilaianWawancara::whereHas('pendaftaran', function ($query) {
             $query->where('user_id', $this->mahasiswa->id);
         })->first();
@@ -232,7 +254,9 @@ class KelulusanWawancaraTest extends TestCase
         $this->assertEquals($pendaftaran->id, $penilaian->pendaftaran_id);
     }
 
-   
+    /**
+     * TC-KW-007: Test validasi nilai komunikasi valid
+     */
     public function test_validasi_nilai_komunikasi_valid(): void
     {
         $pendaftaran = Pendaftaran::factory()->create([
@@ -242,7 +266,7 @@ class KelulusanWawancaraTest extends TestCase
             'pilihan_dinas_2' => $this->dinas->id,
         ]);
 
-       
+        // Test nilai valid (0-100)
         $penilaian = PenilaianWawancara::create([
             'pendaftaran_id' => $pendaftaran->id,
             'penilai_id' => $this->penilai->id,
@@ -257,7 +281,9 @@ class KelulusanWawancaraTest extends TestCase
         $this->assertLessThanOrEqual(100, $penilaian->nilai_komunikasi);
     }
 
-    
+    /**
+     * TC-KW-008: Test validasi nilai motivasi valid
+     */
     public function test_validasi_nilai_motivasi_valid(): void
     {
         $pendaftaran = Pendaftaran::factory()->create([
@@ -281,7 +307,9 @@ class KelulusanWawancaraTest extends TestCase
         $this->assertLessThanOrEqual(100, $penilaian->nilai_motivasi);
     }
 
-    
+    /**
+     * TC-KW-009: Test validasi nilai kemampuan valid
+     */
     public function test_validasi_nilai_kemampuan_valid(): void
     {
         $pendaftaran = Pendaftaran::factory()->create([
@@ -305,7 +333,9 @@ class KelulusanWawancaraTest extends TestCase
         $this->assertLessThanOrEqual(100, $penilaian->nilai_kemampuan);
     }
 
-    
+    /**
+     * TC-KW-010: Test status penilaian belum_dinilai
+     */
     public function test_status_penilaian_belum_dinilai(): void
     {
         $pendaftaran = Pendaftaran::factory()->create([
@@ -328,7 +358,9 @@ class KelulusanWawancaraTest extends TestCase
         $this->assertEquals('belum_dinilai', $penilaian->status);
     }
 
-    
+    /**
+     * TC-KW-011: Test status penilaian sudah_dinilai
+     */
     public function test_status_penilaian_sudah_dinilai(): void
     {
         $pendaftaran = Pendaftaran::factory()->create([
@@ -351,7 +383,9 @@ class KelulusanWawancaraTest extends TestCase
         $this->assertEquals('sudah_dinilai', $penilaian->status);
     }
 
-   
+    /**
+     * TC-KW-012: Test KKM nilai default 70
+     */
     public function test_kkm_nilai_default_70(): void
     {
         $pendaftaran = Pendaftaran::factory()->create([
@@ -374,7 +408,9 @@ class KelulusanWawancaraTest extends TestCase
         $this->assertEquals(70, $penilaian->kkm);
     }
 
-    
+    /**
+     * TC-KW-013: Test compact pass penilaian ke view
+     */
     public function test_compact_pass_penilaian_ke_view(): void
     {
         $pendaftaran = Pendaftaran::factory()->create([
@@ -394,13 +430,17 @@ class KelulusanWawancaraTest extends TestCase
             'status' => 'sudah_dinilai',
         ]);
 
-        $response = $this->actingAs($this->mahasiswa)
+        $response = $this->withoutVite()
+            ->actingAs($this->mahasiswa)
             ->get(route('kelulusanwawancara.index'));
 
+        $response->assertStatus(200);
         $response->assertViewHas('penilaian');
     }
 
-    
+    /**
+     * TC-KW-014: Test view render dengan benar
+     */
     public function test_view_render_dengan_benar(): void
     {
         Pendaftaran::factory()->create([
@@ -410,14 +450,17 @@ class KelulusanWawancaraTest extends TestCase
             'pilihan_dinas_2' => $this->dinas->id,
         ]);
 
-        $response = $this->actingAs($this->mahasiswa)
+        $response = $this->withoutVite()
+            ->actingAs($this->mahasiswa)
             ->get(route('kelulusanwawancara.index'));
 
         $response->assertStatus(200);
         $response->assertViewIs('kelulusan-wawancara.index');
     }
 
-   
+    /**
+     * TC-KW-015: Test penilaian dengan data lengkap ditampilkan
+     */
     public function test_penilaian_dengan_data_lengkap_ditampilkan(): void
     {
         $pendaftaran = Pendaftaran::factory()->create([
@@ -437,7 +480,8 @@ class KelulusanWawancaraTest extends TestCase
             'status' => 'sudah_dinilai',
         ]);
 
-        $response = $this->actingAs($this->mahasiswa)
+        $response = $this->withoutVite()
+            ->actingAs($this->mahasiswa)
             ->get(route('kelulusanwawancara.index'));
 
         $penilaian = $response->viewData('penilaian');
