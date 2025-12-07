@@ -16,7 +16,6 @@ class PenilaianWawancaraControllerTest extends TestCase
         parent::tearDown();
     }
 
-    /** INDEX */
     public function test_index_menampilkan_data()
     {
         $mockPW = Mockery::mock('alias:App\\Models\\PenilaianWawancara');
@@ -32,7 +31,6 @@ class PenilaianWawancaraControllerTest extends TestCase
         $this->assertEquals('penilaian-wawancara.index', $response->name());
     }
 
-    /** CREATE */
     public function test_create_menampilkan_form()
     {
         $mockJadwal = Mockery::mock('alias:App\\Models\\JadwalSeleksi');
@@ -48,7 +46,6 @@ class PenilaianWawancaraControllerTest extends TestCase
         $this->assertEquals('penilaian-wawancara.create', $response->name());
     }
 
-    /** STORE */
     public function test_store_menyimpan_penilaian()
     {
         $req = Request::create('/', 'POST', [
@@ -60,7 +57,6 @@ class PenilaianWawancaraControllerTest extends TestCase
             'kkm' => 75,
         ]);
 
-        // Mock DB connection untuk validator exists
         $mockQuery = Mockery::mock();
         $mockQuery->shouldReceive('useWritePdo')->andReturnSelf();
         $mockQuery->shouldReceive('where')->andReturnSelf();
@@ -72,7 +68,6 @@ class PenilaianWawancaraControllerTest extends TestCase
 
         DB::shouldReceive('connection')->andReturn($mockConnection);
 
-        // Mock PenilaianWawancara
         $mockPW = Mockery::mock('overload:App\Models\PenilaianWawancara');
         $mockPW->shouldReceive('where')->with('pendaftaran_id', 1)->andReturnSelf();
         $mockPW->shouldReceive('exists')->andReturn(false);
@@ -84,7 +79,6 @@ class PenilaianWawancaraControllerTest extends TestCase
         $this->assertEquals(302, $response->status());
     }
 
-    /** EDIT */
     public function test_edit_menampilkan_form_edit()
     {
         $mockPendaftaran = Mockery::mock('alias:App\\Models\\Pendaftaran');
@@ -103,7 +97,6 @@ class PenilaianWawancaraControllerTest extends TestCase
         $this->assertEquals('penilaian-wawancara.edit', $response->name());
     }
 
-    /** UPDATE */
     public function test_update_mengubah_penilaian()
     {
         $req = Request::create('/', 'PUT', [
@@ -115,7 +108,6 @@ class PenilaianWawancaraControllerTest extends TestCase
             'kkm'=>75
         ]);
 
-        // Mock DB connection untuk validator exists
         $mockQuery = Mockery::mock();
         $mockQuery->shouldReceive('useWritePdo')->andReturnSelf();
         $mockQuery->shouldReceive('where')->andReturnSelf();
@@ -127,7 +119,6 @@ class PenilaianWawancaraControllerTest extends TestCase
 
         DB::shouldReceive('connection')->andReturn($mockConnection);
 
-        // Mock model
         $mockPW = Mockery::mock('overload:App\\Models\\PenilaianWawancara');
         $mockPW->shouldReceive('update')->once()->andReturn(true);
 
@@ -137,7 +128,6 @@ class PenilaianWawancaraControllerTest extends TestCase
         $this->assertEquals(302, $response->status());
     }
 
-    /** DESTROY */
     public function test_destroy_menghapus_penilaian()
     {
         $model = Mockery::mock('alias:App\\Models\\PenilaianWawancara');
@@ -149,7 +139,6 @@ class PenilaianWawancaraControllerTest extends TestCase
         $this->assertEquals(302, $response->status());
     }
 
-    /** SHOW */
     public function test_show_menampilkan_detail()
     {
         $mockPW = Mockery::mock('alias:App\\Models\\PenilaianWawancara');
@@ -167,12 +156,10 @@ class PenilaianWawancaraControllerTest extends TestCase
         $this->assertEquals('penilaian-wawancara.show', $response->name());
     }
 
-    /** UPDATE STATUS */
     public function test_updateStatus_berhasil()
     {
         $req = Request::create('/', 'POST', ['kkm'=>75]);
 
-        // Mock item penilaian dengan method update()
         $mockItem = Mockery::mock();
         $mockItem->pendaftaran_id = 1;
         $mockItem->nilai_rata_rata = 80;
