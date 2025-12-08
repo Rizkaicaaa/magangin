@@ -7,7 +7,7 @@ use Mockery;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use App\Http\Controllers\KelulusanMagangController;
-use App\Models\EvaluasiMagang;
+use App\Models\EvaluasiMagangModel;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses; // Tambahkan ini
 
 #[RunTestsInSeparateProcesses] // Tambahkan ini
@@ -30,7 +30,7 @@ class KelulusanMagangControllerTest extends TestCase
         $evaluasiDummy = (object)['id' => 1, 'pendaftaran_id' => 1];
 
         // Mock EvaluasiMagang::with()->whereHas()->first()
-        $evaluasiMock = Mockery::mock('alias:' . EvaluasiMagang::class);
+        $evaluasiMock = Mockery::mock('alias:' . EvaluasiMagangModel::class);
         $evaluasiMock->shouldReceive('with->whereHas->first')
                      ->once()
                      ->andReturn($evaluasiDummy);
