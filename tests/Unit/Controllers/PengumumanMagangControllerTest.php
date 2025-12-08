@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Mockery;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses; // Tambahkan ini
+
+#[RunTestsInSeparateProcesses] // Tambahkan ini
 
 class PengumumanMagangControllerTest extends TestCase
 {
