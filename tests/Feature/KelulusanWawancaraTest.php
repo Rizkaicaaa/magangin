@@ -11,6 +11,10 @@ use App\Models\PenilaianWawancara;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses; // Tambahkan ini
+
+#[RunTestsInSeparateProcesses] // Tambahkan ini
+
 
 class KelulusanWawancaraTest extends TestCase
 {

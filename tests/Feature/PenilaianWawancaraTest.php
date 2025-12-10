@@ -11,6 +11,10 @@ use App\Models\JadwalSeleksi;
 use App\Models\PenilaianWawancara;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses; // Tambahkan ini
+
+#[RunTestsInSeparateProcesses] // Tambahkan ini
+
 
 class PenilaianWawancaraTest extends TestCase
 {
