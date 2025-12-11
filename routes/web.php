@@ -61,6 +61,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/users/{id}/destroy', [UserController::class, 'destroy'])->name('users.destroy');
 
     // Kelola Info OR Routes
+    Route::get('/kelola-info-or/create', [InfoOrController::class, 'create'])->name('info-or.create');
     Route::post('/kelola-info-or', [InfoOrController::class, 'store'])->name('info-or.store');
     Route::put('/kelola-info-or/{id}/tutup', [InfoOrController::class, 'updateStatus'])->name('info-or.tutup');
 
@@ -91,6 +92,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/kelulusan-wawancara', [KelulusanWawancaraController::class, 'index'])->name('kelulusanwawancara.index');
 
     // Evaluasi & Kelulusan Magang Routes
+    Route::get('/penilaian/create', [EvaluasiMagangController::class, 'create'])->name('penilaian.create');
     Route::post('/penilaian/store', [EvaluasiMagangController::class, 'storeOrUpdate'])->name('penilaian.store');
     Route::put('/penilaian/{id}', [EvaluasiMagangController::class, 'storeOrUpdate'])->name('penilaian.update');
     Route::get('/penilaian', [EvaluasiMagangController::class, 'index'])->name('penilaian.index');
