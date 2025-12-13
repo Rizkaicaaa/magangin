@@ -3,22 +3,23 @@
 @section('title', 'Dashboard | MagangIn')
 
 @section('content')
-<div class="bg-white p-8 rounded-xl shadow-lg mx-6 space-y-10">
+<div class="bg-white p-6 md:p-8 rounded-xl shadow-lg mx-4 md:mx-6 space-y-8 md:space-y-10">
 
-    <!-- Header -->
-    <div class="flex justify-between items-center mb-8">
-        <div>
-            <h1 class="text-3xl font-bold text-gray-800">
+    <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-6 mb-8">
+
+        <div class="w-full md:flex-1">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-800 break-words">
                 📊 Dashboard
                 @if($user->role == 'superadmin')
-                Superadmin
+                <span class="block sm:inline mt-1 sm:mt-0">Superadmin</span>
                 @elseif(in_array($user->role, ['admin']))
-                Admin {{ $user->dinas ? '- ' . $user->dinas->nama_dinas : '' }}
+                <span class="block sm:inline mt-1 sm:mt-0">Admin
+                    {{ $user->dinas ? '- ' . $user->dinas->nama_dinas : '' }}</span>
                 @else
-                Mahasiswa
+                <span class="block sm:inline mt-1 sm:mt-0">Mahasiswa</span>
                 @endif
             </h1>
-            <p class="text-gray-500 mt-1">
+            <p class="text-sm md:text-base text-gray-500 mt-2">
                 @if($user->role == 'superadmin')
                 Ringkasan sistem magang BEM KM FTI Universitas Andalas
                 @elseif(in_array($user->role, ['admin']))
@@ -28,21 +29,25 @@
                 @endif
             </p>
             @if($selectedInfoOrData)
-            <div class="mt-2">
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
+            <div class="mt-3">
+                <span
+                    class="inline-flex items-center px-3 py-1 rounded-full text-xs md:text-sm bg-blue-100 text-blue-800 font-medium break-all">
                     📋 {{ $selectedInfoOrData->judul }} ({{ $selectedInfoOrData->periode }})
                 </span>
             </div>
             @endif
         </div>
 
-        <!-- Filter Dropdown - Untuk Superadmin dan Admin yang punya data -->
         @if($showFilter && $allInfoOr->count() > 0)
-        <div class="flex items-center space-x-4">
-            <form method="GET" action="{{ route('dashboard') }}" class="flex items-center space-x-2">
-                <label for="info_or_id" class="text-sm font-medium text-gray-700">Filter periode:</label>
+        <div class="w-full md:w-auto mt-2 md:mt-0">
+            <form method="GET" action="{{ route('dashboard') }}"
+                class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full">
+                <label for="info_or_id"
+                    class="text-sm font-medium text-gray-700 whitespace-nowrap hidden sm:block">Filter periode:</label>
+                <label for="info_or_id" class="text-sm font-medium text-gray-700 sm:hidden mb-1">Pilih Periode:</label>
+
                 <select name="info_or_id" id="info_or_id"
-                    class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    class="block w-full md:w-64 px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
                     onchange="this.form.submit()">
                     <option value="all" {{ $selectedInfoOr == 'all' ? 'selected' : '' }}>
                         🌐 Semua Periode

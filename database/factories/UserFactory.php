@@ -41,13 +41,19 @@ class UserFactory extends Factory
     /**
      * State untuk superadmin
      */
-    public function superadmin(): static
+    public function superadmin()
     {
-        return $this->state(fn (array $attributes) => [
-            'role' => 'superadmin',
-            'nim' => null,
-        ]);
+        return $this->state(function () {
+            return [
+                'nama_lengkap' => 'Superadmin',
+                'nim'          => null,
+                'email'        => 'superadmin@example.com',
+                'password'     => bcrypt('password'),
+                'role'         => 'superadmin',
+            ];
+        });
     }
+
 
     /**
      * State untuk mahasiswa
