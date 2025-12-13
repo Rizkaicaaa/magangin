@@ -7,6 +7,9 @@ use Mockery;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\SeleksiWawancaraController;
 use Carbon\Carbon;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses; // Tambahkan ini
+
+#[RunTestsInSeparateProcesses] // Tambahkan ini
 
 class SeleksiWawancaraControllerTest extends TestCase
 {

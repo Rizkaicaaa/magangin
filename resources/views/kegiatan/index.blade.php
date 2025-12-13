@@ -3,27 +3,27 @@
 @section('title', 'Jadwal Kegiatan | MagangIn')
 
 @section('content')
-<div class="bg-white p-8 rounded-xl shadow-lg mx-6">
+<div class="bg-white p-6 md:p-8 rounded-xl shadow-lg mx-4 md:mx-6">
 
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
 
-        @if($userRole === 'mahasiswa')
-        <h1 class="text-3xl font-bold text-gray-800"> 🗓️ Jadwal Kegiatan Magang</h1>
-        @elseif($userRole === 'admin')
-        <h1 class="text-3xl font-bold text-gray-800">Jadwal Kegiatan Magang</h1>
-        @else
-        <h1 class="text-3xl font-bold text-gray-800">Kelola Jadwal Kegiatan</h1>
-        @endif
+        <div class="mb-2 md:mb-0">
+            @if($userRole === 'mahasiswa')
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-800"> 🗓️ Jadwal Kegiatan Magang</h1>
+            @elseif($userRole === 'admin')
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Jadwal Kegiatan Magang</h1>
+            @else
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Kelola Jadwal Kegiatan</h1>
+            @endif
+        </div>
 
-        <div class="flex items-center gap-4">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+
             {{-- Select periode hanya ditampilkan superadmin --}}
             @if($userRole === 'superadmin')
-            <div class="mb-6">
-                <label for="periode-select" class="block text-sm font-medium text-gray-700 mb-2">
-                    Pilih Periode:
-                </label>
+            <div class="w-full sm:w-auto">
                 <select id="periode-select"
-                    class="block w-48 px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                    class="block w-full sm:w-48 px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
                     <option value="">-- Pilih Periode --</option>
                     @foreach($periodes as $periode)
                     <option value="{{ $periode->id }}" data-status="{{ $periode->status }}" @if($selectedPeriode &&
@@ -41,7 +41,7 @@
             {{-- Button Tambah Kegiatan hanya untuk superadmin --}}
             @if($userRole === 'superadmin')
             <button id="open-create-modal"
-                class="py-2 px-4 rounded-lg bg-navy text-white font-semibold hover:bg-baby-blue transition disabled:opacity-50 disabled:cursor-not-allowed"
+                class="w-full sm:w-auto py-2 px-4 rounded-lg bg-navy text-white font-semibold hover:bg-baby-blue transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-sm"
                 @if($userRole !=='superadmin' || !$selectedPeriode) disabled @endif>
                 Tambah Kegiatan
             </button>

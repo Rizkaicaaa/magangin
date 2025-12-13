@@ -23,6 +23,7 @@ class EvaluasiMagangTest extends TestCase
         'nilai_inisiatif',
         'nilai_hasil_kerja',
         'nilai_total',
+        'hasil_evaluasi',
         'nomor_sertifikat',
         'file_sertifikat',
     ];

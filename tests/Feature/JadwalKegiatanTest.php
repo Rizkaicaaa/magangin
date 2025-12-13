@@ -10,6 +10,10 @@ use App\Models\Pendaftaran;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB; // Tambahkan facade DB
 use Carbon\Carbon;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses; // Tambahkan ini
+
+#[RunTestsInSeparateProcesses] // Tambahkan ini
+
 
 class JadwalKegiatanTest extends TestCase
 {

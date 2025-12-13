@@ -6,6 +6,9 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses; // Tambahkan ini
+
+#[RunTestsInSeparateProcesses] // Tambahkan ini
 
 class ProfileTest extends TestCase
 {

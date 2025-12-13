@@ -7,6 +7,9 @@ use Mockery;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\PenilaianWawancaraController;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses; // Tambahkan ini
+
+#[RunTestsInSeparateProcesses] // Tambahkan ini
 
 class PenilaianWawancaraControllerTest extends TestCase
 {

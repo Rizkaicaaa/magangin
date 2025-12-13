@@ -9,6 +9,10 @@ use App\Models\TemplateSertifikatModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses; // Tambahkan ini
+
+#[RunTestsInSeparateProcesses] // Tambahkan ini
+
 
 class TemplateSertifikatTest extends TestCase
 {

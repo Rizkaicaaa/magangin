@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Mockery;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses; // Tambahkan ini
+
+#[RunTestsInSeparateProcesses] // Tambahkan ini
 
 class TemplateSertifikatControllerTest extends TestCase
 {

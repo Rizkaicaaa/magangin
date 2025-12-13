@@ -5,18 +5,20 @@
 @section('content')
 
 <div class="bg-white p-8 rounded-xl shadow-lg mx-6">
-    <div class="flex justify-between items-center mb-6">
-        <h1 id="page-title" class="text-3xl font-bold text-gray-800">Data Pendaftar</h1>
-        <div class="flex space-x-2">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+        <h1 id="page-title" class="text-2xl md:text-3xl font-bold text-gray-800">Data Pendaftar</h1>
+
+        <div class="flex flex-col sm:flex-row w-full md:w-auto gap-3">
             <select id="filter-periode"
-                class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-baby-blue">
+                class="w-full sm:w-48 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-baby-blue text-sm">
                 <option value="">Semua Periode</option>
                 @foreach($allPeriode as $periode)
                 <option value="{{ $periode->id }}">{{ $periode->periode }}</option>
                 @endforeach
             </select>
+
             <select id="filter-status"
-                class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-baby-blue">
+                class="w-full sm:w-48 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-baby-blue text-sm">
                 <option value="">Semua Status</option>
                 <option value="terdaftar">Terdaftar</option>
                 <option value="lulus_wawancara">Lulus Wawancara</option>

@@ -10,6 +10,10 @@ use App\Models\Pendaftaran;
 use App\Models\JadwalSeleksi;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses; // Tambahkan ini
+
+#[RunTestsInSeparateProcesses] // Tambahkan ini
+
 
 class JadwalSeleksiTest extends TestCase
 {

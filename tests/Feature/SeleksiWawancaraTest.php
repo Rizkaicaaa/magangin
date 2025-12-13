@@ -11,6 +11,10 @@ use App\Models\Dinas;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Carbon\Carbon;
 use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses; // Tambahkan ini
+
+#[RunTestsInSeparateProcesses] // Tambahkan ini
+
 
 class SeleksiWawancaraTest extends TestCase
 {

@@ -7,6 +7,9 @@ use App\Models\InfoOr;
 use Illuminate\Support\Facades\View;
 use Mockery;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses; // Tambahkan ini
+
+#[RunTestsInSeparateProcesses] // Tambahkan ini
 
 class AppServiceProviderTest extends TestCase
 {

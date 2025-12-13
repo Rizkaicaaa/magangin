@@ -10,6 +10,10 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses; // Tambahkan ini
+
+#[RunTestsInSeparateProcesses] // Tambahkan ini
+
 
 class DashboardTest extends TestCase
 {
@@ -65,9 +69,10 @@ class DashboardTest extends TestCase
     /**
      * TEST CASE 2: Admin Dinas mengakses dashboard dan melihat data yang relevan dengan dinasnya.
      */
-    public function test_admin_dinas_mengakses_dashboard_dengan_data_pendaftar_dinasnya_saja(): void
+   public function test_admin_dinas_mengakses_dashboard_dengan_data_pendaftar_dinasnya_saja(): void
     {
         // 1. Setup Dinas dengan nama unik
+        // Pastikan nama dinas benar-benar unik dan tidak bentrok (ini sudah OK)
         $dinasKita = Dinas::factory()->create(['nama_dinas' => 'Dinas A Unique']);
         $dinasLain = Dinas::factory()->create(['nama_dinas' => 'Dinas B Unique']);
 
@@ -80,18 +85,36 @@ class DashboardTest extends TestCase
         // 3. Setup Pendaftaran
         $infoOr = InfoOr::factory()->create();
 
-        // Pendaftar ke Dinas A (Harus terhitung)
+        // Pendaftar ke Dinas A (HARUS terhitung = 1)
         Pendaftaran::factory()->create([
             'info_or_id' => $infoOr->id,
             'pilihan_dinas_1' => $dinasKita->id,
+            // Tambahkan pilihan_dinas_2 ke dinas KITA juga (atau null)
+            // agar factory tidak membuat dinas baru/bentrok.
+            'pilihan_dinas_2' => $dinasKita->id, 
             'status_pendaftaran' => 'terdaftar'
         ]);
 
+        // Pendaftar ke Dinas B (TIDAK terhitung oleh Admin Dinas A)
         Pendaftaran::factory()->create([
             'info_or_id' => $infoOr->id,
             'pilihan_dinas_1' => $dinasLain->id,
+            // Tambahkan pilihan_dinas_2 ke dinas LAIN juga (atau null)
+            'pilihan_dinas_2' => $dinasLain->id, 
             'status_pendaftaran' => 'terdaftar'
         ]);
+        
+        // **OPSIONAL**: Tambahkan pendaftar yang TIDAK memilih dinas KITA sama sekali.
+        // Pendaftar ke Dinas B (Pilihan 1) dan Pilihan C (Pilihan 2)
+        // Ini lebih memperkuat bahwa filter berjalan
+        $dinasC = Dinas::factory()->create(['nama_dinas' => 'Dinas C Unique']);
+        Pendaftaran::factory()->create([
+             'info_or_id' => $infoOr->id,
+             'pilihan_dinas_1' => $dinasLain->id,
+             'pilihan_dinas_2' => $dinasC->id,
+             'status_pendaftaran' => 'terdaftar'
+        ]);
+
 
         // 4. Akses Dashboard
         $response = $this->actingAs($admin)
@@ -100,10 +123,12 @@ class DashboardTest extends TestCase
         // 5. Assertions
         $response->assertStatus(200);
 
-        // Admin harusnya melihat totalPendaftar = 1 (bukan 2)
+        // Admin harusnya melihat totalPendaftar = 1 
+        // (yaitu pendaftar yang memilih dinas KITA pada pilihan 1 atau 2, 
+        // tapi berdasarkan setup di atas, HANYA 1 yang memilih dinasKita di pilihan 1)
         $this->assertEquals(1, $response->viewData('totalPendaftar'));
         
-        // Admin melihat totalDinas = 1 (Hardcoded di controller getAdminData)
+        // Admin melihat totalDinas = 1 (Karena hanya melihat datanya sendiri)
         $this->assertEquals(1, $response->viewData('totalDinas'));
     }
 

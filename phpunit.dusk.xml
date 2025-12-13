@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit backupGlobals="false"
+         beStrictAboutTestsThatDoNotTestAnything="false"
+         colors="true"
+         processIsolation="false"
+         stopOnError="false"
+         stopOnFailure="false"
+         cacheDirectory=".phpunit.cache"
+         backupStaticProperties="false">
+    <testsuites>
+        <testsuite name="Browser Test Suite">
+            <directory suffix="Test.php">./tests/Browser</directory>
+        </testsuite>
+    </testsuites>
+    
+    <!-- ⭐ TAMBAHKAN INI -->
+    <php>
+        <env name="APP_ENV" value="dusk.local"/>
+        <env name="APP_KEY" value="base64:PNIiBe3jWBS0IaDW0ODI3wvYL0r/B4Awg5QBLZq9l+w="/>
+        <env name="DB_CONNECTION" value="mysql"/>
+        <env name="DB_DATABASE" value="magangin_dusk"/>
+        <env name="SESSION_DRIVER" value="cookie"/>
+        <env name="CACHE_DRIVER" value="array"/>
+        <env name="QUEUE_CONNECTION" value="sync"/>
+    </php>
+</phpunit>

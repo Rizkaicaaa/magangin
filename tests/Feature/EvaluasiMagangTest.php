@@ -10,6 +10,10 @@ use App\Models\Pendaftaran;
 use App\Models\EvaluasiMagangModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses; // Tambahkan ini
+
+#[RunTestsInSeparateProcesses] // Tambahkan ini
+
 
 class EvaluasiMagangTest extends TestCase
 {
