@@ -12,14 +12,10 @@ class DinasFactory extends Factory
     public function definition(): array
     {
         return [
-            'nama_dinas' => 'Dinas ' . $this->faker->randomElement([
-                'PSDM', 
-                'Internal', 
-                'Eksternal', 
-                'Sosmasling'
-            ]),
-            'deskripsi' => $this->faker->sentence(10),
-            'kontak_person' => $this->faker->numerify('08##########'),
-        ];
+        'nama_dinas' => $this->faker->unique()->company(),
+        'deskripsi' => $this->faker->sentence(),
+        'kontak_person' => $this->faker->phoneNumber(),
+
+    ];
     }
 }
