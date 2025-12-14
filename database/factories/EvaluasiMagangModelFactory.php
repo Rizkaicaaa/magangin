@@ -22,6 +22,8 @@ class EvaluasiMagangModelFactory extends Factory
             'nilai_hasil_kerja' => 80,
             'nilai_total' => 80,
             'hasil_evaluasi' => 'Lulus',
+            'template_sertifikat_id' => null, // Tambahkan ini jika kolom nullable
+            // Atau jika required, buat factory untuk TemplateSertifikat
         ];
     }
 }

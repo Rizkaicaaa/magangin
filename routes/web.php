@@ -92,8 +92,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/kelulusan-wawancara', [KelulusanWawancaraController::class, 'index'])->name('kelulusanwawancara.index');
 
     // Evaluasi & Kelulusan Magang Routes
-    Route::get('/penilaian/create', [EvaluasiMagangController::class, 'create'])->name('penilaian.create');
-    Route::post('/penilaian/store', [EvaluasiMagangController::class, 'storeOrUpdate'])->name('penilaian.store');
+    Route::post('/penilaian', [EvaluasiMagangController::class, 'storeOrUpdate'])->name('penilaian.store');
     Route::put('/penilaian/{id}', [EvaluasiMagangController::class, 'storeOrUpdate'])->name('penilaian.update');
     Route::get('/penilaian', [EvaluasiMagangController::class, 'index'])->name('penilaian.index');
     Route::delete('/penilaian/{id}', [EvaluasiMagangController::class, 'destroy'])->name('penilaian.destroy');
