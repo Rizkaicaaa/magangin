@@ -239,18 +239,32 @@ inputsEdit.forEach(inp => inp.addEventListener('input', hitungTotalEdit));
 const createForm = document.getElementById('create-form');
 const editForm = document.getElementById('edit-form');
 const tableState = document.getElementById('table-state');
+const emptyState = document.getElementById('empty-state');
+
 document.getElementById('create-button').addEventListener('click', () => {
     createForm.classList.remove('hidden');
     tableState.classList.add('hidden');
+    if (emptyState) emptyState.classList.add('hidden');
 });
-document.getElementById('empty-create-button').addEventListener('click', () => {
-    createForm.classList.remove('hidden');
-    document.getElementById('empty-state').classList.add('hidden');
-});
+
+// Check if empty-create-button exists before adding event listener
+const emptyCreateButton = document.getElementById('empty-create-button');
+if (emptyCreateButton) {
+    emptyCreateButton.addEventListener('click', () => {
+        createForm.classList.remove('hidden');
+        emptyState.classList.add('hidden');
+    });
+}
+
 document.getElementById('cancel-create').addEventListener('click', () => {
     createForm.classList.add('hidden');
-    tableState.classList.remove('hidden');
+    if (tableState && !tableState.classList.contains('hidden')) {
+        tableState.classList.remove('hidden');
+    } else if (emptyState) {
+        emptyState.classList.remove('hidden');
+    }
 });
+
 document.getElementById('cancel-edit').addEventListener('click', () => {
     editForm.classList.add('hidden');
     tableState.classList.remove('hidden');
@@ -258,16 +272,17 @@ document.getElementById('cancel-edit').addEventListener('click', () => {
 
 // ==== Edit Button ====
 document.querySelectorAll('.edit-button').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const id = btn.dataset.id;
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const id = this.dataset.id;
         const url = '{{ url("penilaian") }}/' + id;
         document.getElementById('form-edit').action = url;
         document.getElementById('penilaian_id_edit').value = id;
-        document.getElementById('pendaftaran_edit').value = btn.dataset.pendaftaran;
-        document.getElementById('nilai_kedisiplinan_edit').value = btn.dataset.kedisiplinan;
-        document.getElementById('nilai_inisiatif_edit').value = btn.dataset.inisiatif;
-        document.getElementById('nilai_kerjasama_edit').value = btn.dataset.kerjasama;
-        document.getElementById('nilai_hasil_kerja_edit').value = btn.dataset.hasil_kerja;
+        document.getElementById('pendaftaran_edit').value = this.dataset.pendaftaran;
+        document.getElementById('nilai_kedisiplinan_edit').value = this.dataset.kedisiplinan;
+        document.getElementById('nilai_inisiatif_edit').value = this.dataset.inisiatif;
+        document.getElementById('nilai_kerjasama_edit').value = this.dataset.kerjasama;
+        document.getElementById('nilai_hasil_kerja_edit').value = this.dataset.hasil_kerja;
         hitungTotalEdit();
         editForm.classList.remove('hidden');
         tableState.classList.add('hidden');
@@ -276,7 +291,8 @@ document.querySelectorAll('.edit-button').forEach(btn => {
 
 // ==== SweetAlert Delete ====
 document.querySelectorAll('.delete-button').forEach(button => {
-    button.addEventListener('click', function() {
+    button.addEventListener('click', function(e) {
+        e.preventDefault();
         const form = this.closest('form');
         Swal.fire({
             title: 'Apakah kamu yakin?',
@@ -293,13 +309,12 @@ document.querySelectorAll('.delete-button').forEach(button => {
     });
 });
 
-// ==== Notif Sukses ====
+// ==== Notif Sukses ==== (FIX: Hapus line break di tengah string)
 @if(session('success'))
 Swal.fire({
     icon: 'success',
     title: 'Berhasil!',
-    text: '{{ session('
-    success ') }}',
+    text: '{{ session("success") }}', // FIX: Pakai double quote
     showConfirmButton: false,
     timer: 1500
 });
