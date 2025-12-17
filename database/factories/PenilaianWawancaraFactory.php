@@ -72,7 +72,7 @@ class PenilaianWawancaraFactory extends Factory
             'nilai_total' => 263,
             'nilai_rata_rata' => 87.67,
             'kkm' => $kkm,
-            'hasil' => 'Lulus',
+            'hasil' => 'lulus',
             'status' => 'sudah_dinilai',
         ]);
     }
@@ -86,7 +86,7 @@ class PenilaianWawancaraFactory extends Factory
             'nilai_total' => 187,
             'nilai_rata_rata' => 62.33,
             'kkm' => $kkm,
-            'hasil' => 'Tidak Lulus',
+            'hasil' => 'tidak_lulus',
             'status' => 'sudah_dinilai',
         ]);
     }
