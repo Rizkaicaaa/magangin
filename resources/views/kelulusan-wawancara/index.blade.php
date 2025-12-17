@@ -41,7 +41,7 @@
         </div>
 
         <div class="mt-8 text-center">
-            <button onclick="openDetailModal()"
+            <button dusk="lihat-detail" onclick="openDetailModal()"
                 class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2.5 rounded-lg transition duration-200 shadow-md hover:shadow-lg inline-flex items-center gap-2">
                 <i class="fas fa-eye"></i> Lihat Detail Nilai
             </button>
