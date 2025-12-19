@@ -18,21 +18,9 @@ use App\Http\Controllers\UserController;
 use App\Models\InfoOr;
 use Illuminate\Support\Facades\Route;
 
-// --------------------------------------------------------------------------
-// Public Routes (Akses Tanpa Login)
-// --------------------------------------------------------------------------
 
 Route::get('/', function () {
-    // Ambil data InfoOr terbaru yang memiliki gambar
-    $latestPoster = InfoOr::whereNotNull('gambar')
-        ->orderBy('created_at', 'desc')
-        ->first();
-
-    // Tentukan path gambar. Gunakan gambar default jika tidak ada di database
-    $posterPath = $latestPoster ? $latestPoster->gambar : 'images/poster_default.jpg';
-
-    // Kirim path gambar ke view 'welcome'
-    return view('welcome', compact('posterPath'));
+    return redirect()->route('login');
 });
 
 Route::get('/info-or', [InfoOrController::class, 'index'])->name('info-or.index');
