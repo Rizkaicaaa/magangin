@@ -20,7 +20,7 @@ class EvaluasiMagangModel extends Model
         'nilai_inisiatif',
         'nilai_hasil_kerja',
         'nilai_total',
-        'hasil_evaluasi',        // ← TAMBAHKAN INI
+        'hasil_evaluasi',        
         'nomor_sertifikat',
         'file_sertifikat',
     ];
