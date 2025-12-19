@@ -131,7 +131,7 @@ class EvaluasiMagangControllerTest extends TestCase
                 $table->increments('id');
                 $table->integer('pendaftaran_id')->unique();
                 $table->integer('penilai_id');
-                $table->integer('template_sertifikat_id');
+                $table->integer('template_sertifikat_id')->nullable(); // ✅ NULLABLE
                 $table->decimal('nilai_kedisiplinan', 5, 2)->nullable();
                 $table->decimal('nilai_kerjasama', 5, 2)->nullable();
                 $table->decimal('nilai_inisiatif', 5, 2)->nullable();
@@ -172,7 +172,6 @@ class EvaluasiMagangControllerTest extends TestCase
 
         $pendaftaranMock = Mockery::mock('overload:App\Models\Pendaftaran')->shouldIgnoreMissing();
         $pendaftaranMock->shouldReceive('where')->andReturnSelf();
-        $pendaftaranMock->shouldReceive('whereIn')->andReturnSelf();
         $pendaftaranMock->shouldReceive('with')->andReturnSelf();
         $pendaftaranMock->shouldReceive('get')->andReturn(collect(['dummy_pendaftar']));
 
@@ -210,18 +209,10 @@ class EvaluasiMagangControllerTest extends TestCase
         $pendaftaranMock = Mockery::mock('overload:App\Models\Pendaftaran')->shouldIgnoreMissing();
         $pendaftaranMock->shouldReceive('findOrFail')->with(1)->andReturn($pendaftaranRecord);
 
-        // Mock TemplateSertifikatModel
-        $templateRecord = (object)[
-            'id' => 1,
-            'nama_template' => 'Default Template',
-            'file_template' => 'default.docx'
-        ];
-        
-        $templateMock = Mockery::mock('overload:App\Models\TemplateSertifikatModel')->shouldIgnoreMissing();
-        $templateMock->shouldReceive('first')->andReturn($templateRecord);
-
-        // Mock EvaluasiMagangModel
+        // ✅ Mock EvaluasiMagangModel - cek duplicate dulu
         $evaluasiMock = Mockery::mock('overload:App\Models\EvaluasiMagangModel')->shouldIgnoreMissing();
+        $evaluasiMock->shouldReceive('where')->with('pendaftaran_id', 1)->andReturnSelf();
+        $evaluasiMock->shouldReceive('first')->andReturn(null); // ✅ Tidak ada duplicate
         $evaluasiMock->shouldReceive('create')->once()->andReturn(true);
 
         $response = $controller->storeOrUpdate($request);
@@ -251,16 +242,6 @@ class EvaluasiMagangControllerTest extends TestCase
 
         $pendaftaranMock = Mockery::mock('overload:App\Models\Pendaftaran')->shouldIgnoreMissing();
         $pendaftaranMock->shouldReceive('findOrFail')->with(1)->andReturn($pendaftaranRecord);
-
-        // Mock TemplateSertifikatModel
-        $templateRecord = (object)[
-            'id' => 1,
-            'nama_template' => 'Default Template',
-            'file_template' => 'default.docx'
-        ];
-        
-        $templateMock = Mockery::mock('overload:App\Models\TemplateSertifikatModel')->shouldIgnoreMissing();
-        $templateMock->shouldReceive('first')->andReturn($templateRecord);
 
         // Mock EvaluasiMagangModel
         $evaRecord = Mockery::mock();
@@ -301,6 +282,34 @@ class EvaluasiMagangControllerTest extends TestCase
         $evaluasiMock->shouldReceive('findOrFail')->with(99)->andReturn($evaluasiRecord);
 
         $response = $controller->destroy(99);
+
+        $this->assertEquals(302, $response->getStatusCode());
+    }
+
+    #[Test]
+    public function store_tidak_membuat_duplicate_penilaian()
+    {
+        $controller = new EvaluasiMagangController();
+
+        $request = $this->fakeRequest([
+            'pendaftaran_id' => 1,
+            'nilai_kedisiplinan' => 80,
+            'nilai_kerjasama' => 90,
+            'nilai_inisiatif' => 70,
+            'nilai_hasil_kerja' => 80,
+        ]);
+
+        Auth::shouldReceive('user')->andReturn((object)['id' => 5, 'dinas_id' => 10]);
+
+        // Mock EvaluasiMagangModel - sudah ada evaluasi
+        $existingEvaluasi = (object)['id' => 1, 'pendaftaran_id' => 1];
+        
+        $evaluasiMock = Mockery::mock('overload:App\Models\EvaluasiMagangModel')->shouldIgnoreMissing();
+        $evaluasiMock->shouldReceive('where')->with('pendaftaran_id', 1)->andReturnSelf();
+        $evaluasiMock->shouldReceive('first')->andReturn($existingEvaluasi); // ✅ Ada duplicate
+        $evaluasiMock->shouldReceive('create')->never(); // ✅ Tidak boleh create
+
+        $response = $controller->storeOrUpdate($request);
 
         $this->assertEquals(302, $response->getStatusCode());
     }
