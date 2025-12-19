@@ -9,25 +9,27 @@ use Illuminate\Support\Facades\Auth;
 
 class EvaluasiMagangController extends Controller
 {
-    public function index()
-    {
-        $user = Auth::user();
+   public function index()
+{
+    $user = Auth::user();
 
-        // Ambil pendaftar yang lulus wawancara dari dinas user
-        $pendaftar = Pendaftaran::where('dinas_diterima_id', $user->dinas_id)
-            ->whereIn('status_pendaftaran', ['lulus_wawancara'])
-            ->with('user') 
-            ->get();
-
-        // Ambil penilaian dengan relationship
-        $penilaian = EvaluasiMagangModel::with(['pendaftaran.user'])->get();
-
-        return view('penilaian.index', compact('pendaftar', 'penilaian'));
+    if (!$user) {
+        abort(403);
     }
 
-    public function storeOrUpdate(Request $request)
+    $pendaftar = Pendaftaran::where('dinas_diterima_id', $user->dinas_id)
+        ->where('status_pendaftaran', 'lulus_wawancara')
+        ->with('user')
+        ->get();
+
+    $penilaian = EvaluasiMagangModel::with('pendaftaran.user')->get();
+
+    return view('penilaian.index', compact('pendaftar', 'penilaian'));
+}
+
+    public function storeOrUpdate(Request $request, $id = null)
     {
-        $request->validate([
+        $validated = $request->validate([
             'pendaftaran_id' => 'required|exists:pendaftaran,id',
             'nilai_kedisiplinan' => 'required|numeric|min:0|max:100',
             'nilai_kerjasama' => 'required|numeric|min:0|max:100',
@@ -37,51 +39,48 @@ class EvaluasiMagangController extends Controller
 
         $user = Auth::user();
         $total = (
-            $request->nilai_kedisiplinan +
-            $request->nilai_kerjasama +
-            $request->nilai_inisiatif +
-            $request->nilai_hasil_kerja
+            $validated['nilai_kedisiplinan'] +
+            $validated['nilai_kerjasama'] +
+            $validated['nilai_inisiatif'] +
+            $validated['nilai_hasil_kerja']
         ) / 4;
 
-        $hasilEvaluasi = $total >= 70 ? 'Lulus' : 'Tidak Lulus';
+        $hasilEvaluasi = $total >= 70 ? 'lulus' : 'tidak_lulus';
         $statusPendaftaran = $total >= 70 ? 'lulus_magang' : 'tidak_lulus_magang';
         
-        $pendaftaran = Pendaftaran::findOrFail($request->pendaftaran_id);
+        $pendaftaran = Pendaftaran::findOrFail($validated['pendaftaran_id']);
 
-        // ✅ FIX: Ambil template pertama atau buat dummy jika tidak ada
-$defaultTemplate = \App\Models\TemplateSertifikatModel::first();
+        // Data yang akan disimpan
+        $data = [
+            'pendaftaran_id' => $validated['pendaftaran_id'],
+            'penilai_id' => $user->id,
+            'nilai_kedisiplinan' => $validated['nilai_kedisiplinan'],
+            'nilai_kerjasama' => $validated['nilai_kerjasama'],
+            'nilai_inisiatif' => $validated['nilai_inisiatif'],
+            'nilai_hasil_kerja' => $validated['nilai_hasil_kerja'],
+            'nilai_total' => $total,
+            'hasil_evaluasi' => $hasilEvaluasi,
+            'template_sertifikat_id' => null, // ✅ SET NULL (karena nullable di migration)
+            'nomor_sertifikat' => null,
+            'file_sertifikat' => null,
+        ];
 
-// Jika tidak ada template sama sekali, buat dummy template
-if (!$defaultTemplate) {
-    $defaultTemplate = \App\Models\TemplateSertifikatModel::create([
-        'nama_template' => 'Default Template',
-        'file_template' => 'default.docx',
-        'created_by' => $user->id
-    ]);
-}
-
-// Data yang akan disimpan
-$data = [
-    'pendaftaran_id' => $request->pendaftaran_id,
-    'penilai_id' => $user->id,
-    'nilai_kedisiplinan' => $request->nilai_kedisiplinan,
-    'nilai_kerjasama' => $request->nilai_kerjasama,
-    'nilai_inisiatif' => $request->nilai_inisiatif,
-    'nilai_hasil_kerja' => $request->nilai_hasil_kerja,
-    'nilai_total' => $total,
-    'hasil_evaluasi' => $hasilEvaluasi,
-    'template_sertifikat_id' => $defaultTemplate->id, // ✅ ALWAYS SET ID, BUKAN NULL
-    'nomor_sertifikat' => null,
-    'file_sertifikat' => null,
-];
-
-        if ($request->penilaian_id) {
-            // UPDATE penilaian
-            $evaluasi = EvaluasiMagangModel::findOrFail($request->penilaian_id);
+        if ($id || $request->penilaian_id) {
+            // UPDATE
+            $evaluasiId = $id ?? $request->penilaian_id;
+            $evaluasi = EvaluasiMagangModel::findOrFail($evaluasiId);
             $evaluasi->update($data);
             $message = 'Penilaian berhasil diperbarui!';
         } else {
-            // CREATE penilaian baru
+            // CREATE - cek duplicate dulu
+            $existing = EvaluasiMagangModel::where('pendaftaran_id', $validated['pendaftaran_id'])->first();
+            
+            if ($existing) {
+                // Kalau sudah ada, jangan create lagi
+                return redirect()->route('penilaian.index')
+                    ->with('info', 'Penilaian untuk pendaftar ini sudah ada.');
+            }
+            
             EvaluasiMagangModel::create($data);
             $message = 'Penilaian berhasil disimpan!';
         }

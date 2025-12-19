@@ -116,7 +116,7 @@ public function test_dapat_membuat_penilaian_lulus()
         'nilai_kerjasama' => 90,
         'nilai_inisiatif' => 80,
         'nilai_hasil_kerja' => 88,
-        'hasil_evaluasi' => 'Lulus'
+        'hasil_evaluasi' => 'lulus'
     ]);
 
     // Verifikasi status pendaftaran berubah
@@ -139,7 +139,7 @@ public function test_dapat_membuat_penilaian_lulus()
         'nilai_inisiatif' => 72,
         'nilai_hasil_kerja' => 78,
         'nilai_total' => 73.75,
-        'hasil_evaluasi' => 'Lulus'
+        'hasil_evaluasi' => 'lulus'
     ]);
 
     $this->browse(function (Browser $browser) use ($evaluasi) {
@@ -183,7 +183,7 @@ public function test_dapat_membuat_penilaian_lulus()
         'nilai_kerjasama' => 92,
         'nilai_inisiatif' => 90,
         'nilai_hasil_kerja' => 93,
-        'hasil_evaluasi' => 'Lulus',
+        'hasil_evaluasi' => 'lulus',
     ]);
 }
 
@@ -239,7 +239,7 @@ public function test_dapat_membuat_penilaian_lulus()
             'nilai_inisiatif' => 82,
             'nilai_hasil_kerja' => 88,
             'nilai_total' => 83.75,
-            'hasil_evaluasi' => 'Lulus'
+            'hasil_evaluasi' => 'lulus'
         ]);
 
         $this->browse(function (Browser $browser) use ($evaluasi) {
@@ -278,7 +278,7 @@ public function test_dapat_membuat_penilaian_lulus()
             'nilai_inisiatif' => 82,
             'nilai_hasil_kerja' => 88,
             'nilai_total' => 83.75,
-            'hasil_evaluasi' => 'Lulus'
+            'hasil_evaluasi' => 'lulus'
         ]);
 
         $this->browse(function (Browser $browser) use ($evaluasi) {
@@ -369,7 +369,7 @@ public function test_dapat_membuat_penilaian_lulus()
             'nilai_inisiatif' => 80,
             'nilai_hasil_kerja' => 88,
             'nilai_total' => 85.75,
-            'hasil_evaluasi' => 'Lulus'
+            'hasil_evaluasi' => 'lulus'
         ]);
 
         $this->browse(function (Browser $browser) {

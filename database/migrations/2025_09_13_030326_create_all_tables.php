@@ -128,8 +128,11 @@ Schema::create('jadwal_kegiatan', function (Blueprint $table) {
             $table->foreign('pendaftaran_id')->references('id')->on('pendaftaran')->onDelete('cascade');
             $table->unsignedInteger('penilai_id');
             $table->foreign('penilai_id')->references('id')->on('users')->onDelete('cascade');
-            $table->unsignedInteger('template_sertifikat_id');
-            $table->foreign('template_sertifikat_id')->references('id')->on('template_sertifikat')->onDelete('cascade');
+           $table->unsignedInteger('template_sertifikat_id')->nullable();
+$table->foreign('template_sertifikat_id')
+      ->references('id')
+      ->on('template_sertifikat')
+      ->onDelete('set null');
             $table->decimal('nilai_kedisiplinan', 5, 2)->nullable();
             $table->decimal('nilai_kerjasama', 5, 2)->nullable();
             $table->decimal('nilai_inisiatif', 5, 2)->nullable();
