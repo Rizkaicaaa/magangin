@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Mockery;
 use Tests\TestCase;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses; // Tambahkan ini
+use PHPUnit\Framework\Attributes\Test;
 
 #[RunTestsInSeparateProcesses] // Tambahkan ini
 class AuthenticatedSessionControllerTest extends TestCase
@@ -32,23 +33,34 @@ class AuthenticatedSessionControllerTest extends TestCase
     // --- TEST CASE 1: Menguji Metode create() ---
     
     /** @test */
-    public function create_menampilkan_view_login_dengan_semua_data_dinas()
+    public function create_menampilkan_view_login_dengan_data_dinas_dan_info_or()
     {
-        // 1. Stubbing data dinas
-        $allDinas = collect([
-            (object)['id' => 1, 'nama' => 'Dinas A'],
-            (object)['id' => 2, 'nama' => 'Dinas B'],
-        ]);
+        // 1. Persiapkan data palsu
+        $allDinas = collect([(object)['id' => 1, 'nama' => 'Dinas A']]);
+        $latestInfoOr = (object)['id' => 1, 'judul' => 'Pendaftaran 2025'];
 
-        // 2. Mocking pemanggilan Model Dinas::all()
+        // 2. Mocking Dinas::all()
         $this->dinasMock->shouldReceive('all')->once()->andReturn($allDinas);
 
-        // 3. Panggil metode yang diuji
+        // 3. Mocking InfoOr dengan Static Proxy Mockery
+        // Kita buat mock yang secara spesifik menangani chaining
+        $infoOrMock = \Mockery::mock('alias:App\Models\InfoOr');
+        $infoOrMock->shouldReceive('orderBy')
+            ->with('created_at', 'desc')
+            ->andReturnSelf(); // Mengembalikan mock itu sendiri agar bisa lanjut ke ->first()
+        
+        $infoOrMock->shouldReceive('first')
+            ->andReturn($latestInfoOr);
+
+        // 4. Jalankan method
         $response = $this->controller->create();
 
-        // 4. Verifikasi View dan data yang dilewatkan
+        // 5. Assertions
         $this->assertEquals('auth.login', $response->getName());
+        $this->assertArrayHasKey('allDinas', $response->getData());
+        $this->assertArrayHasKey('infoOr', $response->getData());
         $this->assertEquals($allDinas, $response->getData()['allDinas']);
+        $this->assertEquals($latestInfoOr, $response->getData()['infoOr']);
     }
 
     // --- TEST CASE 2: Menguji Metode store() ---
