@@ -78,7 +78,8 @@ class JadwalKegiatanTest extends DuskTestCase
             // 5. Validasi Data di Tabel
             $browser->pause(1500)
                 ->assertSee('Workshop Laravel Dusk')
-                ->assertSee('Gedung Serba Guna');
+                ->assertSee('Gedung Serba Guna')
+                ->screenshot('01_superadmin_tambah_kegiatan_berhasil');
         });
     }
 
@@ -129,7 +130,8 @@ class JadwalKegiatanTest extends DuskTestCase
                 
             $browser->pause(1500)
                 ->assertSee('Kegiatan Baru Diedit')
-                ->assertSee('Tempat Baru');
+                ->assertSee('Tempat Baru')
+                ->screenshot('02_superadmin_edit_kegiatan_berhasil');
         });
     }
 
@@ -173,7 +175,8 @@ class JadwalKegiatanTest extends DuskTestCase
             $browser->script("document.querySelector('.swal2-confirm').click();");
                 
             $browser->pause(1500)
-                ->assertDontSee('Kegiatan Dihapus');
+                ->assertDontSee('Kegiatan Dihapus')
+                ->screenshot('03_superadmin_hapus_kegiatan_berhasil');
         });
     }
     
@@ -218,7 +221,8 @@ class JadwalKegiatanTest extends DuskTestCase
 
             // Harapkan Error SweetAlert
             $browser->waitFor('.swal2-error', 10)
-                    ->assertSee('Sudah ada kegiatan lain');
+                    ->assertSee('Sudah ada kegiatan lain')
+                    ->screenshot('04_validasi_jadwal_bentrok_gagal');
         });
     }
 
@@ -256,7 +260,8 @@ class JadwalKegiatanTest extends DuskTestCase
                     ->select('#periode-select', $periode2->id)
                     ->pause(1000)
                     ->waitForText('Kegiatan Periode Dua')
-                    ->assertDontSee('Kegiatan Periode Satu');
+                    ->assertDontSee('Kegiatan Periode Satu')
+                    ->screenshot('05_filter_kegiatan_per_periode_berhasil');
         });
     }
 
@@ -291,6 +296,7 @@ class JadwalKegiatanTest extends DuskTestCase
                     ->assertSee($kegiatan->nama_kegiatan)
                     ->assertSee($kegiatan->tempat)
                     ->assertSee($kegiatan->deskripsi_kegiatan)
+                    ->screenshot('06_superadmin_lihat_detail_kegiatan_berhasil')
                     
                     // Tutup detail
                     ->click('.swal2-confirm');
@@ -319,7 +325,8 @@ class JadwalKegiatanTest extends DuskTestCase
                     ->waitForText('Rapat Koordinasi')
                     ->assertMissing('#open-create-modal')
                     ->assertMissing("button[title='Edit Kegiatan']")
-                    ->assertMissing("button[title='Hapus Kegiatan']");
+                    ->assertMissing("button[title='Hapus Kegiatan']")
+                    ->screenshot('07_admin_lihat_kegiatan_read_only');
         });
     }
     
@@ -347,6 +354,7 @@ class JadwalKegiatanTest extends DuskTestCase
                     ->click("button[onclick='showDetail({$kegiatan->id})']")
                     ->waitFor('.swal2-popup')
                     ->assertSee('Detail khusus admin')
+                    ->screenshot('08_admin_lihat_detail_kegiatan_berhasil')
                     ->click('.swal2-confirm');
         });
     }
@@ -386,7 +394,8 @@ class JadwalKegiatanTest extends DuskTestCase
                     ->assertMissing("button[title='Hapus Kegiatan']")
                     
                     ->waitForText('Kegiatan Batch 1')
-                    ->assertDontSee('Kegiatan Batch 2');
+                    ->assertDontSee('Kegiatan Batch 2')
+                    ->screenshot('09_mahasiswa_lihat_jadwal_sesuai_periode');
         });
     }
 
@@ -422,6 +431,7 @@ class JadwalKegiatanTest extends DuskTestCase
                     ->click("button[onclick='showDetail({$kegiatan->id})']")
                     ->waitFor('.swal2-popup')
                     ->assertSee('Detail khusus mahasiswa')
+                    ->screenshot('10_mahasiswa_lihat_detail_kegiatan_berhasil')
                     ->click('.swal2-confirm');
         });
     }

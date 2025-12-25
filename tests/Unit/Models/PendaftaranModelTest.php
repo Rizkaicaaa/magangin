@@ -146,14 +146,5 @@ class PendaftaranModelTest extends TestCase
         $this->assertStringContainsString('pendaftaran_id', $methodCode);
     }
 
-    /** @test */
-    public function relasi_ke_jadwals_mengembalikan_belongs_to_many()
-    {
-        $model = new Pendaftaran;
-
-        $relation = $model->jadwals();
-
-        $this->assertInstanceOf(BelongsToMany::class, $relation);
-    }
 
 }

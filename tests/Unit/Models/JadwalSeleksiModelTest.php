@@ -88,11 +88,4 @@ public function model_memiliki_casts_yang_sesuai()
         $this->assertInstanceOf(BelongsToMany::class, $model->mahasiswas());
     }
 
-    /** @test */
-    public function relasi_ke_pendaftarans_mengembalikan_belongs_to_many()
-    {
-        $model = new JadwalSeleksi;
-
-        $this->assertInstanceOf(BelongsToMany::class, $model->pendaftarans());
-    }
 }

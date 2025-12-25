@@ -43,7 +43,7 @@ class PendaftaranTest extends DuskTestCase
         return $path;
     }
 
-/**
+    /**
      * TEST CASE 1: Mahasiswa dapat mendaftar jika info OR sedang buka
      * @test
      */
@@ -117,14 +117,16 @@ class PendaftaranTest extends DuskTestCase
                     
                     // Tunggu JS melakukan switch tab otomatis ke Login (setelah 2 detik)
                     ->pause(3000)
-                    ->assertVisible('#loginForm'); // Pastikan sudah kembali ke form login
+                    ->assertVisible('#loginForm') // Pastikan sudah kembali ke form login
+                    ->screenshot('01_mahasiswa_berhasil_mendaftar');
                     
             // Validasi Database
             $this->assertDatabaseHas('users', ['email' => 'maba@test.com']);
             $this->assertDatabaseHas('pendaftaran', ['pilihan_dinas_1' => $dinas[0]->id]);
         });
     }
-/**
+
+    /**
      * TEST CASE 2: Validasi mahasiswa tidak bisa mendaftar apabila Info OR Tutup
      * @test
      */
@@ -143,11 +145,11 @@ class PendaftaranTest extends DuskTestCase
                     ->waitFor('#registerTab', 10)
                     ->pause(500)
                     
-                    // Cek via JS apakah tombol disabled
                     ->assertScript("return document.getElementById('registerTab').disabled", true)
                     
                     // Form Register harus tetap hidden
-                    ->assertMissing('#registerForm:not(.hidden)');
+                    ->assertMissing('#registerForm:not(.hidden)')
+                    ->screenshot('02_pendaftaran_ditutup_tombol_disabled');
         });
     }
 
@@ -198,7 +200,8 @@ class PendaftaranTest extends DuskTestCase
                              const budiRow = rows.find(r => r.textContent.includes('Budi Terdaftar'));
                              return budiRow && getComputedStyle(budiRow).display === 'none';"
                         )[0] === true;
-                    });
+                    })
+                    ->screenshot('03_filter_tabel_pendaftar_berhasil');
         });
     }
 
@@ -243,6 +246,7 @@ class PendaftaranTest extends DuskTestCase
                               ->assertSee('Andi Detail') // Nama
                               ->assertSee('Saya ingin belajar keras'); // Motivasi
                     })
+                    ->screenshot('04_detail_pendaftar_ditampilkan')
                     
                     // 5. Tutup Modal
                     ->click("#detail-modal button[onclick='closeDetailModal()']");
@@ -295,7 +299,8 @@ class PendaftaranTest extends DuskTestCase
                     
                     // 6. Tunggu Sukses (Redirect Back)
                     ->pause(2000)
-                    ->assertSee('Dinas penerima berhasil ditetapkan');
+                    ->assertSee('Dinas penerima berhasil ditetapkan')
+                    ->screenshot('05_dinas_penerima_berhasil_ditetapkan');
             
             // Verifikasi DB
             $this->assertDatabaseHas('pendaftaran', [
